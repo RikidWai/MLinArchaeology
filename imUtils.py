@@ -9,13 +9,13 @@ import math
 lower_blue = np.array([120, 50, 20])
 upper_blue = np.array([158, 255, 255])
 lower_green = np.array([40, 52, 70])
-upper_green = np.array([102, 255, 255])
+upper_green = np.array([82, 255, 255])  # TOFIX
 lower_yellow = np.array([20, 100, 100])
 upper_yellow = np.array([30, 255, 255])
 
 lower_red = np.array([0, 100, 100])
 upper_red = np.array([10, 255, 255])
-lower_red2 = np.array([161, 100, 100])
+lower_red2 = np.array([170, 100, 100])
 upper_red2 = np.array([179, 255, 255])
 
 lower_black = np.array([0, 0, 0])
@@ -29,6 +29,13 @@ COLOUR_RANGE = [[[lower_blue, upper_blue]],
                 [[lower_yellow, upper_yellow]],
                 [[lower_red, upper_red], [lower_red2, upper_red2]],
                 [[lower_black, upper_black]]]
+
+# reference colours in rgb, in values between 0 and 1
+b_ref = np.array([26, 0, 165])/255
+g_ref = np.array([30, 187, 22])/255
+y_ref = np.array([252, 222, 10])/255
+r_ref = np.array([240, 0, 22])/255
+COLOUR_REF_RGB = [b_ref, g_ref, y_ref, r_ref, [1, 1, 1], [0, 0, 0]]
 
 MARGIN = 2  # Margin for cropping
 
@@ -117,12 +124,12 @@ def contrastStretching(img):
 
 def get4ColourPatchPos(img):
 
-    img = whiteBalance(img)
-    img = contrastStretching(img)
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
-
+    img2 = img.copy()
     patchPos = []
-
+    extracted_colours_hsv = extracted_colours_rgb = [None]*len(COLOUR_RANGE)
+    coloursRect = []
+    detected_areas_mean_around_red = []
     for i in range(len(COLOUR_RANGE)):
         # Threshold the HSV image to get only certain colors
         if len(COLOUR_RANGE[i]) == 1:
@@ -134,6 +141,7 @@ def get4ColourPatchPos(img):
             mask_2 = cv2.inRange(
                 img_hsv, COLOUR_RANGE[i][1][0], COLOUR_RANGE[i][1][1])
             mask = cv2.bitwise_or(mask_1, mask_2)
+
         # Find contours and filter using threshold area
         colour_cnts, _ = cv2.findContours(
             mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -152,8 +160,53 @@ def get4ColourPatchPos(img):
             x, y, w, h = cv2.boundingRect(coloured_cnt)
             cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
             patchPos.append((x, y, w, h))
+            coloursRect.append(cv2.cvtColor(
+                img2[y:y+h, x:x+w], cv2.COLOR_BGR2RGB))
+            # get the white patch by comparing the left,right,top,bottom patch from the red patch, see which one is the whitest
+            if (len(COLOUR_RANGE[i]) == 2):
+                print("the white colour")
+                print("x", x)
+                print("w:", w)
+                # right side
+                rightSide = img2[y:y+h, x+w:x+w+w//2+w//6]
+                cv2.rectangle(img, (x+w, y), (x+w+w//2 +
+                              w//6, y+h), (0, 255, 0), 2)
+                right_mean = cv2.mean(rightSide)[0:3]
+                print("mean:", right_mean)
+                detected_areas_mean_around_red.append(right_mean)
+                # left side
+                leftSide = img2[y:y+h, (x-w//2-w//6):x]
 
-    return patchPos
+                cv2.rectangle(img, (x-w//2-w//6, y), (x, y+h), (0, 255, 0), 2)
+                left_mean = cv2.mean(leftSide)[0:3]
+                print("mean:", left_mean)
+                detected_areas_mean_around_red.append(left_mean)
+                # top side
+                topSide = img2[(y-h//2-h//6):y, x:x+w]
+                cv2.rectangle(img, (x, (y-h//2-h//6)),
+                              (x+w, y), (0, 255, 0), 2)
+                top_mean = cv2.mean(topSide)[0:3]
+                print("mean:", top_mean)
+                detected_areas_mean_around_red.append(top_mean)
+
+                # bottom side
+                bottomSide = img2[y+h:y+h+h//2+h//6, x:x+w]
+                cv2.rectangle(img, (x, (y+h)),
+                              (x+w, y+h+h//2+h//6), (0, 255, 0), 2)
+                bottom_mean = cv2.mean(bottomSide)[0:3]
+                print("mean:", bottom_mean)
+                detected_areas_mean_around_red.append(bottom_mean)
+
+                all_sides_colours = [rightSide, leftSide, topSide, bottomSide]
+                index_foundClosest_toWhite_colour = detected_areas_mean_around_red.index(
+                    closest_color_to_white(detected_areas_mean_around_red))
+                print("index of the patch closest to white:",
+                      index_foundClosest_toWhite_colour)
+                coloursRect.append(cv2.cvtColor(
+                    all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB))
+
+    imshow(img)
+    return patchPos, coloursRect
 
 
 def isSherd(cnt, patchPos):
