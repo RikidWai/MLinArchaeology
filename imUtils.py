@@ -24,12 +24,11 @@ lower_white = np.array([0, 0, 180])  # TOFIX
 upper_white = np.array([0, 0, 255])  # TOFIX
 
 # Create an array specify lower and upper range of colours
-COLOUR_RANGE = [[lower_blue, upper_blue],
-                [lower_green, upper_green],
-                [lower_yellow, upper_yellow],
+COLOUR_RANGE = [[[lower_blue, upper_blue]],
+                [[lower_green, upper_green]],
+                [[lower_yellow, upper_yellow]],
                 [[lower_red, upper_red], [lower_red2, upper_red2]],
-                [lower_black, upper_black]]
-
+                [[lower_black, upper_black]]]
 
 MARGIN = 2  # Margin for cropping
 
@@ -73,15 +72,28 @@ def imshow(img):
     except Exception as e:
         print(e)
 
+
 def getEdgedImg(img):
-  blur = cv2.medianBlur(img, 3)
-  med_val = np.median(img)
-  lower = int(max(0, 0.5*med_val))
-  upper = int(min(255, 1.3*med_val))
-  edged = cv2.Canny(blur, lower, upper)
-  return edged
+    blur = cv2.medianBlur(img, 3)
+    med_val = np.median(img)
+    lower = int(max(0, 0.5*med_val))
+    upper = int(min(255, 1.3*med_val))
+    edged = cv2.Canny(blur, lower, upper)
+    return edged
 
 # Color Correction
+
+
+def closest_color_to_white(COLORS):
+    r, g, b = 255, 255, 255
+    color_diffs = []
+    for color in COLORS:
+        cr, cg, cb = color
+        color_diff = np.sqrt((r - cr)**2 + (g - cg)**2 + (b - cb)**2)
+        color_diffs.append((color_diff, color))
+    return min(color_diffs)[1]
+
+
 def whiteBalance(img):
     result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     avg_a = np.average(result[:, :, 1])
@@ -100,7 +112,9 @@ def contrastStretching(img):
     norm_img = (255*norm_img).astype(np.uint8)
     return norm_img
 
-# Cropping 
+# Cropping
+
+
 def get4ColourPatchPos(img):
 
     img = whiteBalance(img)
@@ -110,10 +124,10 @@ def get4ColourPatchPos(img):
     patchPos = []
 
     for i in range(len(COLOUR_RANGE)):
-
         # Threshold the HSV image to get only certain colors
-        if i != 3:
-            mask = cv2.inRange(img_hsv, COLOUR_RANGE[i][0], COLOUR_RANGE[i][1])
+        if len(COLOUR_RANGE[i]) == 1:
+            mask = cv2.inRange(
+                img_hsv, COLOUR_RANGE[i][0][0], COLOUR_RANGE[i][0][1])
         else:  # Red color
             mask_1 = cv2.inRange(
                 img_hsv, COLOUR_RANGE[i][0][0], COLOUR_RANGE[i][0][1])

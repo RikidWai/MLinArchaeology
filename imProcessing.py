@@ -30,7 +30,6 @@ img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
           x-imUtils.MARGIN:x+w+imUtils.MARGIN]
 
 # Find Mask
-
 edged = imUtils.getEdgedImg(img.copy())
 
 # threshold
@@ -58,8 +57,10 @@ sub_imgs = []
 
 h, w = img.shape[0], img.shape[1]
 
-while len(sub_imgs) < cfg.SAMPLE_NUM:
+for i in range(500):
     if cfg.MAX_WIDTH > w or cfg.MAX_HEIGHT > h:
+        break
+    if len(sub_imgs) == cfg.SAMPLE_NUM:
         break
     x1 = np.random.randint(0, w - cfg.MAX_WIDTH)
     y1 = np.random.randint(0, h - cfg.MAX_HEIGHT)
