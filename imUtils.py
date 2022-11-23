@@ -35,7 +35,12 @@ b_ref = np.array([26, 0, 165])/255
 g_ref = np.array([30, 187, 22])/255
 y_ref = np.array([252, 222, 10])/255
 r_ref = np.array([240, 0, 22])/255
-COLOUR_REF_RGB = [b_ref, g_ref, y_ref, r_ref, [1, 1, 1], [0, 0, 0]]
+REF_RGB_4Patch = [b_ref,
+                  g_ref,
+                  y_ref,
+                  r_ref,
+                  [1, 1, 1],  # white
+                  [0, 0, 0]]  # black
 
 MARGIN = 2  # Margin for cropping
 
@@ -122,13 +127,14 @@ def contrastStretching(img):
 # Cropping
 
 
-def get4ColourPatchPos(img):
+def get4PatchInfo(img):
 
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
     img2 = img.copy()
     patchPos = []
-    extracted_colours_hsv = extracted_colours_rgb = [None]*len(COLOUR_RANGE)
     coloursRect = []
+    EXTRACTED_RGB = REF_RGB = []
+
     detected_areas_mean_around_red = []
     for i in range(len(COLOUR_RANGE)):
         # Threshold the HSV image to get only certain colors
@@ -206,7 +212,7 @@ def get4ColourPatchPos(img):
                     all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB))
 
     imshow(img)
-    return patchPos, coloursRect
+    return patchPos, coloursRect, EXTRACTED_RGB, REF_RGB
 
 
 def isSherd(cnt, patchPos):

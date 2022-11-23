@@ -14,13 +14,11 @@ img2 = imUtils.imread(folder+'1.cr3', 100)
 img = imUtils.whiteBalance(img)
 
 # Color Correction
-extracted_colours_hsv = extracted_colours_rgb = [
-    None]*len(imUtils.COLOUR_RANGE)
 coloursRect = []
-detected_areas_mean_around_red = []
 patchPos = []
 
-patchPos, coloursRect = imUtils.get4ColourPatchPos(img.copy())
+patchPos, coloursRect, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(
+    img.copy())
 print(len(patchPos), len(coloursRect))
 # patchPos = imUtils.get4ColourPatchPos(img.copy())
 
@@ -31,25 +29,25 @@ colour_y = np.vstack(coloursRect[2])/255
 colour_r = np.vstack(coloursRect[3])/255
 colour_wh = np.vstack(coloursRect[4])/255
 colour_bl = np.vstack(coloursRect[5])/255
-REFERENCE_RGB = colour.cctf_decoding(
-    np.array(np.vstack(([imUtils.COLOUR_REF_RGB[0]]*colour_b.shape[0],
-                        [imUtils.COLOUR_REF_RGB[1]]*colour_g.shape[0],
-                        [imUtils.COLOUR_REF_RGB[2]]*colour_y.shape[0],
-                        [imUtils.COLOUR_REF_RGB[3]]*colour_r.shape[0],
-                        [imUtils.COLOUR_REF_RGB[4]]*colour_wh.shape[0],
-                        [imUtils.COLOUR_REF_RGB[5]]*colour_bl.shape[0])))
+REF_RGB = colour.cctf_decoding(
+    np.array(np.vstack(([imUtils.REF_RGB_4Patch[0]]*colour_b.shape[0],
+                        [imUtils.REF_RGB_4Patch[1]]*colour_g.shape[0],
+                        [imUtils.REF_RGB_4Patch[2]]*colour_y.shape[0],
+                        [imUtils.REF_RGB_4Patch[3]]*colour_r.shape[0],
+                        [imUtils.REF_RGB_4Patch[4]]*colour_wh.shape[0],
+                        [imUtils.REF_RGB_4Patch[5]]*colour_bl.shape[0])))
 )
 
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
-TEST_RGB = np.array(
+EXTRACTED_RGB = np.array(
     np.vstack((colour_b, colour_g, colour_y, colour_r, colour_wh, colour_bl)))
 # currently the bestprint("corrected Vandermonde:")
-corrected11 = colour.colour_correction(
-    img, TEST_RGB, REFERENCE_RGB, 'Vandermonde')
+corrected = colour.colour_correction(
+    img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
 colour.plotting.plot_image(
-    corrected11
+    corrected
 )
-img = (cv2.cvtColor(corrected11.astype(np.float32), cv2.COLOR_RGB2BGR)*255)
+img = (cv2.cvtColor(corrected.astype(np.float32), cv2.COLOR_RGB2BGR)*255)
 img = img.astype(np.uint8)
 
 # Crop the sherd
@@ -107,7 +105,6 @@ for i in range(500):
         sub_imgs.append(sub_img)
 
 # Save the cropped regions
-
 for i, sub_img in enumerate(sub_imgs):
     imUtils.imshow(sub_img)
 # cv2.imwrite(f'{i + 1}.jpg', sub_img)
