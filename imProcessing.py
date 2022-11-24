@@ -14,33 +14,40 @@ img2 = imUtils.imread(folder+'1.cr3', 100)
 img = imUtils.whiteBalance(img)
 
 # Color Correction
-coloursRect = []
+coloursRect = {}
 patchPos = []
 
-patchPos, coloursRect, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(
+patchPos, coloursRect, EXTRACTED_RGB2, REF_RGB2 = imUtils.get4PatchInfo(
     img.copy())
 print(len(patchPos), len(coloursRect))
 # patchPos = imUtils.get4ColourPatchPos(img.copy())
 
 # organise the image sampled colour patches into four arrays (R, Y, G, B, White), in values between 0 and 1
-colour_b = np.vstack(coloursRect[0])/255
-colour_g = np.vstack(coloursRect[1])/255
-colour_y = np.vstack(coloursRect[2])/255
-colour_r = np.vstack(coloursRect[3])/255
-colour_wh = np.vstack(coloursRect[4])/255
-colour_bl = np.vstack(coloursRect[5])/255
+colour_b = np.vstack(coloursRect['blue'])/255
+colour_g = np.vstack(coloursRect['green'])/255
+colour_y = np.vstack(coloursRect['yellow'])/255
+colour_r = np.vstack(coloursRect['red'])/255
+colour_wh = np.vstack(coloursRect['white'])/255
+colour_bl = np.vstack(coloursRect['black'])/255
 REF_RGB = colour.cctf_decoding(
-    np.array(np.vstack(([imUtils.REF_RGB_4Patch[0]]*colour_b.shape[0],
-                        [imUtils.REF_RGB_4Patch[1]]*colour_g.shape[0],
-                        [imUtils.REF_RGB_4Patch[2]]*colour_y.shape[0],
-                        [imUtils.REF_RGB_4Patch[3]]*colour_r.shape[0],
-                        [imUtils.REF_RGB_4Patch[4]]*colour_wh.shape[0],
-                        [imUtils.REF_RGB_4Patch[5]]*colour_bl.shape[0])))
+    np.array(np.vstack(([imUtils.REF_RGB_4Patch['blue']]*colour_b.shape[0],
+                        [imUtils.REF_RGB_4Patch['green']]*colour_g.shape[0],
+                        [imUtils.REF_RGB_4Patch['yellow']]*colour_y.shape[0],
+                        [imUtils.REF_RGB_4Patch['red']]*colour_r.shape[0],
+                        [imUtils.REF_RGB_4Patch['white']]*colour_wh.shape[0],
+                        [imUtils.REF_RGB_4Patch['black']]*colour_bl.shape[0])))
 )
 
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
 EXTRACTED_RGB = np.array(
     np.vstack((colour_b, colour_g, colour_y, colour_r, colour_wh, colour_bl)))
+if REF_RGB2 == REF_RGB:
+    print('Identical')
+else:
+    print('NOT Identical')
+print('a', REF_RGB2)
+print('b', REF_RGB)
+print('length:', len(EXTRACTED_RGB))
 # currently the bestprint("corrected Vandermonde:")
 corrected = colour.colour_correction(
     img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')

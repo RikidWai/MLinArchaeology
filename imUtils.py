@@ -4,6 +4,7 @@ import rawpy
 import os
 import matplotlib.pyplot as plt
 import math
+import colour
 
 # define range of colors in HSV
 lower_blue = np.array([120, 50, 20])
@@ -24,23 +25,23 @@ lower_white = np.array([0, 0, 180])  # TOFIX
 upper_white = np.array([0, 0, 255])  # TOFIX
 
 # Create an array specify lower and upper range of colours
-COLOUR_RANGE = [[[lower_blue, upper_blue]],
-                [[lower_green, upper_green]],
-                [[lower_yellow, upper_yellow]],
-                [[lower_red, upper_red], [lower_red2, upper_red2]],
-                [[lower_black, upper_black]]]
+COLOUR_RANGE = {'blue': [[lower_blue, upper_blue]],
+                'green': [[lower_green, upper_green]],
+                'yellow': [[lower_yellow, upper_yellow]],
+                'red': [[lower_red, upper_red], [lower_red2, upper_red2]],
+                'black': [[lower_black, upper_black]]}
 
 # reference colours in rgb, in values between 0 and 1
 b_ref = np.array([26, 0, 165])/255
 g_ref = np.array([30, 187, 22])/255
 y_ref = np.array([252, 222, 10])/255
 r_ref = np.array([240, 0, 22])/255
-REF_RGB_4Patch = [b_ref,
-                  g_ref,
-                  y_ref,
-                  r_ref,
-                  [1, 1, 1],  # white
-                  [0, 0, 0]]  # black
+REF_RGB_4Patch = {'blue': b_ref,
+                  'green': g_ref,
+                  'yellow': y_ref,
+                  'red': r_ref,
+                  'white': [1, 1, 1],  # white
+                  'black': [0, 0, 0]}  # black
 
 MARGIN = 2  # Margin for cropping
 
@@ -132,20 +133,20 @@ def get4PatchInfo(img):
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
     img2 = img.copy()
     patchPos = []
-    coloursRect = []
+    coloursRectList = {}
     EXTRACTED_RGB = REF_RGB = []
 
     detected_areas_mean_around_red = []
-    for i in range(len(COLOUR_RANGE)):
+    for color in COLOUR_RANGE:
         # Threshold the HSV image to get only certain colors
-        if len(COLOUR_RANGE[i]) == 1:
+        if color != 'red':
             mask = cv2.inRange(
-                img_hsv, COLOUR_RANGE[i][0][0], COLOUR_RANGE[i][0][1])
+                img_hsv, COLOUR_RANGE[color][0][0], COLOUR_RANGE[color][0][1])
         else:  # Red color
             mask_1 = cv2.inRange(
-                img_hsv, COLOUR_RANGE[i][0][0], COLOUR_RANGE[i][0][1])
+                img_hsv, COLOUR_RANGE[color][0][0], COLOUR_RANGE[color][0][1])
             mask_2 = cv2.inRange(
-                img_hsv, COLOUR_RANGE[i][1][0], COLOUR_RANGE[i][1][1])
+                img_hsv, COLOUR_RANGE[color][1][0], COLOUR_RANGE[color][1][1])
             mask = cv2.bitwise_or(mask_1, mask_2)
 
         # Find contours and filter using threshold area
@@ -166,10 +167,20 @@ def get4PatchInfo(img):
             x, y, w, h = cv2.boundingRect(coloured_cnt)
             cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
             patchPos.append((x, y, w, h))
-            coloursRect.append(cv2.cvtColor(
+            coloursRect = cv2.cvtColor(img2[y:y+h, x:x+w], cv2.COLOR_BGR2RGB)
+            coloursRect_1D = np.vstack(coloursRect)/255
+
+            if color != 'black':
+                REF_RGB.append([REF_RGB_4Patch[color]]*coloursRect_1D.shape[0])
+            else:
+                REF_RGB.append([REF_RGB_4Patch['black']]
+                               * coloursRect_1D.shape[0])
+            EXTRACTED_RGB.append(coloursRect_1D)
+            print('hhh', len(EXTRACTED_RGB))
+            coloursRectList[color] = (cv2.cvtColor(
                 img2[y:y+h, x:x+w], cv2.COLOR_BGR2RGB))
             # get the white patch by comparing the left,right,top,bottom patch from the red patch, see which one is the whitest
-            if (len(COLOUR_RANGE[i]) == 2):
+            if (color == 'red'):
                 print("the white colour")
                 print("x", x)
                 print("w:", w)
@@ -208,11 +219,22 @@ def get4PatchInfo(img):
                     closest_color_to_white(detected_areas_mean_around_red))
                 print("index of the patch closest to white:",
                       index_foundClosest_toWhite_colour)
-                coloursRect.append(cv2.cvtColor(
+
+                coloursRect = cv2.cvtColor(
+                    all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB)
+                coloursRect_1D = np.vstack(coloursRect)/255
+
+                REF_RGB.append([REF_RGB_4Patch['white']]
+                               * coloursRect_1D.shape[0])
+                EXTRACTED_RGB.append(coloursRect_1D)
+                coloursRectList['white'] = (cv2.cvtColor(
                     all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB))
 
+    print('bbb', len(REF_RGB))
+    EXTRACTED_RGB = np.array(np.vstack(EXTRACTED_RGB))
+    REF_RGB = colour.cctf_decoding(np.array(np.vstack(REF_RGB)))
     imshow(img)
-    return patchPos, coloursRect, EXTRACTED_RGB, REF_RGB
+    return patchPos, coloursRectList, EXTRACTED_RGB, REF_RGB
 
 
 def isSherd(cnt, patchPos):
