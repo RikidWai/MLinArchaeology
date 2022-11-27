@@ -231,8 +231,8 @@ def get4PatchInfo(img):
                     all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB))
 
     print('bbb', len(REF_RGB))
-    EXTRACTED_RGB = np.array(np.vstack(EXTRACTED_RGB))
-    REF_RGB = colour.cctf_decoding(np.array(np.vstack(REF_RGB)))
+    EXTRACTED_RGB = np.array(np.vstack(tuple(EXTRACTED_RGB)))
+    REF_RGB = colour.cctf_decoding(np.array(np.vstack(tuple(REF_RGB))))
     imshow(img)
     return patchPos, coloursRectList, EXTRACTED_RGB, REF_RGB
 
