@@ -9,17 +9,79 @@ import configure as cfg
 import colour
 
 folder = 'test_images/'
-img = imUtils.imread(folder + '1.cr3')
-img2 = imUtils.imread(folder+'1.cr3', 100)
+img = imUtils.imread(folder + '1.CR2')
 img = imUtils.whiteBalance(img)
 
-# Color Correction
-if imUtils.detect24Checker(img.copy()):
-    print('24Checker is detected') 
-else: 
-    coloursRect = {}
-    patchPos = []
+detector = cv2.mcc.CCheckerDetector_create() 
 
+if imUtils.detect24Checker(img.copy(), detector):
+    # Color Correction
+    checker = detector.getBestColorChecker()
+    cdraw = cv2.mcc.CCheckerDraw_create(checker)
+    img_draw = cdraw.draw(img.copy())
+    imUtils.imshow(img_draw)
+    chartsRGB = checker.getChartsRGB()
+
+    src = chartsRGB[:,1].copy().reshape(24, 1, 3)
+    src /= 255.0
+    print(src.shape)
+
+    # model1 = cv2.ccm_ColorCorrectionModel(src, cv2.mcc.MCC24)
+    model2 = cv2.ccm_ColorCorrectionModel(src, imUtils.chartsRGB_np,cv2.ccm.COLOR_SPACE_sRGB)
+    # model1.run()
+
+    model2.setWeightCoeff(1)
+
+    model2.run()
+
+    ccm2 = model2.getCCM()
+
+    loss2 = model2.getLoss()
+    print("loss model 2 ", loss2)
+    dst_rgbl = model2.get_dst_rgbl()
+    print("mask", model2.get_src_rgbl())
+
+
+
+
+    img_ = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img_ = img_.astype(np.float64)
+    img_ = img_/255
+    # calibratedImage = model1.infer(img_)
+    calibratedImage2 = model2.infer(img_)
+
+    # out_ = calibratedImage * 255
+    out_2 = calibratedImage2 * 255
+
+    # out_[out_ < 0] = 0
+    out_2[out_2 < 0] = 0
+
+    # out_[out_ > 255] = 255
+    out_2[out_2 > 255] = 255
+
+    # out_ = out_.astype(np.uint8)
+    out_2 = out_2.astype(np.uint8)
+
+
+    # out_img = cv2.cvtColor(out_, cv2.COLOR_RGB2BGR)
+    img = cv2.cvtColor(out_2, cv2.COLOR_RGB2BGR)
+
+    imUtils.imshow(img)
+
+    # Detect black color 
+    # Crop the sherd
+    patchPos = imUtils.getCardsPos(img)
+    edged = imUtils.getEdgedImg(img.copy())
+    imUtils.imshow(edged)
+    (cnts, _) = cv2.findContours(edged.copy(),
+                                cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts)
+    max_cnt = max(cnts, key=cv2.contourArea)
+    x, y, w, h = cv2.boundingRect(max_cnt)
+    img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
+            x-imUtils.MARGIN:x+w+imUtils.MARGIN]
+
+else: 
     patchPos, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(
         img.copy())
     # patchPos = imUtils.get4ColourPatchPos(img.copy())
@@ -39,7 +101,6 @@ else:
 
     # Crop the sherd
     edged = imUtils.getEdgedImg(img.copy())
-
     (cnts, _) = cv2.findContours(edged.copy(),
                                 cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts)

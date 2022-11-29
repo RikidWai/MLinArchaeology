@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 import math
 import colour
 
+chartsRGB = [[[115,83,68]],[[196,147,127]],[[91,122,155]],[[94,108,66]],[[129,128,176]],[[98,190,168]],[[223,124,47]],[[72,92,174]],[[194,82,96]],[[93,60,103]],[[162,190,62]],[[229,158,41]],[[49,66,147]],[[77,153,71]],[[173,57,60]],[[241,201,25]],[[190,85,150]],[[0,135,166]],[[242,243,245]],[[203,203,204]],[[162,163,162]],[[120,120,120]],[[84,84,84]],[[50,50,52]]]
+chartsRGB_np = np.array(chartsRGB).astype(float)/ 255.0
+
 # define range of colors in HSV
 lower_blue = np.array([120, 50, 20])
 upper_blue = np.array([158, 255, 255])
@@ -87,32 +90,29 @@ def imshow(img):
 
 
 def getEdgedImg(img):
-    blur = cv2.medianBlur(img, 3)
-    med_val = np.median(img)
+    kernel = np.ones((3,3), np.uint8)
+    eroded = cv2.erode(img, kernel)
+    blur = cv2.medianBlur(eroded, 3)
+    med_val = np.median(eroded)
     lower = int(max(0, 0.5*med_val))
     upper = int(min(255, 1.3*med_val))
     edged = cv2.Canny(blur, lower, upper)
     return edged
 
 # TODO
-def detect24Checker(img): 
-    detector = cv2.mcc.CCheckerDetector_create()
+def detect24Checker(img, detector): 
+    kernel = np.ones((5,5),np.uint8)
+    closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
 
-    detector.process(img, cv2.mcc.MCC24)
-
-    # cv2.mcc_CCheckerDetector.getBestColorChecker()
-    checker = detector.getBestColorChecker()
-    try:
-        cdraw = cv2.mcc.CCheckerDraw_create(checker)
-        img_draw = img.copy()
-        cdraw.draw(img_draw)
-
-        imshow(img_draw)
-        return False 
-    except Exception as e:
-        print('24Checker is not detected. Assume 4Checker is used') 
+    if not detector.process(closing ,cv2.mcc.MCC24,1) :
+        print("24Chart not detected. Assume 4Chart is used\n")
         return False
+    edged = getEdgedImg(img.copy())
+    ## 3. Do morph-close-op and Threshold
 
+    
+    print("24Chart detected.\n")
+    return True
 # Color Correction
 
 
@@ -146,7 +146,23 @@ def contrastStretching(img):
 
 # Cropping
 
+def getCardsPos(img):
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
+    img2 = img.copy()
+    mask = cv2.inRange(img_hsv, COLOUR_RANGE['black'][0], COLOUR_RANGE['black'][1])
+    patchPos = {}
+    colour_cnts, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    colour_cnts = sorted(colour_cnts, reverse=True, key=cv2.contourArea)
+    for i in range(2):
+        if cv2.contourArea(colour_cnts[i]) > 400: 
 
+            x, y, w, h = cv2.boundingRect(colour_cnts[i])
+            patchPos[i] = (x, y, w, h)
+            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    imshow(img2)
+    return patchPos
+
+        
 def get4PatchInfo(img):
 
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
