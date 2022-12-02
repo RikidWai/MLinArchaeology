@@ -71,6 +71,9 @@ if imUtils.detect24Checker(img.copy(), detector):
     # Detect black color 
     # Crop the sherd
     patchPos = imUtils.getCardsPos(img)
+    #FIXME: It is not good to detect objects using edges.... 
+    # Shadow problem 
+    # can't detect edges when file size too large... 
     edged = imUtils.getEdgedImg(img.copy())
     imUtils.imshow(edged)
     (cnts, _) = cv2.findContours(edged.copy(),
@@ -93,6 +96,8 @@ else:
     colour.plotting.plot_image(
         corrected
     )
+
+    #FIXME: How to convert back to proper datatype for openCV to process? 
     corrected *=255 
     corrected = corrected.astype(np.uint8)
     img = cv2.cvtColor(corrected, cv2.COLOR_RGB2BGR)
