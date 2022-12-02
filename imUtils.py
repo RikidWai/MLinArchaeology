@@ -88,12 +88,16 @@ def imshow(img):
     except Exception as e:
         print(e)
 
+def drawCnts(img, cnts):
+    print("Number of Contours found = " + str(len(cnts)))
+    cv2.drawContours(img, cnts, -1, (0, 255, 0), 3)
+    imshow(img)
 
 def getEdgedImg(img):
     kernel = np.ones((3,3), np.uint8)
-    eroded = cv2.erode(img, kernel)
-    blur = cv2.medianBlur(eroded, 3)
-    med_val = np.median(eroded)
+    img = cv2.erode(img, kernel)
+    blur = cv2.medianBlur(img, 3)
+    med_val = np.median(img)
     lower = int(max(0, 0.5*med_val))
     upper = int(min(255, 1.3*med_val))
     edged = cv2.Canny(blur, lower, upper)
@@ -274,7 +278,7 @@ def get4PatchInfo(img):
             all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB)
 
     # EXTRACTED_RGB2 = np.array(np.vstack(tuple(EXTRACTED_RGB)))
-    EXTRACTED_RGB2 = np.array(np.vstack((
+    EXTRACTED_RGB = np.array(np.vstack((
         np.vstack(coloursRectList['blue'])/255,
         np.vstack(coloursRectList['green'])/255,
         np.vstack(coloursRectList['yellow'])/255,
@@ -300,7 +304,7 @@ def get4PatchInfo(img):
                             [REF_RGB_4Patch['white']]*colour_wh.shape[0],)))
     )
 
-    return patchPos, EXTRACTED_RGB2, REF_RGB
+    return patchPos, EXTRACTED_RGB, REF_RGB
 
 
 def isSherd(cnt, patchPos):
