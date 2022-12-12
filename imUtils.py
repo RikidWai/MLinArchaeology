@@ -209,12 +209,15 @@ def get4PatchInfo(img):
 
             coloursRect = cv2.cvtColor(img[y:y+h, x:x+w], cv2.COLOR_BGR2RGB)
             coloursRect_1D = np.vstack(coloursRect)/255
-            print(coloursRect_1D.shape)
-            print(type(coloursRect_1D))
+            temp = [REF_RGB_4Patch[color]]*coloursRect_1D.shape[0]
+            # print(coloursRect_1D.shape)
+            # print(type(coloursRect_1D))
 
-            REF_RGB.append([REF_RGB_4Patch[color]]*coloursRect_1D.shape[0])
+            REF_RGB.append(temp)
             EXTRACTED_RGB.append(coloursRect_1D.copy())
-            a = coloursRect_1D.copy()
+            print(len(EXTRACTED_RGB))
+            print(type(EXTRACTED_RGB))
+            
             coloursRectList[color] = (cv2.cvtColor(
                 img[y:y+h, x:x+w], cv2.COLOR_BGR2RGB))
             # colour_b = np.vstack(coloursRectList['blue'])/255
@@ -276,16 +279,26 @@ def get4PatchInfo(img):
         EXTRACTED_RGB.append(coloursRect_1D.copy())
         coloursRectList['white'] = cv2.cvtColor(
             all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB)
-
+    print('hello world', type(coloursRect_1D))
     # EXTRACTED_RGB2 = np.array(np.vstack(tuple(EXTRACTED_RGB)))
-    EXTRACTED_RGB = np.array(np.vstack((
+    temp = [
         np.vstack(coloursRectList['blue'])/255,
         np.vstack(coloursRectList['green'])/255,
         np.vstack(coloursRectList['yellow'])/255,
         np.vstack(coloursRectList['red'])/255,
         np.vstack(coloursRectList['black'])/255,
-        np.vstack(coloursRectList['white'])/255)))
-    REF_RGB2 = colour.cctf_decoding(np.array(np.vstack(tuple(REF_RGB))))
+        np.vstack(coloursRectList['white'])/255]
+    
+    print('type', len(temp))
+    print('type', type(temp))
+    EXTRACTED_RGB = np.array(np.vstack([
+        np.vstack(coloursRectList['blue'])/255,
+        np.vstack(coloursRectList['green'])/255,
+        np.vstack(coloursRectList['yellow'])/255,
+        np.vstack(coloursRectList['red'])/255,
+        np.vstack(coloursRectList['black'])/255,
+        np.vstack(coloursRectList['white'])/255]))
+    REF_RGB2 = colour.cctf_decoding(np.array(np.vstack(REF_RGB)))
     imshow(img2)
 
     #organise the image sampled colour patches into four arrays (R, Y, G, B, White), in values between 0 and 1
