@@ -7,69 +7,128 @@ import math
 import imUtils
 import configure as cfg
 import colour
+import skimage.transform
 
 folder = 'test_images/'
 img = imUtils.imread(folder + '1.cr3')
-img2 = imUtils.imread(folder+'1.cr3', 100)
-img = imUtils.whiteBalance(img)
+img2 = img.copy()
+# img = imUtils.whiteBalance(img)
+print(img.dtype)
+detector = cv2.mcc.CCheckerDetector_create()
 
-# Color Correction
-coloursRect = {}
-patchPos = []
+if imUtils.detect24Checker(img.copy(), detector):
+    # Color Correction
+    checker = detector.getBestColorChecker()
+    cdraw = cv2.mcc.CCheckerDraw_create(checker)
+    img_draw = cdraw.draw(img.copy())
+    imUtils.imshow(img_draw)
+    chartsRGB = checker.getChartsRGB()
 
-patchPos, coloursRect, EXTRACTED_RGB2, REF_RGB2 = imUtils.get4PatchInfo(
-    img.copy())
-print(len(patchPos), len(coloursRect))
-# patchPos = imUtils.get4ColourPatchPos(img.copy())
+    src = chartsRGB[:, 1].copy().reshape(24, 1, 3)
+    src /= 255.0
+    print(src.shape)
 
-# organise the image sampled colour patches into four arrays (R, Y, G, B, White), in values between 0 and 1
-colour_b = np.vstack(coloursRect['blue'])/255
-colour_g = np.vstack(coloursRect['green'])/255
-colour_y = np.vstack(coloursRect['yellow'])/255
-colour_r = np.vstack(coloursRect['red'])/255
-colour_wh = np.vstack(coloursRect['white'])/255
-colour_bl = np.vstack(coloursRect['black'])/255
-REF_RGB = colour.cctf_decoding(
-    np.array(np.vstack(([imUtils.REF_RGB_4Patch['blue']]*colour_b.shape[0],
-                        [imUtils.REF_RGB_4Patch['green']]*colour_g.shape[0],
-                        [imUtils.REF_RGB_4Patch['yellow']]*colour_y.shape[0],
-                        [imUtils.REF_RGB_4Patch['red']]*colour_r.shape[0],
-                        [imUtils.REF_RGB_4Patch['white']]*colour_wh.shape[0],
-                        [imUtils.REF_RGB_4Patch['black']]*colour_bl.shape[0])))
-)
+    # model1 = cv2.ccm_ColorCorrectionModel(src, cv2.mcc.MCC24)
+    model = cv2.ccm_ColorCorrectionModel(
+        src, imUtils.chartsRGB_np, cv2.ccm.COLOR_SPACE_sRGB)
+    # model1.run()
 
-img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
-EXTRACTED_RGB = np.array(
-    np.vstack((colour_b, colour_g, colour_y, colour_r, colour_wh, colour_bl)))
-if REF_RGB2 == REF_RGB:
-    print('Identical')
+    model.setWeightCoeff(1)
+
+    model.run()
+
+    ccm = model.getCCM()
+
+    loss = model.getLoss()
+    print("loss model 2 ", loss)
+    dst_rgbl = model.get_dst_rgbl()
+    print("mask", model.get_src_rgbl())
+
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img_rgb = img_rgb.astype(np.float64)
+    img_rgb = img_rgb/255
+    # calibratedImage = model1.infer(img_)
+    calibratedImg = model.infer(img_rgb)
+
+    # out_ = calibratedImage * 255
+    out = calibratedImg * 255
+
+    # out_[out_ < 0] = 0
+    out[out < 0] = 0
+
+    # out_[out_ > 255] = 255
+    out[out > 255] = 255
+
+    # out_ = out_.astype(np.uint8)
+    out = out.astype(np.uint8)
+
+    # out_img = cv2.cvtColor(out_, cv2.COLOR_RGB2BGR)
+    img = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
+
+    imUtils.imshow(img)
+
+    # Detect black color
+    # Crop the sherd
+    patchPos = imUtils.getCardsPos(img)
+    edged = imUtils.getEdgedImg(img.copy())
+    imUtils.imshow(edged)
+    kernel = np.ones((5, 5), np.uint8)
+    dilation = cv2.dilate(edged, kernel, iterations=1)
+    imUtils.imshow(dilation)
+    (cnts, _) = cv2.findContours(dilation.copy(),
+                                 cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    for cnt in cnts:
+        if cv2.contourArea(cnt) > 400:
+            x, y, w, h = cv2.boundingRect(cnt)
+            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    imUtils.imshow(img2)
+    # cnts = filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts)
+    # max_cnt = max(cnts, key=cv2.contourArea)
+    # x, y, w, h = cv2.boundingRect(max_cnt)
+    # img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
+    #           x-imUtils.MARGIN:x+w+imUtils.MARGIN]
+
 else:
-    print('NOT Identical')
-print('a', REF_RGB2)
-print('b', REF_RGB)
-print('length:', len(EXTRACTED_RGB))
-# currently the bestprint("corrected Vandermonde:")
-corrected = colour.colour_correction(
-    img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
-colour.plotting.plot_image(
-    corrected
-)
-img = (cv2.cvtColor(corrected.astype(np.float32), cv2.COLOR_RGB2BGR)*255)
-img = img.astype(np.uint8)
+    patchPos, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(
+        img.copy())
+    # patchPos = imUtils.get4ColourPatchPos(img.copy())
 
-# Crop the sherd
-edged = imUtils.getEdgedImg(img.copy())
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
 
-(cnts, _) = cv2.findContours(edged.copy(),
-                             cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-cnts = filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts)
+    # currently the bestprint("corrected Vandermonde:")
+    corrected = colour.colour_correction(
+        img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
+    colour.plotting.plot_image(
+        corrected
+    )
 
-max_cnt = max(cnts, key=cv2.contourArea)
-x, y, w, h = cv2.boundingRect(max_cnt)
-img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
-          x-imUtils.MARGIN:x+w+imUtils.MARGIN]
+    # FIXME: How to convert back to proper datatype for openCV to process?
+    print(corrected[0])
+    img = cv2.cvtColor(corrected.astype(np.float32), cv2.COLOR_RGB2BGR)
+    imUtils.imshow(img)
+    # img *= 255  # or any coefficient
+    # img = img.astype(np.uint8)
+    # img = img.astype(np.uint8)
+    # corrected *= 255
+    # corrected = corrected.astype(np.uint8)
+    # img = cv2.cvtColor(corrected, cv2.COLOR_RGB2BGR)
+    # imUtils.imshow(img)
+    # img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+    # # img = img.astype(np.uint8)*255
+    # imUtils.imshow(img)
+    # Crop the sherd
+    edged = imUtils.getEdgedImg(img.copy())
+    (cnts, _) = cv2.findContours(edged.copy(),
+                                 cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts)
+
+    max_cnt = max(cnts, key=cv2.contourArea)
+    x, y, w, h = cv2.boundingRect(max_cnt)
+    img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
+              x-imUtils.MARGIN:x+w+imUtils.MARGIN]
 
 # Find Mask
+# FIXME: better way of finding masks?
 edged = imUtils.getEdgedImg(img.copy())
 
 # threshold
@@ -90,6 +149,7 @@ cv2.drawContours(filled, [max_cnt], 0, 255, -1)
 
 mask = filled[imUtils.MARGIN:y+h-imUtils.MARGIN,
               imUtils.MARGIN:x+w-imUtils.MARGIN]
+imUtils.imshow(mask)
 img = img[imUtils.MARGIN:y+h-imUtils.MARGIN,
           imUtils.MARGIN:x+w-imUtils.MARGIN]
 
