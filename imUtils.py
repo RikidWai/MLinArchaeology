@@ -2,8 +2,6 @@ import numpy as np
 import cv2
 import rawpy
 import os
-import matplotlib.pyplot as plt
-import math
 import colour
 
 chartsRGB = [[[115, 83, 68]], [[196, 147, 127]], [[91, 122, 155]], [[94, 108, 66]], [[129, 128, 176]], [[98, 190, 168]], [[223, 124, 47]], [[72, 92, 174]], [[194, 82, 96]], [[93, 60, 103]], [[162, 190, 62]], [[229, 158, 41]], [

@@ -1,13 +1,9 @@
 import numpy as np
 import cv2
-import rawpy
-import os
 import matplotlib.pyplot as plt
-import math
 import imUtils
 import configure as cfg
 import colour
-import skimage.transform
 
 folder = 'test_images/'
 img = imUtils.imread(folder + '1.cr3')
@@ -31,7 +27,6 @@ if imUtils.detect24Checker(img.copy(), detector):
     # model1 = cv2.ccm_ColorCorrectionModel(src, cv2.mcc.MCC24)
     model = cv2.ccm_ColorCorrectionModel(
         src, imUtils.chartsRGB_np, cv2.ccm.COLOR_SPACE_sRGB)
-    # model1.run()
 
     model.setWeightCoeff(1)
 
@@ -124,9 +119,11 @@ else:
 # Find Mask
 # FIXME: better way of finding masks?
 edged = imUtils.getEdgedImg(img.copy())
-
 # threshold
 thresh = cv2.threshold(edged, 128, 255, cv2.THRESH_BINARY)[1]
+# # Find Mask
+# FIXME: better way of finding masks?
+# edged = imUtils.getEdgedImg(img.copy())
 
 # apply close morphology
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
@@ -140,7 +137,12 @@ max_cnt = max(cnts, key=cv2.contourArea)
 x, y, w, h = cv2.boundingRect(max_cnt)
 cv2.drawContours(filled, [max_cnt], 0, 255, -1)
 
-# crop filled contour image
+# # get bounding box coordinates from the one filled external contour
+# filled = np.zeros_like(thresh)
+# (cnts, _) = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+# max_cnt = max(cnts, key=cv2.contourArea)
+# x, y, w, h = cv2.boundingRect(max_cnt)
+# cv2.drawContours(filled, [max_cnt], 0, 255, -1)
 
 mask = filled[imUtils.MARGIN:y+h-imUtils.MARGIN,
               imUtils.MARGIN:x+w-imUtils.MARGIN]
