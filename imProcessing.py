@@ -12,7 +12,7 @@ import skimage.transform
 folder = 'test_images/'
 img = imUtils.imread(folder + '1.cr3')
 img2 = img.copy()
-# img = imUtils.whiteBalance(img)
+img = imUtils.whiteBalance(img)
 print(img.dtype)
 detector = cv2.mcc.CCheckerDetector_create()
 
@@ -50,22 +50,7 @@ if imUtils.detect24Checker(img.copy(), detector):
     # calibratedImage = model1.infer(img_)
     calibratedImg = model.infer(img_rgb)
 
-    # out_ = calibratedImage * 255
-    out = calibratedImg * 255
-
-    # out_[out_ < 0] = 0
-    out[out < 0] = 0
-
-    # out_[out_ > 255] = 255
-    out[out > 255] = 255
-
-    # out_ = out_.astype(np.uint8)
-    out = out.astype(np.uint8)
-
-    # out_img = cv2.cvtColor(out_, cv2.COLOR_RGB2BGR)
-    img = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
-
-    imUtils.imshow(img)
+    img = imUtils.toOpenCVU8(calibratedImg, True)
 
     # Detect black color
     # Crop the sherd
@@ -94,18 +79,20 @@ else:
     # patchPos = imUtils.get4ColourPatchPos(img.copy())
 
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
-
+    print(img.dtype)
     # currently the bestprint("corrected Vandermonde:")
     corrected = colour.colour_correction(
         img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
+    # corretect = colour.cctf_encoding(corrected) #TODO: WHAT IS THIS???
     colour.plotting.plot_image(
         corrected
     )
-
-    # FIXME: How to convert back to proper datatype for openCV to process?
-    print(corrected[0])
     img = cv2.cvtColor(corrected.astype(np.float32), cv2.COLOR_RGB2BGR)
-    imUtils.imshow(img)
+    # FIXME: How to convert back to proper datatype for openCV to process?
+    # img = cv2.cvtColor(corrected.astype(np.float32), cv2.COLOR_RGB2BGR)
+    # img = imUtils.toOpenCVU8(corrected, True)
+    # img = cv2.cvtColor(corrected, cv2.COLOR_RGB2BGR)
+    # imUtils.imshow(img)
     # img *= 255  # or any coefficient
     # img = img.astype(np.uint8)
     # img = img.astype(np.uint8)
@@ -117,6 +104,13 @@ else:
     # # img = img.astype(np.uint8)*255
     # imUtils.imshow(img)
     # Crop the sherd
+    # temp = imUtils.correctedToU8(img.copy())
+    # print('this is temp')
+    # imUtils.imshow(temp)
+    # gray = cv2.cvtColor(temp, cv2.COLOR_BGR2GRAY)
+    # _, thresh = cv2.threshold(
+    #     gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # imUtils.imshow(thresh)
     edged = imUtils.getEdgedImg(img.copy())
     (cnts, _) = cv2.findContours(edged.copy(),
                                  cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -137,9 +131,10 @@ thresh = cv2.threshold(edged, 128, 255, cv2.THRESH_BINARY)[1]
 # apply close morphology
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
 thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-
+imUtils.imshow(thresh)
 # get bounding box coordinates from the one filled external contour
 filled = np.zeros_like(thresh)
+
 (cnts, _) = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 max_cnt = max(cnts, key=cv2.contourArea)
 x, y, w, h = cv2.boundingRect(max_cnt)

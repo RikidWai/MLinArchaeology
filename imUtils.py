@@ -51,7 +51,7 @@ MARGIN = 2  # Margin for cropping
 
 
 def imread(path, percent=50):
-    _, extension = os.path.splitext(path)
+    _ , extension = os.path.splitext(path)
     try:
         if 'cr' in extension or 'CR' in extension:
             raw = rawpy.imread(path)  # access to the RAW image
@@ -70,7 +70,7 @@ def imread(path, percent=50):
         print(e)
 
 
-def imshow(img):
+def imshow(img, title = 'img'):
     if img is None:
         raise Exception('No Image')
     if img.shape[1] >= 1000 and img.shape[1] >= img.shape[0]:
@@ -84,7 +84,7 @@ def imshow(img):
         dim = (width, height)
         img = cv2.resize(img, dim)
     try:
-        cv2.imshow('img', img)
+        cv2.imshow(title, img)
         cv2.waitKey(0)
     except Exception as e:
         print(e)
@@ -97,18 +97,30 @@ def drawCnts(img, cnts):
 
 
 def getEdgedImg(img):
-    img = (img*255).astype(np.uint8)
-
+    img = toOpenCVU8(img)
+    
     blur = cv2.medianBlur(img, 3)
     med_val = np.median(img)
     lower = int(max(0, 0.5*med_val))
     upper = int(min(255, 1.3*med_val))
     edged = cv2.Canny(blur, lower, upper)
 
-
     return edged
 
 # TODO
+
+
+def toOpenCVU8(img, show = False):
+    # out_ = calibratedImage * 255
+    out = img * 255
+    out[out < 0] = 0
+    out[out > 255] = 255
+    out = out.astype(np.uint8)
+    out = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
+    if show: 
+        imshow(out, 'out')
+        imshow(img, 'original')
+    return out
 
 
 def detect24Checker(img, detector):
@@ -209,7 +221,7 @@ def get4PatchInfo(img):
         if len(colour_cnts) > 0:
             coloured_cnt = max(colour_cnts, key=cv2.contourArea)
         if cv2.contourArea(coloured_cnt) > 400:
-
+            print(color, 'detected')
             # offsets - with this you get 'mask'
             x, y, w, h = cv2.boundingRect(coloured_cnt)
             cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 2)
