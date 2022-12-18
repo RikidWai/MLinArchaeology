@@ -89,7 +89,8 @@ def imshow(img, title = 'img'):
 
 
 def drawCnts(img, cnts):
-    print("Number of Contours found = " + str(len(cnts)))
+    cnts = filter(lambda cnt: cv2.contourArea(cnt)> 400, cnts)
+    # print("Number of Contours found = " + str(len(cnts)))
     cv2.drawContours(img, cnts, -1, (0, 255, 0), 3)
     imshow(img)
 
@@ -165,7 +166,26 @@ def contrastStretching(img):
     return norm_img
 
 # Cropping
+def masking(img):
+    gray = cv2.cvtColor(toOpenCVU8(img.copy()), cv2.COLOR_BGR2GRAY)
+    thresh = cv2.adaptiveThreshold(gray,255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,27,9)
+    # apply close morphology
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+    imshow(thresh)
+    # get bounding box coordinates from the one filled external contour
+    filled = np.zeros_like(thresh)
 
+    (cnts, _) = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    drawCnts(img.copy())
+    for cnt in cnts: 
+        if cv2.contourArea(cnt) > 400:
+            cv2.drawContours(filled, [cnt], 0, 255, -1)
+    # max_cnt = max(cnts, key=cv2.contourArea)
+    # x, y, w, h = cv2.boundingRect(max_cnt)
+    # cv2.drawContours(filled, [max_cnt], 0, 255, -1)
+    imshow(filled, 'test')
+    return filled
 
 def getCardsPos(img):
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
