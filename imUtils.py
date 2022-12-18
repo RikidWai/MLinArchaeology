@@ -89,7 +89,7 @@ def imshow(img, title = 'img'):
 
 
 def drawCnts(img, cnts):
-    cnts = filter(lambda cnt: cv2.contourArea(cnt)> 400, cnts)
+    # cnts = filter(lambda cnt: cv2.contourArea(cnt)> 400, cnts)
     # print("Number of Contours found = " + str(len(cnts)))
     cv2.drawContours(img, cnts, -1, (0, 255, 0), 3)
     imshow(img)
