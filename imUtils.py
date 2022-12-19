@@ -49,7 +49,7 @@ MARGIN = 2  # Margin for cropping
 
 
 def imread(path, percent=50):
-    _ , extension = os.path.splitext(path)
+    _, extension = os.path.splitext(path)
     try:
         if 'cr' in extension or 'CR' in extension:
             raw = rawpy.imread(path)  # access to the RAW image
@@ -68,17 +68,18 @@ def imread(path, percent=50):
         print(e)
 
 
-def imshow(img, title = 'img'):
+def imshow(img, title='img'):
     if img is None:
         raise Exception('No Image')
-    if img.shape[1] >= 1000 and img.shape[1] >= img.shape[0]:
-        width = 1000
-        height = int(img.shape[0] * 1000 / img.shape[1])
+    size = 800
+    if img.shape[1] >= size and img.shape[1] >= img.shape[0]:
+        width = size
+        height = int(img.shape[0] * size / img.shape[1])
         dim = (width, height)
         img = cv2.resize(img, dim)
-    elif img.shape[0] >= 1000 and img.shape[0] >= img.shape[1]:
-        width = int(img.shape[1] * 1000 / img.shape[0])
-        height = 1000
+    elif img.shape[0] >= size and img.shape[0] >= img.shape[1]:
+        width = int(img.shape[1] * size / img.shape[0])
+        height = size
         dim = (width, height)
         img = cv2.resize(img, dim)
     try:
@@ -89,15 +90,14 @@ def imshow(img, title = 'img'):
 
 
 def drawCnts(img, cnts):
-    # cnts = filter(lambda cnt: cv2.contourArea(cnt)> 400, cnts)
-    # print("Number of Contours found = " + str(len(cnts)))
+    print("Number of Contours found = " + str(len(cnts)))
     cv2.drawContours(img, cnts, -1, (0, 255, 0), 3)
     imshow(img)
 
 
 def getEdgedImg(img):
     img = toOpenCVU8(img)
-    
+
     blur = cv2.medianBlur(img, 3)
     med_val = np.median(img)
     lower = int(max(0, 0.5*med_val))
@@ -109,14 +109,16 @@ def getEdgedImg(img):
 # TODO
 
 
-def toOpenCVU8(img, show = False):
+def toOpenCVU8(img, show=False):
+    # This is to float32
+    # img = cv2.cvtColor(img.astype(np.float32), cv2.COLOR_RGB2BGR)
+
     # out_ = calibratedImage * 255
     out = img * 255
     out[out < 0] = 0
     out[out > 255] = 255
-    out = out.astype(np.uint8)
-    out = cv2.cvtColor(out, cv2.COLOR_RGB2BGR)
-    if show: 
+    out = cv2.cvtColor(out.astype(np.uint8), cv2.COLOR_RGB2BGR)
+    if show:
         imshow(out, 'out')
         imshow(img, 'original')
     return out
@@ -166,26 +168,40 @@ def contrastStretching(img):
     return norm_img
 
 # Cropping
-def masking(img):
-    gray = cv2.cvtColor(toOpenCVU8(img.copy()), cv2.COLOR_BGR2GRAY)
-    thresh = cv2.adaptiveThreshold(gray,255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,27,9)
+
+
+def masking(img, mode='all'):
+    # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    thresh = cv2.adaptiveThreshold(
+        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 6)
+
     # apply close morphology
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-    imshow(thresh)
+    imshow(thresh, 'thresh')
+
     # get bounding box coordinates from the one filled external contour
     filled = np.zeros_like(thresh)
 
-    (cnts, _) = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    drawCnts(img.copy())
-    for cnt in cnts: 
-        if cv2.contourArea(cnt) > 400:
+    cnts, _ = cv2.findContours(
+        thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = [cnt for cnt in cnts if cv2.contourArea(cnt) > 400]
+    # drawCnts(img.copy(), cnts)
+    if mode == 'all':
+        for cnt in cnts:
             cv2.drawContours(filled, [cnt], 0, 255, -1)
+        return filled, cnts
+    elif mode == 'biggest':
+        max_cnt = max(cnts, key=cv2.contourArea)
+        cv2.drawContours(filled, [max_cnt], 0, 255, -1)
+        return filled, max_cnt
     # max_cnt = max(cnts, key=cv2.contourArea)
     # x, y, w, h = cv2.boundingRect(max_cnt)
     # cv2.drawContours(filled, [max_cnt], 0, 255, -1)
-    imshow(filled, 'test')
-    return filled
+    # imshow(filled, 'filled')
+    return None, None
+
 
 def getCardsPos(img):
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
@@ -201,7 +217,7 @@ def getCardsPos(img):
 
             x, y, w, h = cv2.boundingRect(colour_cnts[i])
             patchPos[i] = (x, y, w, h)
-            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 3)
     imshow(img2)
     return patchPos
 
@@ -313,7 +329,9 @@ def get4PatchInfo(img):
     return patchPos, EXTRACTED_RGB, REF_RGB
 
 
-def isSherd(cnt, patchPos):
+def isSherd(cnt, patchPos, img=None):
+    if cv2.contourArea(cnt) < 400:
+        return False
     x, y, w, h = cv2.boundingRect(cnt)
 
     for pos in patchPos.values():
@@ -321,6 +339,10 @@ def isSherd(cnt, patchPos):
             # Axis-Aligned Bounding Box
             # Test if two bound box not intersect
             # Return True is sherd
-            if (x + w) < pos[0] or x > (pos[0] + pos[2]) or y > (pos[1] + pos[3]) or (y + h) < pos[1]:
-                return True
-    return False
+            # imshow(img[y:y+h, x:x+w], 'sherd')
+            # imshow(img[pos[1]:pos[1] + pos[3], pos[0]:pos[0] + pos[2]], 'black blocks')
+            # if True means no overlapped
+            if not ((x + w) < pos[0] or x > (pos[0] + pos[2]) or y > (pos[1] + pos[3]) or (y + h) < pos[1]):
+
+                return False
+    return True
