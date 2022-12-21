@@ -108,6 +108,15 @@ def getEdgedImg(img):
 
 # TODO
 
+# Get contours that are big enough only.
+
+
+def validCnt(cnt):
+    (_, (width, height), _) = cv2.minAreaRect(cnt)
+    if width > 100 and height > 100 and cv2.contourArea(cnt) > 400:
+        return True
+    return False
+
 
 def toOpenCVU8(img, show=False):
     # This is to float32
@@ -186,7 +195,7 @@ def masking(img, mode='all'):
 
     cnts, _ = cv2.findContours(
         thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    cnts = [cnt for cnt in cnts if cv2.contourArea(cnt) > 400]
+    cnts = [cnt for cnt in cnts if validCnt(cnt)]
     # drawCnts(img.copy(), cnts)
     if mode == 'all':
         for cnt in cnts:

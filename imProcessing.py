@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import imUtils
 import configure as cfg
 import colour
-
+from colour_checker_detection.detection.segmentation import as_8_bit_BGR_image
 folder = 'test_images/'
 img = imUtils.imread(folder + '1.CR2')
 img2 = img.copy()
