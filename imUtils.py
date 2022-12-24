@@ -136,8 +136,9 @@ def toOpenCVU8(img, show=False):
 def detect24Checker(img, detector):
     kernel = np.ones((5, 5), np.uint8)
     closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-
-    if not detector.process(closing, cv2.mcc.MCC24, 1):
+    procesParams = cv2.mcc.DetectorParameters_create()
+    procesParams.maxError = 0.05
+    if not detector.process(closing, cv2.mcc.MCC24, 1, params=procesParams):
         print("24Chart not detected. Assume 4Chart is used\n")
         return False
     edged = getEdgedImg(img.copy())

@@ -5,8 +5,10 @@ import imUtils
 import configure as cfg
 import colour
 from colour_checker_detection.detection.segmentation import as_8_bit_BGR_image
+import sys
+
 folder = 'test_images/'
-img = imUtils.imread(folder + '1.CR2')
+img = imUtils.imread(folder + '1.cr3')
 img2 = img.copy()
 img = imUtils.whiteBalance(img)
 detector = cv2.mcc.CCheckerDetector_create()
@@ -67,7 +69,11 @@ if imUtils.detect24Checker(img.copy(), detector):
     imUtils.imshow(img2)
     cnts = list(filter(lambda cnt: imUtils.isSherd(
         cnt, patchPos, img.copy()), cnts))
-    max_cnt = max(cnts, key=cv2.contourArea)
+    try:
+        max_cnt = max(cnts, key=cv2.contourArea)
+    except:
+        print("Cnt contains no value")
+        sys.exit(1)
     x, y, w, h = cv2.boundingRect(max_cnt)
     img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
               x-imUtils.MARGIN:x+w+imUtils.MARGIN]
@@ -80,10 +86,6 @@ else:
     # currently the bestprint("corrected Vandermonde:")
     calibrated = colour.colour_correction(
         img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
-    # corretect = colour.cctf_encoding(corrected) #TODO: WHAT IS THIS???
-    # colour.plotting.plot_image(
-    #     corrected
-    # )
     img = imUtils.toOpenCVU8(calibrated.copy())
 
     # FIXME: How to convert back to proper datatype for openCV to process?
@@ -114,8 +116,12 @@ else:
     _, cnts = imUtils.masking(img.copy())
 
     cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
-
-    max_cnt = max(cnts, key=cv2.contourArea)
+    #checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
+    try:
+        max_cnt = max(cnts, key=cv2.contourArea)
+    except:
+        print("Cnt contains no value")
+        sys.exit(1)
     x, y, w, h = cv2.boundingRect(max_cnt)
     img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
               x-imUtils.MARGIN:x+w+imUtils.MARGIN]
