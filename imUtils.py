@@ -26,6 +26,10 @@ upper_black = np.array([179, 255, 60])
 lower_white = np.array([0, 0, 180])  # TOFIX
 upper_white = np.array([0, 0, 255])  # TOFIX
 
+lower_black_custom = np.array([0, 0, 0])
+upper_black_custom = np.array([179, 255, 100])
+
+
 # Create an array specify lower and upper range of colours
 COLOUR_RANGE = {'blue': [lower_blue, upper_blue],
                 'green': [lower_green, upper_green],
@@ -180,14 +184,14 @@ def contrastStretching(img):
 # Cropping
 
 
-def masking(img, mode='all'):
+def masking(img, kernel_size=5, mode='all'):
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(
         gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 6)
 
     # apply close morphology
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
     imshow(thresh, 'thresh')
 
@@ -356,3 +360,154 @@ def isSherd(cnt, patchPos, img=None):
 
                 return False
     return True
+
+
+# Rotates a numpy image by right angle
+# Direction options counterclockwise 'ccw' and clockwise 'cw'
+def rotate_right_angle(img, direction):
+    if direction == 'ccw':
+        out = cv2.transpose(img)
+        out = cv2.flip(out, flipCode=0)
+    elif direction == 'cw':
+        out = cv2.transpose(img)
+        out = cv2.flip(out, flipCode=1)
+    else:
+        print('Incorrect rotation direction!')
+        return img
+    return out
+
+
+# Gives the list of contours from a binary image
+# The binary image can be obtained from inRange, threshold, grayscale, etc
+def get_contours(binary_img):
+    contours_tuple = cv2.findContours(binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = contours_tuple[0] if len(contours_tuple) == 2 else contours_tuple[1] # versioning
+    return contours
+
+
+# Finds the centroid of a contour shape
+def get_centroid(cnt):
+    M = cv2.moments(cnt)
+    if M['m00'] != 0:
+        cx = int(M['m10']/M['m00'])
+        cy = int(M['m01']/M['m00'])
+        return cx, cy
+    else:
+        print('Division by zero, contour is bad. Returning (0, 0)')
+        return 0, 0
+
+
+# Displays an image of np array in a new window. Close it by pressing keyboard buttons and do not press X to close
+def display_image(img, title):
+    title = title + ' (do not press "x"!)' # appends warning
+    cv2.imshow(title, img)
+    cv2.waitKey(0)
+    cv2.destroyWindow(title)
+
+
+# Takes in BGR numpy image
+# dst_ppc is the destinated number of pixels per cm
+# Outputs the scaled image and the scaling factor
+def scale_img(img, dst_ppc=118):
+    min_area = 400 # Min area for valid contour
+    kernel_size = 5 # Adjust for morphing
+    arclength_factor = 0.05 # Adjust for rectangle checking, 0.01 may not work that well
+
+    # Masking to retrieve black color parts
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    black_mask = cv2.inRange(img_hsv, lower_black, upper_black)
+    imshow(black_mask, 'black_mask')
+
+    # Morphing to connect lines and reduce noise
+    # Close: Dilate --> Erode
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
+    mask = black_mask.copy()
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    imshow(mask, 'postmorph_mask')
+
+    # Try contour detection
+    try:
+        cnts = get_contours(mask)
+        print(f'There are {len(cnts)} contours')
+    except Exception as e:
+        print(f'Error detecting contours: {e}')
+        sys.exit(1)
+
+    # Filter contours by area
+    cnts_filtered = []
+    for cnt in cnts:
+        area = cv2.contourArea(cnt)
+        if area >= min_area:
+            cnts_filtered.append(cnt)
+
+
+    # Takes only rectangular contours
+    cnts_rect = []
+    for cnt in cnts_filtered:
+        approx = cv2.approxPolyDP(cnt, 0.1*cv2.arcLength(cnt, True), True)
+        if len(approx) == 4:
+            cnts_rect.append(cnt)
+
+    print(f'There are {len(cnts_rect)} rectangular contours')
+
+    if len(cnts_rect) == 0:
+        print('Unable to detect the required calibration cards, returning original image')
+        return img, 1
+
+    img_rect = img.copy()
+    cv2.drawContours(img_rect, cnts_rect, -1, (0, 0, 255), 2)
+    imshow(img_rect, 'marked rects')
+
+    # Area sort
+    cnts_sorted = sorted(cnts_rect, reverse=True, key=cv2.contourArea)
+
+    print(f'There are {len(cnts_sorted)} elements in cnts_sorted')
+
+    # Choose second biggest
+    idx = 1 if len(cnts_sorted) > 1 else 0
+    img_copy = img.copy()
+    cv2.drawContours(img_copy, cnts_sorted, idx, (0, 255, 0), 2)
+    # bof.display_image(img_copy, 'sherd_mask_with_proper_contours')
+    imshow(img_copy, 'marked contour')
+
+    # Compute length of black square in 4_color, length of calibration card in 24_color
+    approx_chosen = cv2.approxPolyDP(cnts_sorted[idx], 0.01*cv2.arcLength(cnts_sorted[idx], True), True)
+    print(f'The approximated 4 points are: {approx_chosen}')
+
+    x, y, w, h = cv2.boundingRect(cnts_sorted[idx])
+    print(f'The width and height are {w} and {h}')
+
+    if w == 0 or h == 0:
+        print('Width or height zero, error detecting bounding box of calibration card, returning original image')
+        return img, 1
+
+    # Deals with the case of using 24 color card and 4 color card
+    if w/h > 2 or h/w > 2: # 24c, 2nd biggest is calibration card, with length of card being 5cm
+        ppc = max(w, h)/5
+    else: # 4c, 2nd biggest if two black squares found, else choose the only one. Each square is 1cm in length
+        ppc = max(w, h)
+    print(f'The detected pixels per cm is {ppc}')
+
+    if ppc <= 0:
+        print('Error obtaining detected ppc, returning original image')
+        return img, 1
+
+
+    scaling_factor = dst_ppc/ppc
+
+    print(f'The scaling factor is {scaling_factor}')
+
+    
+
+    # Suspect when ppc is small e.g. 18, then may crash
+    if scaling_factor >= 5 or (max(img.shape) > 3000 and scaling_factor >= 3):
+        print(f'Scaling factor too large ({scaling_factor}), aborting scaling')
+        return img, 1
+
+    try:
+        img_scaled = cv2.resize(img.copy(), None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
+    except Exception as e:
+        print(f'Error scaling image: {e}')
+        sys.exit(1)
+
+    return img_scaled, scaling_factor
