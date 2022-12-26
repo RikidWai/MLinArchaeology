@@ -1,10 +1,8 @@
 import numpy as np
 import cv2
-# import matplotlib.pyplot as plt # Where is this used?
 import imUtils
 import configure as cfg
 import colour
-from colour_checker_detection.detection.segmentation import as_8_bit_BGR_image
 import sys
 import math
 
@@ -33,7 +31,7 @@ def main(argv):
 
     img = imUtils.imread(folder + '1.cr3')
     img2 = img.copy()
-    img = imUtils.whiteBalance(img)
+    img = imUtils.white_bal(img)
     detector = cv2.mcc.CCheckerDetector_create()
 
 
@@ -92,18 +90,10 @@ def main(argv):
         calibrated = model.infer(img_rgb)
         calibrated = imUtils.toOpenCVU8(calibrated.copy())
 
-        # Detect black color
-        # Crop the sherd
         patchPos = imUtils.getCardsPos(img.copy())
 
         filled, cnts = imUtils.masking(calibrated.copy())
-        # edged = imUtils.getEdgedImg(img.copy())
-        # imUtils.imshow(edged)
-        # kernel = np.ones((5, 5), np.uint8)
-        # dilation = cv2.dilate(edged, kernel, iterations=1)
-        # imUtils.imshow(dilation)
-        # (cnts, _) = cv2.findContours(dilation.copy(),
-        #                              cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
         for cnt in cnts:
             x, y, w, h = cv2.boundingRect(cnt)
             cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 5)
@@ -126,42 +116,17 @@ def main(argv):
 
     else:
         patchPos, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(img.copy())
-        # patchPos = imUtils.get4ColourPatchPos(img.copy())
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
+        
         # currently the bestprint("corrected Vandermonde:")
         calibrated = colour.colour_correction(
             img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
         img = imUtils.toOpenCVU8(calibrated.copy())
-
-        # FIXME: How to convert back to proper datatype for openCV to process?
-        # img = cv2.cvtColor(corrected.astype(np.float32), cv2.COLOR_RGB2BGR)
-        # img = imUtils.toOpenCVU8(corrected, True)
-        # img = cv2.cvtColor(corrected, cv2.COLOR_RGB2BGR)
-        # imUtils.imshow(img)
-        # img *= 255  # or any coefficient
-        # img = img.astype(np.uint8)
-        # img = img.astype(np.uint8)
-        # corrected *= 255
-        # corrected = corrected.astype(np.uint8)
-        # img = cv2.cvtColor(corrected, cv2.COLOR_RGB2BGR)
-        # imUtils.imshow(img)
-        # img = cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
-        # # img = img.astype(np.uint8)*255
-        # imUtils.imshow(img)
-        # Crop the sherd
-        # temp = imUtils.correctedToU8(img.copy())
-        # print('this is temp')
-        # imUtils.imshow(temp)
-        # gray = cv2.cvtColor(temp, cv2.COLOR_BGR2GRAY)
-        # _, thresh = cv2.threshold(
-        #     gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        # imUtils.imshow(thresh)
-
-        # edged = imUtils.getEdgedImg(img.copy())
         _, cnts = imUtils.masking(img.copy())
 
         cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
+        
         #checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
         try:
             max_cnt = max(cnts, key=cv2.contourArea)
@@ -171,16 +136,6 @@ def main(argv):
         x, y, w, h = cv2.boundingRect(max_cnt)
         img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
                   x-imUtils.MARGIN:x+w+imUtils.MARGIN]
-
-    # Find Mask
-    # FIXME: better way of finding masks?
-    # edged = imUtils.getEdgedImg(img.copy())
-    # # threshold
-    # _, thresh = cv2.threshold(edged, 128, 255, cv2.THRESH_BINARY)
-    # # Find Mask
-    # FIXME: better way of finding masks?
-    # edged = imUtils.getEdgedImg(img.copy())
-
 
     # Scales kernel size by scaling factor computed for better masking
     kernel_size_scaled = math.floor(5 * scaling_factor)
@@ -193,7 +148,6 @@ def main(argv):
 
     mask = filled[imUtils.MARGIN:y+h-imUtils.MARGIN,
                   imUtils.MARGIN:x+w-imUtils.MARGIN]
-    imUtils.imshow(mask, 'mask')
     img = img[imUtils.MARGIN:y+h-imUtils.MARGIN,
               imUtils.MARGIN:x+w-imUtils.MARGIN]
 

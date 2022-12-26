@@ -3,9 +3,34 @@ import cv2
 import rawpy
 import os
 import colour
+import sys
 
-chartsRGB = [[[115, 83, 68]], [[196, 147, 127]], [[91, 122, 155]], [[94, 108, 66]], [[129, 128, 176]], [[98, 190, 168]], [[223, 124, 47]], [[72, 92, 174]], [[194, 82, 96]], [[93, 60, 103]], [[162, 190, 62]], [[229, 158, 41]], [
-    [49, 66, 147]], [[77, 153, 71]], [[173, 57, 60]], [[241, 201, 25]], [[190, 85, 150]], [[0, 135, 166]], [[242, 243, 245]], [[203, 203, 204]], [[162, 163, 162]], [[120, 120, 120]], [[84, 84, 84]], [[50, 50, 52]]]
+chartsRGB = [
+    [[115, 83, 68]],
+    [[196, 147, 127]],
+    [[91, 122, 155]],
+    [[94, 108, 66]],
+    [[129, 128, 176]],
+    [[98, 190, 168]],
+    [[223, 124, 47]],
+    [[72, 92, 174]],
+    [[194, 82, 96]],
+    [[93, 60, 103]],
+    [[162, 190, 62]],
+    [[229, 158, 41]],
+    [[49, 66, 147]],
+    [[77, 153, 71]],
+    [[173, 57, 60]],
+    [[241, 201, 25]],
+    [[190, 85, 150]],
+    [[0, 135, 166]],
+    [[242, 243, 245]],
+    [[203, 203, 204]],
+    [[162, 163, 162]],
+    [[120, 120, 120]],
+    [[84, 84, 84]],
+    [[50, 50, 52]],
+]
 chartsRGB_np = np.array(chartsRGB).astype(float) / 255.0
 
 # define range of colors in HSV
@@ -31,7 +56,7 @@ upper_black_custom = np.array([179, 255, 100])
 
 
 # Create an array specify lower and upper range of colours
-COLOUR_RANGE = {'blue': [lower_blue, upper_blue],
+COLOR_RANGE = {'blue': [lower_blue, upper_blue],
                 'green': [lower_green, upper_green],
                 'yellow': [lower_yellow, upper_yellow],
                 'red': [[lower_red, upper_red], [lower_red2, upper_red2]],
@@ -51,16 +76,14 @@ REF_RGB_4Patch = {'blue': b_ref,
 
 MARGIN = 2  # Margin for cropping
 
-
-def imread(path, percent=50):
+# Read a raw image
+def imread(path, scale_percent=50):
     _, extension = os.path.splitext(path)
     try:
         if 'cr' in extension or 'CR' in extension:
-            raw = rawpy.imread(path)  # access to the RAW image
-            rgb = raw.postprocess()  # a numpy RGB array
-            img = cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)  # the OpenCV image
+            raw = rawpy.imread(path).postprocess()  # access to the RAW image to a numpy RGB array
+            img = cv2.cvtColor(raw, cv2.COLOR_RGB2BGR)  # the OpenCV image
 
-            scale_percent = percent  # percent of original size
             width = int(img.shape[1] * scale_percent / 100)
             height = int(img.shape[0] * scale_percent / 100)
             dim = (width, height)
@@ -71,7 +94,7 @@ def imread(path, percent=50):
     except Exception as e:
         print(e)
 
-
+# Display an image
 def imshow(img, title='img'):
     if img is None:
         raise Exception('No Image')
@@ -92,13 +115,13 @@ def imshow(img, title='img'):
     except Exception as e:
         print(e)
 
-
+# Draw contours of an image
 def drawCnts(img, cnts):
     print("Number of Contours found = " + str(len(cnts)))
     cv2.drawContours(img, cnts, -1, (0, 255, 0), 3)
     imshow(img)
 
-
+# detect edges in an image
 def getEdgedImg(img):
     img = toOpenCVU8(img)
 
@@ -110,23 +133,15 @@ def getEdgedImg(img):
 
     return edged
 
-# TODO
-
-# Get contours that are big enough only.
-
-
+# validate contours that are big enough only
 def validCnt(cnt):
     (_, (width, height), _) = cv2.minAreaRect(cnt)
-    if width > 100 and height > 100 and cv2.contourArea(cnt) > 400:
+    if width > 100 and height > 100 and cv2.contourArea(cnt) > 400: # Filter those small edges detected
         return True
     return False
 
-
+# Convert data type of an image from float64 to uint8
 def toOpenCVU8(img, show=False):
-    # This is to float32
-    # img = cv2.cvtColor(img.astype(np.float32), cv2.COLOR_RGB2BGR)
-
-    # out_ = calibratedImage * 255
     out = img * 255
     out[out < 0] = 0
     out[out > 255] = 255
@@ -136,23 +151,20 @@ def toOpenCVU8(img, show=False):
         imshow(img, 'original')
     return out
 
-
-def detect24Checker(img, detector):
-    kernel = np.ones((5, 5), np.uint8)
+# detect if 24-patch color card exists
+def detect24Checker(img, detector, kernel_size=5):
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
     closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
-    procesParams = cv2.mcc.DetectorParameters_create()
-    procesParams.maxError = 0.05
-    if not detector.process(closing, cv2.mcc.MCC24, 1, params=procesParams):
+    processParams = cv2.mcc.DetectorParameters_create()
+    processParams.maxError = 0.05
+    if not detector.process(closing, cv2.mcc.MCC24, 1, params=processParams):
         print("24Chart not detected. Assume 4Chart is used\n")
         return False
-    edged = getEdgedImg(img.copy())
-    # 3. Do morph-close-op and Threshold
-
     print("24Chart detected.\n")
     return True
 # Color Correction
 
-
+# a helper function to find the region contains color that is closest to white
 def closest_color_to_white(COLORS):
     r, g, b = 255, 255, 255
     color_diffs = []
@@ -162,8 +174,8 @@ def closest_color_to_white(COLORS):
         color_diffs.append((color_diff, color))
     return min(color_diffs)[1]
 
-
-def whiteBalance(img):
+# apply white balance
+def white_bal(img):
     result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
     avg_a = np.average(result[:, :, 1])
     avg_b = np.average(result[:, :, 2])
@@ -174,8 +186,8 @@ def whiteBalance(img):
     result = cv2.cvtColor(result, cv2.COLOR_LAB2BGR)
     return result
 
-
-def contrastStretching(img):
+# apply contrast stretching
+def contrast_stretching(img):
     norm_img = cv2.normalize(img, None, alpha=0, beta=1,
                              norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_32F)
     norm_img = (255*norm_img).astype(np.uint8)
@@ -183,12 +195,11 @@ def contrastStretching(img):
 
 # Cropping
 
-
+# apply masking 
 def masking(img, kernel_size=5, mode='all'):
-    # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(
-        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 6)
+        gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 4)
 
     # apply close morphology
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
@@ -205,23 +216,21 @@ def masking(img, kernel_size=5, mode='all'):
     if mode == 'all':
         for cnt in cnts:
             cv2.drawContours(filled, [cnt], 0, 255, -1)
+        imshow(filled, 'filled')
         return filled, cnts
     elif mode == 'biggest':
         max_cnt = max(cnts, key=cv2.contourArea)
         cv2.drawContours(filled, [max_cnt], 0, 255, -1)
+        imshow(filled, 'filled')
         return filled, max_cnt
-    # max_cnt = max(cnts, key=cv2.contourArea)
-    # x, y, w, h = cv2.boundingRect(max_cnt)
-    # cv2.drawContours(filled, [max_cnt], 0, 255, -1)
-    # imshow(filled, 'filled')
     return None, None
 
-
+# Detect the black region to guess the positions of 24checker and scaling card in an image 
 def getCardsPos(img):
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
-    img2 = img.copy()
+    img_display = img.copy()
     mask = cv2.inRange(
-        img_hsv, COLOUR_RANGE['black'][0], COLOUR_RANGE['black'][1])
+        img_hsv, COLOR_RANGE['black'][0], COLOR_RANGE['black'][1])
     patchPos = {}
     colour_cnts, _ = cv2.findContours(
         mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -231,30 +240,30 @@ def getCardsPos(img):
 
             x, y, w, h = cv2.boundingRect(colour_cnts[i])
             patchPos[i] = (x, y, w, h)
-            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 3)
-    imshow(img2)
+            cv2.rectangle(img_display, (x, y), (x+w, y+h), (0, 255, 0), 3)
+    imshow(img_display)
     return patchPos
 
-
+# Detect 4 patches in 4Checker for color calibration
 def get4PatchInfo(img):
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) 
+    img_display = img.copy()
 
-    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
-    img2 = img.copy()
     patchPos = {}
     coloursRectList = {}
     EXTRACTED_RGB, REF_RGB = [], []
+    meansOfWhiteRegions = []
 
-    detected_areas_mean_around_red = []
-    for color in COLOUR_RANGE:
+    for color in COLOR_RANGE:
         # Threshold the HSV image to get only certain colors
         if color != 'red':
             mask = cv2.inRange(
-                img_hsv, COLOUR_RANGE[color][0], COLOUR_RANGE[color][1])
+                img_hsv, COLOR_RANGE[color][0], COLOR_RANGE[color][1])
         else:  # Red color
             mask_1 = cv2.inRange(
-                img_hsv, COLOUR_RANGE[color][0][0], COLOUR_RANGE[color][0][1])
+                img_hsv, COLOR_RANGE[color][0][0], COLOR_RANGE[color][0][1])
             mask_2 = cv2.inRange(
-                img_hsv, COLOUR_RANGE[color][1][0], COLOUR_RANGE[color][1][1])
+                img_hsv, COLOR_RANGE[color][1][0], COLOR_RANGE[color][1][1])
             mask = cv2.bitwise_or(mask_1, mask_2)
 
         # Find contours and filter using threshold area
@@ -272,7 +281,7 @@ def get4PatchInfo(img):
             print(color, 'detected')
             # offsets - with this you get 'mask'
             x, y, w, h = cv2.boundingRect(coloured_cnt)
-            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 2)
+            cv2.rectangle(img_display, (x, y), (x+w, y+h), (0, 255, 0), 2)
             patchPos[color] = (x, y, w, h)
 
             colorRect = cv2.cvtColor(img[y:y+h, x:x+w], cv2.COLOR_BGR2RGB)
@@ -288,77 +297,63 @@ def get4PatchInfo(img):
     # get the white patch by comparing the left,right,top,bottom patch from the red patch, see which one is the whitest
     if 'red' in patchPos:
         (x, y, w, h) = patchPos['red']
-        print("the white colour")
-        print("x", x)
-        print("w:", w)
+
         # right side
         rightSide = img[y:y+h, x+w:x+w+w//2+w//6]
-        cv2.rectangle(img2, (x+w, y), (x+w+w//2 +
+        cv2.rectangle(img_display, (x+w, y), (x+w+w//2 +
                                        w//6, y+h), (0, 255, 0), 2)
         right_mean = cv2.mean(rightSide)[0:3]
-        print("mean:", right_mean)
-        detected_areas_mean_around_red.append(right_mean)
+        meansOfWhiteRegions.append(right_mean)
+
         # left side
         leftSide = img[y:y+h, (x-w//2-w//6):x]
 
-        cv2.rectangle(img2, (x-w//2-w//6, y), (x, y+h), (0, 255, 0), 2)
+        cv2.rectangle(img_display, (x-w//2-w//6, y), (x, y+h), (0, 255, 0), 2)
         left_mean = cv2.mean(leftSide)[0:3]
-        print("mean:", left_mean)
-        detected_areas_mean_around_red.append(left_mean)
+        meansOfWhiteRegions.append(left_mean)
+
         # top side
         topSide = img[(y-h//2-h//6):y, x:x+w]
-        cv2.rectangle(img2, (x, (y-h//2-h//6)),
+        cv2.rectangle(img_display, (x, (y-h//2-h//6)),
                       (x+w, y), (0, 255, 0), 2)
         top_mean = cv2.mean(topSide)[0:3]
-        print("mean:", top_mean)
-        detected_areas_mean_around_red.append(top_mean)
+        meansOfWhiteRegions.append(top_mean)
 
         # bottom side
         bottomSide = img[y+h:y+h+h//2+h//6, x:x+w]
-        cv2.rectangle(img2, (x, (y+h)),
+        cv2.rectangle(img_display, (x, (y+h)),
                       (x+w, y+h+h//2+h//6), (0, 255, 0), 2)
         bottom_mean = cv2.mean(bottomSide)[0:3]
-        print("mean:", bottom_mean)
-        detected_areas_mean_around_red.append(bottom_mean)
+        meansOfWhiteRegions.append(bottom_mean)
 
-        all_sides_colours = [rightSide, leftSide, topSide, bottomSide]
-        index_foundClosest_toWhite_colour = detected_areas_mean_around_red.index(
-            closest_color_to_white(detected_areas_mean_around_red))
-        print("index of the patch closest to white:",
-              index_foundClosest_toWhite_colour)
+        whiteRegions = [rightSide, leftSide, topSide, bottomSide]
+        whiteIndex = meansOfWhiteRegions.index(
+            closest_color_to_white(meansOfWhiteRegions))
 
-        colorRect = cv2.cvtColor(
-            all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB)
+        colorRect = cv2.cvtColor(whiteRegions[whiteIndex], cv2.COLOR_BGR2RGB)
         colorRect_1D = np.vstack(colorRect)/255
         REF_RGB.append(([REF_RGB_4Patch['white']] *
                        colorRect_1D.shape[0]).copy())
         EXTRACTED_RGB.append(colorRect_1D.copy())
         coloursRectList['white'] = cv2.cvtColor(
-            all_sides_colours[index_foundClosest_toWhite_colour], cv2.COLOR_BGR2RGB)
+            whiteRegions[whiteIndex], cv2.COLOR_BGR2RGB)
 
     EXTRACTED_RGB = np.array(np.vstack(EXTRACTED_RGB))
     REF_RGB = colour.cctf_decoding(np.array(np.vstack(REF_RGB)))
-    imshow(img2)
+    imshow(img_display)
 
     return patchPos, EXTRACTED_RGB, REF_RGB
 
-
-def isSherd(cnt, patchPos, img=None):
-    if cv2.contourArea(cnt) < 400:
-        return False
+# Guess if a contour is a sherd
+def isSherd(cnt, patchPos):
     x, y, w, h = cv2.boundingRect(cnt)
 
     for pos in patchPos.values():
-        if w > 100 and h > 100:  # Filter those small edges detected
-            # Axis-Aligned Bounding Box
-            # Test if two bound box not intersect
-            # Return True is sherd
-            # imshow(img[y:y+h, x:x+w], 'sherd')
-            # imshow(img[pos[1]:pos[1] + pos[3], pos[0]:pos[0] + pos[2]], 'black blocks')
-            # if True means no overlapped
-            if not ((x + w) < pos[0] or x > (pos[0] + pos[2]) or y > (pos[1] + pos[3]) or (y + h) < pos[1]):
-
-                return False
+        # Axis-Aligned Bounding Box
+        # Test if two bound box not intersect
+        # Return True is sherd
+        if not ((x + w) < pos[0] or x > (pos[0] + pos[2]) or y > (pos[1] + pos[3]) or (y + h) < pos[1]):
+            return False
     return True
 
 
@@ -416,7 +411,6 @@ def scale_img(img, dst_ppc=118):
     # Masking to retrieve black color parts
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     black_mask = cv2.inRange(img_hsv, lower_black, upper_black)
-    imshow(black_mask, 'black_mask')
 
     # Morphing to connect lines and reduce noise
     # Close: Dilate --> Erode
@@ -434,20 +428,11 @@ def scale_img(img, dst_ppc=118):
         sys.exit(1)
 
     # Filter contours by area
-    cnts_filtered = []
-    for cnt in cnts:
-        area = cv2.contourArea(cnt)
-        if area >= min_area:
-            cnts_filtered.append(cnt)
-
+    cnts_filtered = [cnt for cnt in cnts if cv2.contourArea(cnt) >= min_area]
 
     # Takes only rectangular contours
-    cnts_rect = []
-    for cnt in cnts_filtered:
-        approx = cv2.approxPolyDP(cnt, 0.1*cv2.arcLength(cnt, True), True)
-        if len(approx) == 4:
-            cnts_rect.append(cnt)
-
+    cnts_rect = list(filter(lambda x: len(cv2.approxPolyDP(
+            x, 0.1*cv2.arcLength(x, True), True)) == 4, cnts_filtered))
     print(f'There are {len(cnts_rect)} rectangular contours')
 
     if len(cnts_rect) == 0:
