@@ -10,7 +10,7 @@ import math
 DEFAULT_DST_PPC = 118
 DEFAULT_OUT_DIM = (1000, 500)
 
-def main(argv):
+def imgProcessing(argv):
 
     if len(argv) > 1:
         dst_ppc = float(argv[1])

@@ -91,7 +91,7 @@ def imread(path, scale_percent=50):
         print(e)
 
 # Display an image
-def imshow(img, title='img'):
+def imshow(img, title='img', ):
     if img is None:
         raise Exception('No Image')
     size = 800
