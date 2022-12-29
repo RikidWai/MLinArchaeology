@@ -170,8 +170,8 @@ def main(argv):
             sub_img = img[y1: y1 + cfg.MAX_HEIGHT,
                           x1: x1 + cfg.MAX_WIDTH, :]
             sub_imgs.append(sub_img)
-        if i == 500 and len(sub_imgs) == 0:
-            print('nth found!')
+    if len(sub_imgs) == 0:
+        print('nth found!')
 
     # Save the cropped regions
     for i, sub_img in enumerate(sub_imgs):

@@ -47,13 +47,9 @@ lower_red2 = np.array([170, 100, 100])
 upper_red2 = np.array([179, 255, 255])
 
 lower_black = np.array([0, 0, 0])
-upper_black = np.array([179, 255, 60])
+upper_black = np.array([179, 255, 70])
 lower_white = np.array([0, 0, 180])  # TOFIX
 upper_white = np.array([0, 0, 255])  # TOFIX
-
-lower_black_custom = np.array([0, 0, 0])
-upper_black_custom = np.array([179, 255, 100])
-
 
 # Create an array specify lower and upper range of colours
 COLOR_RANGE = {'blue': [lower_blue, upper_blue],
