@@ -1,9 +1,11 @@
+import sys
+sys.path.append('../')
+
 import numpy as np
 import cv2
 import imUtils
 import configure as cfg
 import colour
-import sys
 import math
 
 

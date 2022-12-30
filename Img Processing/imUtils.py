@@ -74,7 +74,7 @@ REF_RGB_4Patch = {'blue': b_ref,
                   'black': [0, 0, 0],  # black
                   'white': [1, 1, 1], }  # white
 
-MARGIN = 2  # Margin for cropping
+MARGIN = 0  # Margin for cropping
 
 # Read a raw image
 def imread(path, scale_percent=50):

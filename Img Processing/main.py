@@ -1,7 +1,9 @@
+import sys
+sys.path.append('../')
+
 import os
 import pandas as pd
 import configure as cfg
-import sys
 from imProcessingPipeline import improcessing as process
 import imUtils
 import cv2
