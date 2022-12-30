@@ -13,16 +13,6 @@ DEFAULT_OUT_DIM = (1000, 500)
 
 def improcessing(file):
 
-    # if len(argv) > 1:
-    #     dst_ppc = float(argv[1])
-    #     if dst_ppc <= 0:
-    #         print('dst_ppc must be positive')
-    #         dst_ppc = DEFAULT_DST_PPC
-    #     if len(argv) > 2:  # For cropping as output
-    #         out_w, out_h = int(argv[2][0]), int(argv[2][1])
-    #     else:
-    #         out_w, out_h = DEFAULT_OUT_DIM
-    # else:
     dst_ppc = DEFAULT_DST_PPC  # Default value
     out_w, out_h = DEFAULT_OUT_DIM
 
@@ -40,18 +30,9 @@ def improcessing(file):
     except Exception as e:
         print(f'Error scaling image: {e}')
         sys.exit(1)
+    imUtils.display_image(img, 'see scaled')
+    cv2.imwrite('../out_images/img_scaled_1.jpeg', img)
     img2 = img.copy()
-    # -- Tests the effect of scaling on final sherd mask --
-    # Higher scaling factor leads to a more disconnected mask
-    # Try adjusting kernel size according to input image dimension to solve this
-    # scaling_factor = 1.2
-    # img = cv2.resize(img.copy(), None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
-
-    # cv2.imwrite('output_scaled.jpeg', img)
-
-    # Testing only above
-    # if True:
-    #     return
 
     if imUtils.detect24Checker(img.copy(), detector):
         # Color Correction
