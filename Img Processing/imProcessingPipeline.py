@@ -11,12 +11,13 @@ DEFAULT_DST_PPC = 118
 DEFAULT_OUT_DIM = (1000, 500)
 
 
-def improcessing(file):
+def improcessing(file, logger, err_list):
 
     dst_ppc = DEFAULT_DST_PPC  # Default value
     out_w, out_h = DEFAULT_OUT_DIM
 
     print(f'Using dst_ppc {dst_ppc}')
+
 
     img = imUtils.imread(file)
     print('shape', img.shape)
@@ -29,7 +30,10 @@ def improcessing(file):
         img, scaling_factor = imUtils.scale_img(img, dst_ppc)
     except Exception as e:
         print(f'Error scaling image: {e}')
-        sys.exit(1)
+        imUtils.log_err(logger, err=e)
+        imUtils.append_err_list(err_list)
+        return
+
     imUtils.display_image(img, 'see scaled')
     cv2.imwrite('../out_images/img_scaled_1.jpeg', img)
     img2 = img.copy()
@@ -83,7 +87,10 @@ def improcessing(file):
             max_cnt = max(cnts, key=cv2.contourArea)
         except:
             print("Cnt contains no value")
-            sys.exit(1)
+            imUtils.log_err(logger, msg='Cnt contains no value')
+            imUtils.append_err_list(err_list)
+            return
+
         x, y, w, h = cv2.boundingRect(max_cnt)
         img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
                   x-imUtils.MARGIN:x+w+imUtils.MARGIN]
@@ -106,7 +113,10 @@ def improcessing(file):
             max_cnt = max(cnts, key=cv2.contourArea)
         except:
             print("Cnt contains no value")
-            sys.exit(1)
+            imUtils.log_err(logger, msg='Cnt contains no value')
+            imUtils.append_err_list(err_list)
+            return
+
         x, y, w, h = cv2.boundingRect(max_cnt)
         img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
                   x-imUtils.MARGIN:x+w+imUtils.MARGIN]

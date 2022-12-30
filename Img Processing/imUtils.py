@@ -1,9 +1,13 @@
 import numpy as np
+import pandas as pd
 import cv2
 import rawpy
 import os
 import colour
 import sys
+import logging
+from datetime import datetime
+
 
 chartsRGB = [
     [[115, 83, 68]],
@@ -421,7 +425,7 @@ def scale_img(img, dst_ppc=118):
         print(f'There are {len(cnts)} contours')
     except Exception as e:
         print(f'Error detecting contours: {e}')
-        sys.exit(1)
+        return img, 1
 
     # Filter contours by area
     cnts_filtered = [cnt for cnt in cnts if cv2.contourArea(cnt) >= min_area]
@@ -489,6 +493,47 @@ def scale_img(img, dst_ppc=118):
         img_scaled = cv2.resize(img.copy(), None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
     except Exception as e:
         print(f'Error scaling image: {e}')
-        sys.exit(1)
+        return img, 1
 
     return img_scaled, scaling_factor
+
+
+
+# Logs error messages
+def log_err(logger, err=None, msg=None):
+    if err:
+        logger.error(err)
+    if msg:
+        logger.info(msg)
+
+
+# Creates logger object and log directory
+def init_logger():
+    log_dir = '../logs'
+    log_path = log_dir + datetime.now().strftime('/img_process_log_%Y_%m_%d_%H_%M.log')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+    logging.basicConfig(filename=log_path, level=logging.DEBUG, 
+                            format='%(asctime)s %(levelname)s %(name)s %(message)s')
+    logger = logging.getLogger('img_processing')
+    return logger
+
+
+# Appends to a list containing the data images that had errors in image processing
+# file is the same argument passed to process()
+def append_err_list(err_list, file):
+    filepath = os.path.splitext(file)[0]
+    filename = filepath.split('/')[-1]
+    err_list.append(filename)
+
+
+# Saves error list as csv for inspection
+def err_list_to_csv(err_list):
+    err_dir = '../err_list'
+    err_path = err_dir + datetime.now().strftime('/err_list_%Y_%m_%d_%H_%M.csv')
+    if not os.path.exists(err_dir):
+        os.makedirs(err_dir)
+    err_df = pd.DataFrame(err_list)
+    err_df.to_csv(err_path, index=True)
+
+

@@ -3,11 +3,17 @@ import pandas as pd
 import configure as cfg
 import sys
 from imProcessingPipeline import improcessing as process
+import imUtils
 import cv2
 df_encoding = pd.read_csv('../Labelling/LabelEncoding.csv')
 
 
 def main(argv):
+    # For loggging errors
+    logger = imUtils.init_logger()
+    err_list = []
+
+    # Looping begins
     for root, dirs, files in os.walk(cfg.DATA_DIR):
         for file in files:
             filename, extension = os.path.splitext(file)
@@ -15,7 +21,7 @@ def main(argv):
                 path = os.path.join(root, file)
                 dir = root.split(os.path.sep)[-1]
                 print(f'')
-                subImgs = process(path)
+                subImgs = process(path, logger, err_list)
                 # if subImgs != None:
                 #     # check the dir match filename column in LabelEncoding, then put into respective folder
                 #     print(dir)
@@ -34,3 +40,5 @@ if __name__ == '__main__':
         print('Usage: imProcessing.py [, dst_ppc [, cropped_dim ] ]')
         sys.exit(1)
     main(sys.argv)
+
+    
