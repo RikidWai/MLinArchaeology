@@ -47,7 +47,6 @@ def improcessing(file):
         src /= 255.0
         print(src.shape)
 
-        # model1 = cv2.ccm_ColorCorrectionModel(src, cv2.mcc.MCC24)
         model = cv2.ccm_ColorCorrectionModel(
             src, imUtils.chartsRGB_np, cv2.ccm.COLOR_SPACE_sRGB)
 
@@ -63,7 +62,6 @@ def improcessing(file):
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img_rgb = img_rgb.astype(np.float64)
         img_rgb = img_rgb/255
-        # calibratedImage = model1.infer(img_)
         calibrated = model.infer(img_rgb)
         calibrated = imUtils.toOpenCVU8(calibrated.copy())
 
@@ -76,7 +74,6 @@ def improcessing(file):
             cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 5)
         print('pos', patchPos)
         for pos in patchPos.values():
-            print('this is pos', pos)
             (x, y, w, h) = pos
             cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 0, 255), 5)
         print('shape', img.shape, img2.shape)
