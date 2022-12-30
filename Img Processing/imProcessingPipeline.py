@@ -10,46 +10,42 @@ import math
 DEFAULT_DST_PPC = 118
 DEFAULT_OUT_DIM = (1000, 500)
 
-def main(argv):
 
-    if len(argv) > 1:
-        dst_ppc = float(argv[1])
-        if dst_ppc <= 0:
-            print('dst_ppc must be positive')
-            dst_ppc = DEFAULT_DST_PPC
-        if len(argv) > 2: # For cropping as output
-            out_w, out_h = int(argv[2][0]), int(argv[2][1])
-        else:
-            out_w, out_h = DEFAULT_OUT_DIM
-    else:
-        dst_ppc = DEFAULT_DST_PPC # Default value
-        out_w, out_h = DEFAULT_OUT_DIM
+def improcessing(file):
+
+    # if len(argv) > 1:
+    #     dst_ppc = float(argv[1])
+    #     if dst_ppc <= 0:
+    #         print('dst_ppc must be positive')
+    #         dst_ppc = DEFAULT_DST_PPC
+    #     if len(argv) > 2:  # For cropping as output
+    #         out_w, out_h = int(argv[2][0]), int(argv[2][1])
+    #     else:
+    #         out_w, out_h = DEFAULT_OUT_DIM
+    # else:
+    dst_ppc = DEFAULT_DST_PPC  # Default value
+    out_w, out_h = DEFAULT_OUT_DIM
 
     print(f'Using dst_ppc {dst_ppc}')
 
-    folder = 'test_images/'
+    img = imUtils.imread(file)
+    print('shape', img.shape)
 
-    img = imUtils.imread(folder + '1.cr3')
-    img2 = img.copy()
     img = imUtils.white_bal(img)
     detector = cv2.mcc.CCheckerDetector_create()
-
-
+    scaling_factor = 1
     # Scale image according to required ppc ratio
     try:
         img, scaling_factor = imUtils.scale_img(img, dst_ppc)
     except Exception as e:
         print(f'Error scaling image: {e}')
         sys.exit(1)
-
-
+    img2 = img.copy()
     # -- Tests the effect of scaling on final sherd mask --
     # Higher scaling factor leads to a more disconnected mask
     # Try adjusting kernel size according to input image dimension to solve this
     # scaling_factor = 1.2
     # img = cv2.resize(img.copy(), None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
-
-
 
     # cv2.imwrite('output_scaled.jpeg', img)
 
@@ -102,9 +98,9 @@ def main(argv):
             print('this is pos', pos)
             (x, y, w, h) = pos
             cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 0, 255), 5)
-        imUtils.imshow(img2)
-        cnts = list(filter(lambda cnt: imUtils.isSherd(
-            cnt, patchPos, img.copy()), cnts))
+        print('shape', img.shape, img2.shape)
+        imUtils.imshow(img2, 'copy')
+        cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
         try:
             max_cnt = max(cnts, key=cv2.contourArea)
         except:
@@ -118,7 +114,7 @@ def main(argv):
         patchPos, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(img.copy())
 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
-        
+
         # currently the bestprint("corrected Vandermonde:")
         calibrated = colour.colour_correction(
             img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
@@ -126,8 +122,8 @@ def main(argv):
         _, cnts = imUtils.masking(img.copy())
 
         cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
-        
-        #checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
+
+        # checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
         try:
             max_cnt = max(cnts, key=cv2.contourArea)
         except:
@@ -140,11 +136,11 @@ def main(argv):
     # Scales kernel size by scaling factor computed for better masking
     kernel_size_scaled = math.floor(5 * scaling_factor)
 
-    filled, max_cnt = imUtils.masking(img.copy(), kernel_size_scaled,'biggest')
+    filled, max_cnt = imUtils.masking(
+        img.copy(), kernel_size_scaled, 'biggest')
     x, y, w, h = cv2.boundingRect(max_cnt)
 
     # TODO: crop 1000x500 centered on the above max_cnt
-
 
     mask = filled[imUtils.MARGIN:y+h-imUtils.MARGIN,
                   imUtils.MARGIN:x+w-imUtils.MARGIN]
@@ -172,16 +168,12 @@ def main(argv):
             sub_imgs.append(sub_img)
     if len(sub_imgs) == 0:
         print('nth found!')
+        return None
+    else:
+        imUtils.imshow(sub_imgs[0])
+        return sub_imgs
 
     # Save the cropped regions
-    for i, sub_img in enumerate(sub_imgs):
-        imUtils.imshow(sub_img)
+    # for i, sub_img in enumerate(sub_imgs):
+    #     imUtils.imshow(sub_img)
     # cv2.imwrite(f'{i + 1}.jpg', sub_img)
-
-
-
-if __name__ == '__main__':
-    if len(sys.argv) > 3:
-        print('Usage: imProcessing.py [, dst_ppc [, cropped_dim ] ]')
-        sys.exit(1)
-    main(sys.argv)
