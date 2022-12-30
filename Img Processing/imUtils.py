@@ -523,7 +523,7 @@ def init_logger():
 # file is the same argument passed to process()
 def append_err_list(err_list, file):
     filepath = os.path.splitext(file)[0]
-    filename = filepath.split('/')[-1]
+    filename = filepath.split('/')[-2] + "/" + filepath.split('/')[-1]
     err_list.append(filename)
 
 

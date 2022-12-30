@@ -1,0 +1,9 @@
+2022-12-31 03:44:23,805 INFO img_processing STATUS - ../test_images/img_24c_3_2.CR2: SUCCESS (not guarantee match label)
+2022-12-31 03:44:28,682 INFO img_processing STATUS - ../test_images/img_24c_2_2.CR2 has no cropped sherd found
+2022-12-31 03:44:36,333 INFO img_processing STATUS - ../test_images/1.cr3: SUCCESS (not guarantee match label)
+2022-12-31 03:44:39,863 INFO img_processing Cnt contains no value
+2022-12-31 03:44:42,775 INFO img_processing Cnt contains no value
+2022-12-31 03:44:47,987 INFO img_processing STATUS - ../test_images/478130_4419430_1_11/2.CR2: SUCCESS (not guarantee match label)
+2022-12-31 03:44:48,539 INFO numexpr.utils Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2022-12-31 03:44:48,540 INFO numexpr.utils NumExpr defaulting to 8 threads.
+2022-12-31 03:44:52,694 INFO img_processing STATUS - ../test_images/478130_4419430_1_11/1.CR2: SUCCESS (not guarantee match label)

@@ -34,7 +34,7 @@ def improcessing(file, logger, err_list):
     except Exception as e:
         print(f'Error scaling image: {e}')
         imUtils.log_err(logger, err=e)
-        imUtils.append_err_list(err_list)
+        imUtils.append_err_list(err_list,file)
         return
 
     imUtils.display_image(img, 'see scaled')
@@ -90,8 +90,8 @@ def improcessing(file, logger, err_list):
             max_cnt = max(cnts, key=cv2.contourArea)
         except:
             print("Cnt contains no value")
-            imUtils.log_err(logger, msg='Cnt contains no value')
-            imUtils.append_err_list(err_list)
+            imUtils.log_err(logger, msg=f'{file}: Cnt contains no value')
+            imUtils.append_err_list(err_list, file)
             return
 
         x, y, w, h = cv2.boundingRect(max_cnt)
@@ -116,8 +116,8 @@ def improcessing(file, logger, err_list):
             max_cnt = max(cnts, key=cv2.contourArea)
         except:
             print("Cnt contains no value")
-            imUtils.log_err(logger, msg='Cnt contains no value')
-            imUtils.append_err_list(err_list)
+            imUtils.log_err(logger, msg=f'{file}: Cnt contains no value')
+            imUtils.append_err_list(err_list,file)
             return
 
         x, y, w, h = cv2.boundingRect(max_cnt)
@@ -162,7 +162,7 @@ def improcessing(file, logger, err_list):
         imUtils.log_err(logger, msg=f'STATUS - {file} has no cropped sherd found')
         return None
     else:
-        imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS (not guarantee match label)')
+        imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS')
         imUtils.imshow(sub_imgs[0])
         return sub_imgs
 

@@ -1,0 +1,9 @@
+2022-12-31 04:01:36,772 INFO img_processing STATUS - ../test_images/img_24c_3_2.CR2: SUCCESS
+2022-12-31 04:01:41,657 INFO img_processing STATUS - ../test_images/img_24c_2_2.CR2 has no cropped sherd found
+2022-12-31 04:01:47,144 INFO img_processing STATUS - ../test_images/1.cr3: SUCCESS
+2022-12-31 04:01:50,347 INFO img_processing ../test_images/478130_4419430_1_34/1.CR2: Cnt contains no value
+2022-12-31 04:01:53,404 INFO img_processing ../test_images/478130_4419430_1_34/2.CR2: Cnt contains no value
+2022-12-31 04:01:57,962 INFO img_processing STATUS - ../test_images/478130_4419430_1_11/2.CR2: SUCCESS
+2022-12-31 04:01:58,054 INFO numexpr.utils Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2022-12-31 04:01:58,055 INFO numexpr.utils NumExpr defaulting to 8 threads.
+2022-12-31 04:02:02,473 INFO img_processing STATUS - ../test_images/478130_4419430_1_11/1.CR2: SUCCESS

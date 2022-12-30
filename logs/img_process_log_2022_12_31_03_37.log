@@ -1,0 +1,4 @@
+2022-12-31 03:37:19,401 INFO img_processing STATUS - ../test_images/img_24c_3_2.CR2: SUCCESS (not guarantee match label)
+2022-12-31 03:37:23,657 INFO img_processing STATUS - ../test_images/img_24c_2_2.CR2 has no cropped sherd found
+2022-12-31 03:37:29,575 INFO img_processing STATUS - ../test_images/1.cr3: SUCCESS (not guarantee match label)
+2022-12-31 03:37:32,811 INFO img_processing Cnt contains no value
