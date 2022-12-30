@@ -8,7 +8,7 @@ from imProcessingPipeline import improcessing as process
 import imUtils
 import cv2
 df_encoding = pd.read_csv('../Labelling/LabelEncoding.csv')
-
+df_encoding.drop(df_encoding.filter(regex="Unname"),axis=1, inplace=True)
 
 def main(argv):
     # For loggging errors
@@ -21,20 +21,27 @@ def main(argv):
             filename, extension = os.path.splitext(file)
             if 'cr' in extension or 'CR' in extension:
                 path = os.path.join(root, file)
+                print("root: ",root)
                 dir = root.split(os.path.sep)[-1]
                 print(f'')
                 subImgs = process(path, logger, err_list)
-                # if subImgs != None:
-                #     # check the dir match filename column in LabelEncoding, then put into respective folder
-                #     print(dir)
-                #     targetFolder = str(df_encoding.query(
-                #         f'file_name == "{dir}"').fabric)
-                #     print(cfg.TARGET_DIR + targetFolder + os.path.sep)
-                #     print('fuck')
-                #     if not os.path.exists(targetFolder):
-                #         os.makedirs(targetFolder)
-                #     for i, sub_img in enumerate(subImgs):
-                #         cv2.imwrite(f'{dir}_{filename}_s{i+1}.jpg', sub_img)
+                if subImgs != None:
+                    # check the dir match filename column in LabelEncoding, then put into respective folder
+                    print("Directory: "+dir)
+                    if len(dir)>0:
+                        targetFolder = df_encoding.query(
+                            f'file_name == "{dir}"')
+                        if targetFolder.empty != True:
+                            print("targetFolder: ",targetFolder.iloc[0]['fabric'])
+                            targetFolder = str(targetFolder.iloc[0]['fabric'])
+                            print(cfg.TARGET_DIR + targetFolder + os.path.sep)
+
+                            if not os.path.exists(cfg.TARGET_DIR + targetFolder):
+                                os.makedirs(cfg.TARGET_DIR + targetFolder)
+                                
+                            for i, sub_img in enumerate(subImgs):
+                                print("path", f'{cfg.TARGET_DIR}{targetFolder}/{dir}_{filename}_s{i+1}.jpg')
+                                cv2.imwrite(f'{cfg.TARGET_DIR}{targetFolder}/{dir}_{filename}_s{i+1}.jpg', sub_img)
 
 
 if __name__ == '__main__':

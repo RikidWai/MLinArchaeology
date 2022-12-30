@@ -7,14 +7,15 @@ import imUtils
 import configure as cfg
 import colour
 import math
+import os
 
-
+ROOT_DIR = os.getcwd()
 DEFAULT_DST_PPC = 118
 DEFAULT_OUT_DIM = (1000, 500)
 
 
 def improcessing(file, logger, err_list):
-
+    print("filename: ",file)
     dst_ppc = DEFAULT_DST_PPC  # Default value
     out_w, out_h = DEFAULT_OUT_DIM
 
@@ -158,8 +159,10 @@ def improcessing(file, logger, err_list):
             sub_imgs.append(sub_img)
     if len(sub_imgs) == 0:
         print('nth found!')
+        imUtils.log_err(logger, msg=f'STATUS - {file} has no cropped sherd found')
         return None
     else:
+        imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS (not guarantee match label)')
         imUtils.imshow(sub_imgs[0])
         return sub_imgs
 

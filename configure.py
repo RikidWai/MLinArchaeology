@@ -1,5 +1,5 @@
 DATA_DIR = '../test_images/'
-TARGET_DIR = '../test_images/'
+TARGET_DIR = '../test_output/'
 
 # Image Processing Parameters
 MAX_WIDTH = 256 # Dimension of cropped img

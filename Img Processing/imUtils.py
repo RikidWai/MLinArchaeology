@@ -109,11 +109,11 @@ def imshow(img, title='img'):
         height = size
         dim = (width, height)
         img = cv2.resize(img, dim)
-    try:
-        cv2.imshow(title, img)
-        cv2.waitKey(0)
-    except Exception as e:
-        print(e)
+    # try:
+    #     # cv2.imshow(title, img)
+    #     cv2.waitKey(0)
+    # except Exception as e:
+    #     print(e)
 
 # Draw contours of an image
 def drawCnts(img, cnts):
@@ -395,9 +395,9 @@ def get_centroid(cnt):
 # Displays an image of np array in a new window. Close it by pressing keyboard buttons and do not press X to close
 def display_image(img, title):
     title = title + ' (do not press "x"!)' # appends warning
-    cv2.imshow(title, img)
-    cv2.waitKey(0)
-    cv2.destroyWindow(title)
+    # cv2.imshow(title, img)
+    # cv2.waitKey(0)
+    # cv2.destroyWindow(title)
 
 
 # Takes in BGR numpy image
