@@ -21,8 +21,8 @@ import matplotlib.pyplot as plt
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-datadir = '/content/drive/MyDrive/CS_FYP_archaeology/train_data_dummy/' # Change to local dir containing training data
-
+datadir = '/content/drive/MyDrive/CS_FYP_archaeology/train_data_dummy/'  # Change to local dir containing training data
+NUM_CLASS = 92  # hard code here
 
 # Shows an image tensor using opencv
 # Gives all black? How to show properly without plt?
@@ -49,6 +49,7 @@ def imshow_tensor_plt(img_tensor, ax=None, title=None, normalize=True):
 
     return ax
 
+
 # Defines the transformation done to each input data prior to being fed into the model
 def create_transform(resize_size=None, crop_size=None):
     if resize_size and crop_size:
@@ -60,24 +61,28 @@ def create_transform(resize_size=None, crop_size=None):
                                         transforms.ToTensor()])
     elif resize_size:
         transform = transform.Compose([transforms.Resize(resize_size),
-                                    transforms.ToTensor()])
+                                       transforms.ToTensor()])
     elif crop_size:
         transform = transform.Compose([transforms.CenterCrop(crop_size),
-                                    transforms.ToTensor()])
+                                       transforms.ToTensor()])
     else:
         transform = ToTensor()
     return transform
 
 
-if __name__ == '__main__':
+def target_to_oh(target):
+    one_hot = torch.eye(NUM_CLASS)[target]
+    return one_hot
 
+
+if __name__ == '__main__':
     # Loading dataset using default Pytorch ImageFolder
     # Assumes the data structure shown above classified by label into subfolders
-    ds = torchvision.datasets.ImageFolder(root=datadir, transform=create_transform(255, 224))
-
+    ds = torchvision.datasets.ImageFolder(root=datadir, transform=create_transform(255, 224),
+                                          target_transform=target_to_oh)
 
     # Inspect the classes
-    list_of_classes=list(ds.classes)
+    list_of_classes = list(ds.classes)
     print(f'The list of classes: {list_of_classes}')
 
     dataloader = torch.utils.data.DataLoader(ds, batch_size=2) # Can specify batch_size=1 and shuffle=False
