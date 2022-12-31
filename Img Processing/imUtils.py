@@ -196,7 +196,7 @@ def contrast_stretching(img):
 # Cropping
 
 # apply masking 
-def masking(img, kernel_size=5, mode='all'):
+def masking(img, logger, err_list, file, kernel_size=5, mode='all'):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(
         gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 4)
@@ -219,7 +219,14 @@ def masking(img, kernel_size=5, mode='all'):
         imshow(filled, 'filled')
         return filled, cnts
     elif mode == 'biggest':
-        max_cnt = max(cnts, key=cv2.contourArea)
+        try:
+            max_cnt = max(cnts, key=cv2.contourArea)
+        except:
+            print("masking(): Cnt contains no value")
+            log_err(logger, msg=f'{file}: Cnt contains no value - masking() Utils')
+            append_err_list(err_list, file)
+            return None, None
+
         cv2.drawContours(filled, [max_cnt], 0, 255, -1)
         imshow(filled, 'filled')
         return filled, max_cnt

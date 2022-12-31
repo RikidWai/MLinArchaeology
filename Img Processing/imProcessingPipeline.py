@@ -74,7 +74,7 @@ def improcessing(file, logger, err_list):
 
         patchPos = imUtils.getCardsPos(img.copy())
 
-        filled, cnts = imUtils.masking(calibrated.copy())
+        filled, cnts = imUtils.masking(calibrated.copy(),logger,err_list, file)
 
         for cnt in cnts:
             x, y, w, h = cv2.boundingRect(cnt)
@@ -107,7 +107,7 @@ def improcessing(file, logger, err_list):
         calibrated = colour.colour_correction(
             img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
         img = imUtils.toOpenCVU8(calibrated.copy())
-        _, cnts = imUtils.masking(img.copy())
+        _, cnts = imUtils.masking(img.copy(),logger,err_list, file)
 
         cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
 
@@ -128,7 +128,10 @@ def improcessing(file, logger, err_list):
     kernel_size_scaled = math.floor(5 * scaling_factor)
 
     filled, max_cnt = imUtils.masking(
-        img.copy(), kernel_size_scaled, 'biggest')
+        img.copy(), logger, err_list, file, kernel_size_scaled, 'biggest')
+    if filled is None and max_cnt is None:
+        print("retuned values from making() is none")
+        return
     x, y, w, h = cv2.boundingRect(max_cnt)
 
     # TODO: crop 1000x500 centered on the above max_cnt
@@ -159,7 +162,8 @@ def improcessing(file, logger, err_list):
             sub_imgs.append(sub_img)
     if len(sub_imgs) == 0:
         print('nth found!')
-        imUtils.log_err(logger, msg=f'STATUS - {file} has no cropped sherd found')
+        imUtils.log_err(logger, msg=f'STATUS - {file} has no cropped sherd found') #need add this to err list now
+        imUtils.append_err_list(err_list,file)
         return None
     else:
         imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS')

@@ -51,7 +51,6 @@ def main(argv):
     imUtils.err_list_to_csv(err_list)
                             
 
-
 if __name__ == '__main__':
     if len(sys.argv) > 3:
         print('Usage: imProcessing.py [, dst_ppc [, cropped_dim ] ]')
