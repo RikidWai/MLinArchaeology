@@ -21,13 +21,13 @@ else:
     df_labelEncoding.fabric = le.fit_transform(
         df_labelEncoding.fabric.astype(str))
     print(df_labelEncoding)
-    filepath = Path('./LabelEncoding.csv')
+    filepath = Path('./labelEncoding.csv')
     df_labelEncoding.to_csv(filepath)
 
     le_name_mapping = pd.DataFrame(
         zip(le.classes_, le.transform(le.classes_)), columns=['Class', 'EncodedLabel'])
     print(le_name_mapping)
-    filepath = Path('./LabelEncodingMapping.csv')
+    filepath = Path('./labelEncodingMapping.csv')
     le_name_mapping.to_csv(filepath)
 
     # One-Hot Encoding
