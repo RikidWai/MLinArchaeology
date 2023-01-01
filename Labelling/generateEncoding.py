@@ -9,7 +9,7 @@ df = pd.read_csv('original_labels.csv')
 df = df[['file_name', 'fabric_group_name']]
 df.rename(columns={'fabric_group_name': 'fabric'}, inplace=True)
 # verify integrity
-if df.file_name.nunique != df.file_name.nunique:
+if df.file_name.nunique != df.file_name:
     print("There are duplicated labels")
 
 else:

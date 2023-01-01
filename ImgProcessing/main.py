@@ -60,6 +60,7 @@ def main(argv):
                     else:
                         imUtils.log_err(logger, msg=f'Image not in the correct directory structure {path}') 
     imUtils.err_list_to_csv(err_list)
+    imUtils.log_err(logger, msg=f'Total {total} images are processed, {num_success} images output data successfully  ') 
     print(f'Total {total} images are processed, {num_success} images output data successfully  ')
                             
 
