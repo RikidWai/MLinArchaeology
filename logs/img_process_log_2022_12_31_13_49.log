@@ -1,0 +1,247 @@
+2022-12-31 13:49:35,226 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_323/2.CR3 has no cropped sherd found
+2022-12-31 13:49:37,906 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_323/1.CR3 has no cropped sherd found
+2022-12-31 13:49:41,735 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_2/1.CR2: SUCCESS
+2022-12-31 13:49:41,756 INFO numexpr.utils Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2022-12-31 13:49:41,756 INFO numexpr.utils NumExpr defaulting to 8 threads.
+2022-12-31 13:49:45,552 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_2/2.CR2: SUCCESS
+2022-12-31 13:49:48,221 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_354/2.CR3: SUCCESS
+2022-12-31 13:49:48,225 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_354/2.CR3
+2022-12-31 13:49:50,826 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_354/1.CR3 has no cropped sherd found
+2022-12-31 13:49:53,461 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_259/2.CR3: SUCCESS
+2022-12-31 13:49:53,465 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_259/2.CR3
+2022-12-31 13:49:56,208 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_259/1.CR3 has no cropped sherd found
+2022-12-31 13:50:01,422 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_40/1.CR2: SUCCESS
+2022-12-31 13:50:06,800 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_40/2.CR2: SUCCESS
+2022-12-31 13:50:11,390 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_37/2.CR2: SUCCESS
+2022-12-31 13:50:14,996 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_37/1.CR2: SUCCESS
+2022-12-31 13:50:43,974 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_163/1.CR2: SUCCESS
+2022-12-31 13:50:47,563 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_163/2.CR2: SUCCESS
+2022-12-31 13:50:51,176 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_137/2.CR2 has no cropped sherd found
+2022-12-31 13:50:54,373 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_137/1.CR2 has no cropped sherd found
+2022-12-31 13:50:57,944 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_140/2.CR2: SUCCESS
+2022-12-31 13:51:01,661 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_140/1.CR2: Cnt contains no value - masking() Utils
+2022-12-31 13:51:05,614 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_114/1.CR2 has no cropped sherd found
+2022-12-31 13:51:09,860 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_114/2.CR2 has no cropped sherd found
+2022-12-31 13:51:12,523 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_38/1.CR3 has no cropped sherd found
+2022-12-31 13:51:15,091 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_38/2.CR3 has no cropped sherd found
+2022-12-31 13:51:18,928 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_32/2.CR2 has no cropped sherd found
+2022-12-31 13:51:23,374 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_32/1.CR2 has no cropped sherd found
+2022-12-31 13:51:27,006 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_45/2.CR2 has no cropped sherd found
+2022-12-31 13:51:30,653 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_45/1.CR2 has no cropped sherd found
+2022-12-31 13:51:33,095 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_423/1.CR3: SUCCESS
+2022-12-31 13:51:33,106 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_423/1.CR3
+2022-12-31 13:51:35,758 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_423/2.CR3: SUCCESS
+2022-12-31 13:51:35,762 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_423/2.CR3
+2022-12-31 13:51:39,100 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_162/2.CR2 has no cropped sherd found
+2022-12-31 13:51:42,744 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_162/1.CR2 has no cropped sherd found
+2022-12-31 13:51:46,584 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_115/2.CR2: SUCCESS
+2022-12-31 13:51:50,298 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_115/1.CR2: SUCCESS
+2022-12-31 13:51:54,036 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_95/2.CR2 has no cropped sherd found
+2022-12-31 13:51:57,617 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_95/1.CR2 has no cropped sherd found
+2022-12-31 13:51:59,893 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_981/2.CR3: SUCCESS
+2022-12-31 13:51:59,896 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_981/2.CR3
+2022-12-31 13:52:02,411 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_981/1.CR3: SUCCESS
+2022-12-31 13:52:02,417 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_981/1.CR3
+2022-12-31 13:52:05,062 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_45/1.CR3 has no cropped sherd found
+2022-12-31 13:52:07,751 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_45/2.CR3 has no cropped sherd found
+2022-12-31 13:52:10,325 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_32/1.CR3: SUCCESS
+2022-12-31 13:52:10,329 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_32/1.CR3
+2022-12-31 13:52:12,933 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_32/2.CR3: SUCCESS
+2022-12-31 13:52:12,937 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_32/2.CR3
+2022-12-31 13:52:15,411 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_524/1.CR3 has no cropped sherd found
+2022-12-31 13:52:17,691 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_524/2.CR3 has no cropped sherd found
+2022-12-31 13:52:21,381 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_38/2.CR2 has no cropped sherd found
+2022-12-31 13:52:25,108 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_38/1.CR2 has no cropped sherd found
+2022-12-31 13:52:28,340 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_6_20/1.CR2 has no cropped sherd found
+2022-12-31 13:52:31,552 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_6_20/2.CR2 has no cropped sherd found
+2022-12-31 13:52:34,947 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_400/1.CR2: Cnt contains no value - masking() Utils
+2022-12-31 13:52:38,432 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_400/2.CR2 has no cropped sherd found
+2022-12-31 13:52:41,974 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_71/2.CR2: SUCCESS
+2022-12-31 13:52:45,543 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_71/1.CR2: SUCCESS
+2022-12-31 13:52:48,268 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_329/2.CR3 has no cropped sherd found
+2022-12-31 13:52:51,029 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_329/1.CR3 has no cropped sherd found
+2022-12-31 13:52:54,718 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_8/1.CR2: SUCCESS
+2022-12-31 13:52:58,461 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_8/2.CR2: SUCCESS
+2022-12-31 13:53:00,934 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_253/1.CR3 has no cropped sherd found
+2022-12-31 13:53:03,384 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_253/2.CR3 has no cropped sherd found
+2022-12-31 13:53:05,731 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_400/2.CR3 has no cropped sherd found
+2022-12-31 13:53:08,135 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_400/1.CR3 has no cropped sherd found
+2022-12-31 13:53:11,839 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_5/2.CR2: SUCCESS
+2022-12-31 13:53:15,542 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_5/1.CR2: SUCCESS
+2022-12-31 13:53:18,003 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_224/1.CR3: SUCCESS
+2022-12-31 13:53:18,007 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_224/1.CR3
+2022-12-31 13:53:20,461 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_224/2.CR3: SUCCESS
+2022-12-31 13:53:20,466 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_224/2.CR3
+2022-12-31 13:53:24,308 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_187/1.CR2: SUCCESS
+2022-12-31 13:53:27,980 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_187/2.CR2: SUCCESS
+2022-12-31 13:53:31,894 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_169/1.CR2: SUCCESS
+2022-12-31 13:53:40,188 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_169/2.CR2: SUCCESS
+2022-12-31 13:53:43,677 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_168/1.CR2: SUCCESS
+2022-12-31 13:53:47,442 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_168/2.CR2 has no cropped sherd found
+2022-12-31 13:53:49,943 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_344/1.CR3 has no cropped sherd found
+2022-12-31 13:53:52,380 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_344/2.CR3 has no cropped sherd found
+2022-12-31 13:53:57,518 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_186/1.CR2: SUCCESS
+2022-12-31 13:54:02,800 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_186/2.CR2: SUCCESS
+2022-12-31 13:54:06,427 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_85/1.CR2 has no cropped sherd found
+2022-12-31 13:54:10,178 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_85/2.CR2 has no cropped sherd found
+2022-12-31 13:54:12,694 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_333/2.CR3 has no cropped sherd found
+2022-12-31 13:54:15,149 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_333/1.CR3 has no cropped sherd found
+2022-12-31 13:54:19,050 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_333/1.CR2 has no cropped sherd found
+2022-12-31 13:54:22,663 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_333/2.CR2 has no cropped sherd found
+2022-12-31 13:54:27,983 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_19/2.CR2: SUCCESS
+2022-12-31 13:54:33,390 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_19/1.CR2: SUCCESS
+2022-12-31 13:54:37,033 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_344/2.CR2: Cnt contains no value - masking() Utils
+2022-12-31 13:54:40,473 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_344/1.CR2 has no cropped sherd found
+2022-12-31 13:54:44,541 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_80/1.CR2 has no cropped sherd found
+2022-12-31 13:54:48,170 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_80/2.CR2 has no cropped sherd found
+2022-12-31 13:54:51,551 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_249/2.CR2 has no cropped sherd found
+2022-12-31 13:54:54,858 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_249/1.CR2 has no cropped sherd found
+2022-12-31 13:54:57,398 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_127/2.CR3 has no cropped sherd found
+2022-12-31 13:55:00,034 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_127/1.CR3 has no cropped sherd found
+2022-12-31 13:55:03,663 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_4_27/2.CR2 has no cropped sherd found
+2022-12-31 13:55:07,517 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_4_27/1.CR2 has no cropped sherd found
+2022-12-31 13:55:10,204 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_150/2.CR3 has no cropped sherd found
+2022-12-31 13:55:12,906 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_150/1.CR3 has no cropped sherd found
+2022-12-31 13:55:17,766 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_13/2.CR2: SUCCESS
+2022-12-31 13:55:22,897 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_13/1.CR2: SUCCESS
+2022-12-31 13:55:26,696 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_339/2.CR2 has no cropped sherd found
+2022-12-31 13:55:30,433 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_339/1.CR2 has no cropped sherd found
+2022-12-31 13:55:34,361 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_64/1.CR2 has no cropped sherd found
+2022-12-31 13:55:38,243 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_64/2.CR2 has no cropped sherd found
+2022-12-31 13:55:41,545 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_243/1.CR2 has no cropped sherd found
+2022-12-31 13:55:44,871 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_243/2.CR2 has no cropped sherd found
+2022-12-31 13:55:49,164 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_234/2.CR2: SUCCESS
+2022-12-31 13:55:53,255 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_234/1.CR2 has no cropped sherd found
+2022-12-31 13:55:55,514 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_389/1.CR3 has no cropped sherd found
+2022-12-31 13:55:57,714 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_389/2.CR3 has no cropped sherd found
+2022-12-31 13:56:01,604 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_1_30/1.CR2: SUCCESS
+2022-12-31 13:56:05,777 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_1_30/2.CR2: SUCCESS
+2022-12-31 13:56:08,248 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_636/2.CR3 has no cropped sherd found
+2022-12-31 13:56:10,652 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_636/1.CR3 has no cropped sherd found
+2022-12-31 13:56:13,681 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_1_47/2.CR2 has no cropped sherd found
+2022-12-31 13:56:16,598 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_1_47/1.CR2: Cnt contains no value - masking() Utils
+2022-12-31 13:56:20,462 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_61/1.CR2: SUCCESS
+2022-12-31 13:56:24,150 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_61/2.CR2: SUCCESS
+2022-12-31 13:56:27,926 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_162/2.CR2 has no cropped sherd found
+2022-12-31 13:56:31,503 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_162/1.CR2 has no cropped sherd found
+2022-12-31 13:56:35,099 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_115/2.CR2 has no cropped sherd found
+2022-12-31 13:56:38,802 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_115/1.CR2 has no cropped sherd found
+2022-12-31 13:56:42,383 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_16/2.CR2: Cnt contains no value - masking() Utils
+2022-12-31 13:56:46,004 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_16/1.CR2 has no cropped sherd found
+2022-12-31 13:56:48,437 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_339/2.CR3 has no cropped sherd found
+2022-12-31 13:56:50,789 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_339/1.CR3 has no cropped sherd found
+2022-12-31 13:56:54,561 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_127/1.CR2 has no cropped sherd found
+2022-12-31 13:56:58,211 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_127/2.CR2 has no cropped sherd found
+2022-12-31 13:57:01,767 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_150/2.CR2 has no cropped sherd found
+2022-12-31 13:57:05,116 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_150/1.CR2 has no cropped sherd found
+2022-12-31 13:57:07,391 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_493/1.CR3 has no cropped sherd found
+2022-12-31 13:57:09,799 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_493/2.CR3 has no cropped sherd found
+2022-12-31 13:57:12,093 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_827/1.CR3 has no cropped sherd found
+2022-12-31 13:57:14,389 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_827/2.CR3 has no cropped sherd found
+2022-12-31 13:57:18,119 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_49/2.CR2 has no cropped sherd found
+2022-12-31 13:57:21,543 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_49/1.CR2 has no cropped sherd found
+2022-12-31 13:57:24,655 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_77/2.CR2 has no cropped sherd found
+2022-12-31 13:57:28,131 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_8_77/1.CR2: Cnt contains no value
+2022-12-31 13:57:31,109 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_488/2.CR3: SUCCESS
+2022-12-31 13:57:31,114 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_488/2.CR3
+2022-12-31 13:57:33,949 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_488/1.CR3: SUCCESS
+2022-12-31 13:57:33,952 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_488/1.CR3
+2022-12-31 13:57:36,544 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_93/2.CR3 has no cropped sherd found
+2022-12-31 13:57:39,107 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_93/1.CR3 has no cropped sherd found
+2022-12-31 13:57:42,293 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_6_18/1.CR2 has no cropped sherd found
+2022-12-31 13:57:45,367 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_6_18/2.CR2 has no cropped sherd found
+2022-12-31 13:57:48,510 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_72/1.CR2 has no cropped sherd found
+2022-12-31 13:57:51,612 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_72/2.CR2 has no cropped sherd found
+2022-12-31 13:57:55,114 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_126/2.CR2 has no cropped sherd found
+2022-12-31 13:57:58,651 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_126/1.CR2 has no cropped sherd found
+2022-12-31 13:58:02,137 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_172/2.CR2 has no cropped sherd found
+2022-12-31 13:58:05,903 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_172/1.CR2 has no cropped sherd found
+2022-12-31 13:58:09,782 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_105/2.CR2 has no cropped sherd found
+2022-12-31 13:58:13,308 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_105/1.CR2 has no cropped sherd found
+2022-12-31 13:58:16,642 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_151/1.CR2 has no cropped sherd found
+2022-12-31 13:58:19,820 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_151/2.CR2 has no cropped sherd found
+2022-12-31 13:58:22,239 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_366/2.CR3: Cant process image. imProcessing HAS BUG. Exception low >= high
+2022-12-31 13:58:24,956 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_366/1.CR3 has no cropped sherd found
+2022-12-31 13:58:28,004 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_285/1.CR3 has no cropped sherd found
+2022-12-31 13:58:30,891 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_285/2.CR3: SUCCESS
+2022-12-31 13:58:30,898 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_285/2.CR3
+2022-12-31 13:58:33,839 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_311/1.CR3 has no cropped sherd found
+2022-12-31 13:58:36,522 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_311/2.CR3 has no cropped sherd found
+2022-12-31 13:58:39,121 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_388/1.CR3 has no cropped sherd found
+2022-12-31 13:58:41,364 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_388/2.CR3 has no cropped sherd found
+2022-12-31 13:58:44,614 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_78/1.CR2: SUCCESS
+2022-12-31 13:58:48,079 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_78/2.CR2: SUCCESS
+2022-12-31 13:58:51,829 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_196/1.CR2 has no cropped sherd found
+2022-12-31 13:58:55,569 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_196/2.CR2 has no cropped sherd found
+2022-12-31 13:58:59,112 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_178/2.CR2 has no cropped sherd found
+2022-12-31 13:59:02,741 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_178/1.CR2 has no cropped sherd found
+2022-12-31 13:59:06,422 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_96/1.CR2 has no cropped sherd found
+2022-12-31 13:59:10,386 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_96/2.CR2: Cnt contains no value - masking() Utils
+2022-12-31 13:59:13,620 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_151/2.CR3: SUCCESS
+2022-12-31 13:59:13,626 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_151/2.CR3
+2022-12-31 13:59:16,665 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_41_151/1.CR3: Cnt contains no value - masking() Utils
+2022-12-31 13:59:19,468 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_216/1.CR3 has no cropped sherd found
+2022-12-31 13:59:22,041 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_216/2.CR3 has no cropped sherd found
+2022-12-31 13:59:24,831 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_382/2.CR3: SUCCESS
+2022-12-31 13:59:24,835 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_382/2.CR3
+2022-12-31 13:59:27,989 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_382/1.CR3: SUCCESS
+2022-12-31 13:59:27,993 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_382/1.CR3
+2022-12-31 13:59:31,322 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_261/2.CR3: SUCCESS
+2022-12-31 13:59:31,326 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_261/2.CR3
+2022-12-31 13:59:35,681 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_261/1.CR3: Cnt contains no value
+2022-12-31 13:59:38,395 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_499/1.CR3 has no cropped sherd found
+2022-12-31 13:59:41,167 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_499/2.CR3 has no cropped sherd found
+2022-12-31 13:59:44,670 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_43/2.CR2 has no cropped sherd found
+2022-12-31 13:59:48,142 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_43/1.CR2 has no cropped sherd found
+2022-12-31 13:59:51,427 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_34/1.CR2: SUCCESS
+2022-12-31 13:59:54,788 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_5_34/2.CR2: SUCCESS
+2022-12-31 13:59:57,284 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_178/2.CR3 has no cropped sherd found
+2022-12-31 13:59:59,699 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_178/1.CR3 has no cropped sherd found
+2022-12-31 14:00:04,712 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_77/1.CR3: Cnt contains no value
+2022-12-31 14:00:09,651 INFO img_processing /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_77/2.CR3: Cnt contains no value
+2022-12-31 14:00:12,290 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_99/1.CR3 has no cropped sherd found
+2022-12-31 14:00:14,945 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_99/2.CR3 has no cropped sherd found
+2022-12-31 14:00:17,994 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_1289/1.CR3 has no cropped sherd found
+2022-12-31 14:00:20,532 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_1289/2.CR3 has no cropped sherd found
+2022-12-31 14:00:23,822 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_6_12/1.CR2 has no cropped sherd found
+2022-12-31 14:00:26,992 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_6_12/2.CR2 has no cropped sherd found
+2022-12-31 14:00:30,145 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_162/2.CR3: SUCCESS
+2022-12-31 14:00:30,152 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_162/2.CR3
+2022-12-31 14:00:32,755 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_162/1.CR3: SUCCESS
+2022-12-31 14:00:32,759 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_162/1.CR3
+2022-12-31 14:00:36,302 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_4_15/1.CR2 has no cropped sherd found
+2022-12-31 14:00:39,736 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_4_15/2.CR2 has no cropped sherd found
+2022-12-31 14:00:42,517 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_115/1.CR3 has no cropped sherd found
+2022-12-31 14:00:45,052 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_115/2.CR3 has no cropped sherd found
+2022-12-31 14:00:49,455 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_376/1.CR2: SUCCESS
+2022-12-31 14:00:54,153 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_376/2.CR2: SUCCESS
+2022-12-31 14:00:58,031 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_301/2.CR2: SUCCESS
+2022-12-31 14:01:01,957 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_301/1.CR2: SUCCESS
+2022-12-31 14:01:04,698 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_39_56/1.CR3: SUCCESS
+2022-12-31 14:01:04,701 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_39_56/1.CR3
+2022-12-31 14:01:07,331 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_39_56/2.CR3: SUCCESS
+2022-12-31 14:01:07,335 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_39_56/2.CR3
+2022-12-31 14:01:11,100 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_295/1.CR2: SUCCESS
+2022-12-31 14:01:14,778 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_295/2.CR2: SUCCESS
+2022-12-31 14:01:17,767 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_39/2.CR3 has no cropped sherd found
+2022-12-31 14:01:20,338 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_39/1.CR3 has no cropped sherd found
+2022-12-31 14:01:24,007 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_398/2.CR2: SUCCESS
+2022-12-31 14:01:27,689 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_398/1.CR2: SUCCESS
+2022-12-31 14:01:30,447 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_333/1.CR3 has no cropped sherd found
+2022-12-31 14:01:33,076 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_333/2.CR3 has no cropped sherd found
+2022-12-31 14:01:35,566 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_398/1.CR3 has no cropped sherd found
+2022-12-31 14:01:38,068 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_398/2.CR3 has no cropped sherd found
+2022-12-31 14:01:41,250 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_59/1.CR2: SUCCESS
+2022-12-31 14:01:44,329 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_2_59/2.CR2: SUCCESS
+2022-12-31 14:01:46,716 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_301/2.CR3: SUCCESS
+2022-12-31 14:01:46,720 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_301/2.CR3
+2022-12-31 14:01:48,980 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_301/1.CR3: SUCCESS
+2022-12-31 14:01:48,984 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_301/1.CR3
+2022-12-31 14:01:51,388 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_376/2.CR3 has no cropped sherd found
+2022-12-31 14:01:53,714 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_37_376/1.CR3 has no cropped sherd found
+2022-12-31 14:01:56,071 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_679/2.CR3 has no cropped sherd found
+2022-12-31 14:01:58,683 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_679/1.CR3 has no cropped sherd found
+2022-12-31 14:02:01,705 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_1_91/1.CR2 has no cropped sherd found
+2022-12-31 14:02:04,582 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_1_91/2.CR2 has no cropped sherd found
+2022-12-31 14:02:07,111 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_703/1.CR3: SUCCESS
+2022-12-31 14:02:07,117 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_42_703/1.CR3

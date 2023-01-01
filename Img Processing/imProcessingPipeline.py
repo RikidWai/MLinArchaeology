@@ -162,7 +162,7 @@ def improcessing(file, logger, err_list):
             sub_imgs.append(sub_img)
     if len(sub_imgs) == 0:
         print('nth found!')
-        imUtils.log_err(logger, msg=f'STATUS - {file} has no cropped sherd found') #need add this to err list now
+        imUtils.log_err(logger, msg=f'STATUS - {file} has no cropped sherd found')
         imUtils.append_err_list(err_list,file)
         return None
     else:

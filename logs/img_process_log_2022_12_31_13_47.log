@@ -1,0 +1,16 @@
+2022-12-31 13:47:59,403 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_323/2.CR3 has no cropped sherd found
+2022-12-31 13:48:02,135 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_323/1.CR3 has no cropped sherd found
+2022-12-31 13:48:06,020 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_2/1.CR2: SUCCESS
+2022-12-31 13:48:06,039 INFO numexpr.utils Note: NumExpr detected 16 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
+2022-12-31 13:48:06,039 INFO numexpr.utils NumExpr defaulting to 8 threads.
+2022-12-31 13:48:09,849 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_9_2/2.CR2: SUCCESS
+2022-12-31 13:48:12,537 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_354/2.CR3: SUCCESS
+2022-12-31 13:48:12,541 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_354/2.CR3
+2022-12-31 13:48:15,185 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_354/1.CR3 has no cropped sherd found
+2022-12-31 13:48:17,899 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_259/2.CR3: SUCCESS
+2022-12-31 13:48:17,903 INFO img_processing no target label found for this image /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_259/2.CR3
+2022-12-31 13:48:20,655 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_38_259/1.CR3 has no cropped sherd found
+2022-12-31 13:48:25,134 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_40/1.CR2: SUCCESS
+2022-12-31 13:48:29,718 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_40/2.CR2: SUCCESS
+2022-12-31 13:48:33,554 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_37/2.CR2: SUCCESS
+2022-12-31 13:48:37,577 INFO img_processing STATUS - /userhome/2072/fyp22007/data/raw_images/478130_4419430_3_37/1.CR2: SUCCESS
