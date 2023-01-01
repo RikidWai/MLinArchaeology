@@ -2,3 +2,4 @@
 *.txt
 err_list/
 logs/
+test_output/
