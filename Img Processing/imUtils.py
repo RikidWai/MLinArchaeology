@@ -108,11 +108,11 @@ def imshow(img, title='img'):
         height = size
         dim = (width, height)
         img = cv2.resize(img, dim)
-    # try:
-    #     # cv2.imshow(title, img)
-    #     cv2.waitKey(0)
-    # except Exception as e:
-    #     print(e)
+    try:
+        cv2.imshow(title, img)
+        cv2.waitKey(0)
+    except Exception as e:
+        print(e)
 
 # Draw contours of an image
 def drawCnts(img, cnts):
@@ -140,14 +140,11 @@ def validCnt(cnt):
     return False
 
 # Convert data type of an image from float64 to uint8
-def toOpenCVU8(img, show=False):
+def toOpenCVU8(img):
     out = img * 255
     out[out < 0] = 0
     out[out > 255] = 255
     out = cv2.cvtColor(out.astype(np.uint8), cv2.COLOR_RGB2BGR)
-    if show:
-        imshow(out, 'out')
-        imshow(img, 'original')
     return out
 
 # detect if 24-patch color card exists
@@ -157,9 +154,7 @@ def detect24Checker(img, detector, kernel_size=5):
     processParams = cv2.mcc.DetectorParameters_create()
     processParams.maxError = 0.05
     if not detector.process(closing, cv2.mcc.MCC24, 1, params=processParams):
-        print("24Chart not detected. Assume 4Chart is used\n")
         return False
-    print("24Chart detected.\n")
     return True
 # Color Correction
 
@@ -203,7 +198,6 @@ def masking(img, logger, err_list, file, kernel_size=5, mode='all'):
     # apply close morphology
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-    imshow(thresh, 'thresh')
 
     # get bounding box coordinates from the one filled external contour
     filled = np.zeros_like(thresh)
@@ -211,11 +205,10 @@ def masking(img, logger, err_list, file, kernel_size=5, mode='all'):
     cnts, _ = cv2.findContours(
         thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = [cnt for cnt in cnts if validCnt(cnt)]
-    # drawCnts(img.copy(), cnts)
+    
     if mode == 'all':
         for cnt in cnts:
             cv2.drawContours(filled, [cnt], 0, 255, -1)
-        imshow(filled, 'filled')
         return filled, cnts
     elif mode == 'biggest':
         try:
@@ -227,14 +220,12 @@ def masking(img, logger, err_list, file, kernel_size=5, mode='all'):
             return None, None
 
         cv2.drawContours(filled, [max_cnt], 0, 255, -1)
-        imshow(filled, 'filled')
         return filled, max_cnt
     return None, None
 
 # Detect the black region to guess the positions of 24checker and scaling card in an image 
 def getCardsPos(img):
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
-    img_display = img.copy()
     mask = cv2.inRange(
         img_hsv, COLOR_RANGE['black'][0], COLOR_RANGE['black'][1])
     patchPos = {}
@@ -243,17 +234,13 @@ def getCardsPos(img):
     colour_cnts = sorted(colour_cnts, reverse=True, key=cv2.contourArea)
     for i in range(2):
         if cv2.contourArea(colour_cnts[i]) > 400:
-
             x, y, w, h = cv2.boundingRect(colour_cnts[i])
             patchPos[i] = (x, y, w, h)
-            cv2.rectangle(img_display, (x, y), (x+w, y+h), (0, 255, 0), 3)
-    imshow(img_display)
     return patchPos
 
 # Detect 4 patches in 4Checker for color calibration
 def get4PatchInfo(img):
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) 
-    img_display = img.copy()
 
     patchPos = {}
     coloursRectList = {}
@@ -284,10 +271,8 @@ def get4PatchInfo(img):
         if len(colour_cnts) > 0:
             coloured_cnt = max(colour_cnts, key=cv2.contourArea)
         if cv2.contourArea(coloured_cnt) > 400:
-            print(color, 'detected')
             # offsets - with this you get 'mask'
             x, y, w, h = cv2.boundingRect(coloured_cnt)
-            cv2.rectangle(img_display, (x, y), (x+w, y+h), (0, 255, 0), 2)
             patchPos[color] = (x, y, w, h)
 
             colorRect = cv2.cvtColor(img[y:y+h, x:x+w], cv2.COLOR_BGR2RGB)
@@ -306,29 +291,21 @@ def get4PatchInfo(img):
 
         # right side
         rightSide = img[y:y+h, x+w:x+w+w//2+w//6]
-        cv2.rectangle(img_display, (x+w, y), (x+w+w//2 +
-                                       w//6, y+h), (0, 255, 0), 2)
         right_mean = cv2.mean(rightSide)[0:3]
         meansOfWhiteRegions.append(right_mean)
 
         # left side
         leftSide = img[y:y+h, (x-w//2-w//6):x]
-
-        cv2.rectangle(img_display, (x-w//2-w//6, y), (x, y+h), (0, 255, 0), 2)
         left_mean = cv2.mean(leftSide)[0:3]
         meansOfWhiteRegions.append(left_mean)
 
         # top side
         topSide = img[(y-h//2-h//6):y, x:x+w]
-        cv2.rectangle(img_display, (x, (y-h//2-h//6)),
-                      (x+w, y), (0, 255, 0), 2)
         top_mean = cv2.mean(topSide)[0:3]
         meansOfWhiteRegions.append(top_mean)
 
         # bottom side
         bottomSide = img[y+h:y+h+h//2+h//6, x:x+w]
-        cv2.rectangle(img_display, (x, (y+h)),
-                      (x+w, y+h+h//2+h//6), (0, 255, 0), 2)
         bottom_mean = cv2.mean(bottomSide)[0:3]
         meansOfWhiteRegions.append(bottom_mean)
 
@@ -346,7 +323,6 @@ def get4PatchInfo(img):
 
     EXTRACTED_RGB = np.array(np.vstack(EXTRACTED_RGB))
     REF_RGB = colour.cctf_decoding(np.array(np.vstack(REF_RGB)))
-    imshow(img_display)
 
     return patchPos, EXTRACTED_RGB, REF_RGB
 
@@ -397,15 +373,6 @@ def get_centroid(cnt):
         print('Division by zero, contour is bad. Returning (0, 0)')
         return 0, 0
 
-
-# Displays an image of np array in a new window. Close it by pressing keyboard buttons and do not press X to close
-def display_image(img, title):
-    title = title + ' (do not press "x"!)' # appends warning
-    # cv2.imshow(title, img)
-    # cv2.waitKey(0)
-    # cv2.destroyWindow(title)
-
-
 # Takes in BGR numpy image
 # dst_ppc is the destinated number of pixels per cm
 # Outputs the scaled image and the scaling factor
@@ -423,12 +390,10 @@ def scale_img(img, dst_ppc=118):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     mask = black_mask.copy()
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-    imshow(mask, 'postmorph_mask')
 
     # Try contour detection
     try:
         cnts = get_contours(mask)
-        print(f'There are {len(cnts)} contours')
     except Exception as e:
         print(f'Error detecting contours: {e}')
         return img, 1
@@ -439,7 +404,6 @@ def scale_img(img, dst_ppc=118):
     # Takes only rectangular contours
     cnts_rect = list(filter(lambda x: len(cv2.approxPolyDP(
             x, 0.1*cv2.arcLength(x, True), True)) == 4, cnts_filtered))
-    print(f'There are {len(cnts_rect)} rectangular contours')
 
     if len(cnts_rect) == 0:
         print('Unable to detect the required calibration cards, returning original image')
@@ -447,26 +411,19 @@ def scale_img(img, dst_ppc=118):
 
     img_rect = img.copy()
     cv2.drawContours(img_rect, cnts_rect, -1, (0, 0, 255), 2)
-    imshow(img_rect, 'marked rects')
 
     # Area sort
     cnts_sorted = sorted(cnts_rect, reverse=True, key=cv2.contourArea)
-
-    print(f'There are {len(cnts_sorted)} elements in cnts_sorted')
 
     # Choose second biggest
     idx = 1 if len(cnts_sorted) > 1 else 0
     img_copy = img.copy()
     cv2.drawContours(img_copy, cnts_sorted, idx, (0, 255, 0), 2)
-    # bof.display_image(img_copy, 'sherd_mask_with_proper_contours')
-    imshow(img_copy, 'marked contour')
 
     # Compute length of black square in 4_color, length of calibration card in 24_color
     approx_chosen = cv2.approxPolyDP(cnts_sorted[idx], 0.01*cv2.arcLength(cnts_sorted[idx], True), True)
-    print(f'The approximated 4 points are: {approx_chosen}')
 
     x, y, w, h = cv2.boundingRect(cnts_sorted[idx])
-    print(f'The width and height are {w} and {h}')
 
     if w == 0 or h == 0:
         print('Width or height zero, error detecting bounding box of calibration card, returning original image')
@@ -477,7 +434,6 @@ def scale_img(img, dst_ppc=118):
         ppc = max(w, h)/5
     else: # 4c, 2nd biggest if two black squares found, else choose the only one. Each square is 1cm in length
         ppc = max(w, h)
-    print(f'The detected pixels per cm is {ppc}')
 
     if ppc <= 0:
         print('Error obtaining detected ppc, returning original image')
@@ -485,11 +441,7 @@ def scale_img(img, dst_ppc=118):
 
 
     scaling_factor = dst_ppc/ppc
-
-    print(f'The scaling factor is {scaling_factor}')
-
-    
-
+   
     # Suspect when ppc is small e.g. 18, then may crash
     if scaling_factor >= 5 or (max(img.shape) > 3000 and scaling_factor >= 3):
         print(f'Scaling factor too large ({scaling_factor}), aborting scaling')

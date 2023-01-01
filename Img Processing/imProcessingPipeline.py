@@ -14,19 +14,14 @@ DEFAULT_OUT_DIM = (1000, 500)
 
 
 def improcessing(file, logger, err_list):
-    print("filename: ",file)
     dst_ppc = DEFAULT_DST_PPC  # Default value
     out_w, out_h = DEFAULT_OUT_DIM
-
-    print(f'Using dst_ppc {dst_ppc}')
-
-
     img = imUtils.imread(file)
-    print('shape', img.shape)
 
     img = imUtils.white_bal(img)
     detector = cv2.mcc.CCheckerDetector_create()
     scaling_factor = 1
+    
     # Scale image according to required ppc ratio
     try:
         img, scaling_factor = imUtils.scale_img(img, dst_ppc)
@@ -36,22 +31,13 @@ def improcessing(file, logger, err_list):
         imUtils.append_err_list(err_list,file)
         return
 
-    imUtils.display_image(img, 'see scaled')
-    cv2.imwrite('../out_images/img_scaled_1.jpeg', img)
-    img2 = img.copy()
-
     if imUtils.detect24Checker(img.copy(), detector):
         # Color Correction
         checker = detector.getBestColorChecker()
-        print('coor', checker.getBox())
-        cdraw = cv2.mcc.CCheckerDraw_create(checker)
-        img_draw = cdraw.draw(img.copy())
-        imUtils.imshow(img_draw)
         chartsRGB = checker.getChartsRGB()
 
         src = chartsRGB[:, 1].copy().reshape(24, 1, 3)
         src /= 255.0
-        print(src.shape)
 
         model = cv2.ccm_ColorCorrectionModel(
             src, imUtils.chartsRGB_np, cv2.ccm.COLOR_SPACE_sRGB)
@@ -77,13 +63,9 @@ def improcessing(file, logger, err_list):
 
         for cnt in cnts:
             x, y, w, h = cv2.boundingRect(cnt)
-            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 255, 0), 5)
-        print('pos', patchPos)
         for pos in patchPos.values():
             (x, y, w, h) = pos
-            cv2.rectangle(img2, (x, y), (x+w, y+h), (0, 0, 255), 5)
-        print('shape', img.shape, img2.shape)
-        imUtils.imshow(img2, 'copy')
+            
         cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
         try:
             max_cnt = max(cnts, key=cv2.contourArea)
@@ -166,10 +148,4 @@ def improcessing(file, logger, err_list):
         return None
     else:
         imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS')
-        imUtils.imshow(sub_imgs[0])
         return sub_imgs
-
-    # Save the cropped regions
-    # for i, sub_img in enumerate(sub_imgs):
-    #     imUtils.imshow(sub_img)
-    # cv2.imwrite(f'{i + 1}.jpg', sub_img)

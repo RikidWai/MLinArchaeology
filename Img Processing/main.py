@@ -7,21 +7,29 @@ import configure as cfg
 from imProcessingPipeline import improcessing as process
 import imUtils
 import cv2
+from pathlib import Path
 
 df_encoding = pd.read_csv('../Labelling/LabelEncoding.csv')
 df_encoding.drop(df_encoding.filter(regex="Unname"),axis=1, inplace=True)
 
+
 def main(argv):
+    
+    num_success = 0 
+    total = 0
+    
     # For loggging errors
     logger = imUtils.init_logger()
     err_list = []
-
+    Path(cfg.TARGET_DIR).mkdir(parents=True, exist_ok=True)
     # Looping begins
     for root, dirs, files in os.walk(cfg.DATA_DIR):
         dirs.sort()
         for file in files:
+            print(file)
             filename, extension = os.path.splitext(file)
             if 'cr' in extension or 'CR' in extension:
+                total += 1 
                 path = os.path.join(root, file)
                 dir = root.split(os.path.sep)[-1]
 
@@ -33,6 +41,7 @@ def main(argv):
                     continue
 
                 if subImgs != None:
+                    
                     # check the dir match filename column in LabelEncoding, then put into respective folder
                     if len(dir)>0:
                         targetFolder = df_encoding.query(
@@ -42,7 +51,7 @@ def main(argv):
 
                             if not os.path.exists(cfg.TARGET_DIR + targetFolder):
                                 os.makedirs(cfg.TARGET_DIR + targetFolder)
-
+                            num_success += 1 
                             for i, sub_img in enumerate(subImgs):
                                 cv2.imwrite(f'{cfg.TARGET_DIR}{targetFolder}/{dir}_{filename}_s{i+1}.jpg', sub_img)
                         else:
@@ -50,6 +59,7 @@ def main(argv):
                     else:
                         imUtils.log_err(logger, msg=f'Image not in the correct directory structure {path}') 
     imUtils.err_list_to_csv(err_list)
+    print(f'Total {total} images are processed, {num_success} images output data successfully  ')
                             
 
 if __name__ == '__main__':
