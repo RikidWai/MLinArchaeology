@@ -9,22 +9,18 @@ import colour
 import math
 import os
 
-DEFAULT_DST_PPC = 118
 DEFAULT_OUT_DIM = (1000, 500)
 
-
 def improcessing(file, logger, err_list):
-    dst_ppc = DEFAULT_DST_PPC  # Default value
     out_w, out_h = DEFAULT_OUT_DIM
     img = imUtils.imread(file)
 
     img = imUtils.white_bal(img)
     detector = cv2.mcc.CCheckerDetector_create()
-    scaling_factor = 1
     
     # Scale image according to required ppc ratio
     try:
-        img, scaling_factor = imUtils.scale_img(img, dst_ppc)
+        img, scaling_factor = imUtils.scale_img(img, cfg.DST_PPC)
     except Exception as e:
         print(f'Error scaling image: {e}')
         imUtils.log_err(logger, err=e)
@@ -46,14 +42,8 @@ def improcessing(file, logger, err_list):
 
         model.run()
 
-        ccm = model.getCCM()
-
-        loss = model.getLoss()
-        dst_rgbl = model.get_dst_rgbl()
-
         img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img_rgb = img_rgb.astype(np.float64)
-        img_rgb = img_rgb/255
+        img_rgb = img_rgb.astype(np.float64) / 255
         calibrated = model.infer(img_rgb)
         calibrated = imUtils.toOpenCVU8(calibrated.copy())
 
@@ -76,8 +66,7 @@ def improcessing(file, logger, err_list):
             return
 
         x, y, w, h = cv2.boundingRect(max_cnt)
-        img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
-                  x-imUtils.MARGIN:x+w+imUtils.MARGIN]
+        img = img[y:y+h, x:x+w]
 
     else:
         patchPos, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(img.copy())
@@ -102,8 +91,7 @@ def improcessing(file, logger, err_list):
             return
 
         x, y, w, h = cv2.boundingRect(max_cnt)
-        img = img[y-imUtils.MARGIN:y+h+imUtils.MARGIN,
-                  x-imUtils.MARGIN:x+w+imUtils.MARGIN]
+        img = img[y:y+h, x:x+w]
 
     # Scales kernel size by scaling factor computed for better masking
     kernel_size_scaled = math.floor(5 * scaling_factor)
@@ -126,7 +114,7 @@ def improcessing(file, logger, err_list):
 
     h, w = img.shape[0], img.shape[1]
 
-    for i in range(500):
+    for i in range(5000):
         # if the object is too small
         if cfg.MAX_WIDTH > w or cfg.MAX_HEIGHT > h:
             break
