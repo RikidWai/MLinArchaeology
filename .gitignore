@@ -1,2 +1,4 @@
 *.pyc
 *.txt
+err_list/
+logs/

@@ -9,7 +9,6 @@ import colour
 import math
 import os
 
-ROOT_DIR = os.getcwd()
 DEFAULT_DST_PPC = 118
 DEFAULT_OUT_DIM = (1000, 500)
 

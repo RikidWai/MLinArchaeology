@@ -7,6 +7,7 @@ import configure as cfg
 from imProcessingPipeline import improcessing as process
 import imUtils
 import cv2
+
 df_encoding = pd.read_csv('../Labelling/LabelEncoding.csv')
 df_encoding.drop(df_encoding.filter(regex="Unname"),axis=1, inplace=True)
 
@@ -52,9 +53,6 @@ def main(argv):
                             
 
 if __name__ == '__main__':
-    if len(sys.argv) > 3:
-        print('Usage: imProcessing.py [, dst_ppc [, cropped_dim ] ]')
-        sys.exit(1)
     main(sys.argv)
 
     

@@ -8,7 +8,6 @@ import sys
 import logging
 from datetime import datetime
 
-
 chartsRGB = [
     [[115, 83, 68]],
     [[196, 147, 127]],
