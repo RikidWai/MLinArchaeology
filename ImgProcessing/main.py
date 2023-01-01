@@ -10,13 +10,10 @@ import cv2
 from pathlib import Path
 from Labelling.labelling import generateEncoding
 
-df_encoding = pd.read_csv('../Labelling/labelEncoding.csv')
-df_encoding.drop(df_encoding.filter(regex="Unname"),axis=1, inplace=True)
-
-# May need to run generateEncoding.py first
-
 def main(argv):
     generateEncoding()
+    df_encoding = pd.read_csv('../Labelling/labelEncoding.csv')
+    df_encoding.drop(df_encoding.filter(regex="Unname"),axis=1, inplace=True)
     
     num_success = 0 
     total = 0
