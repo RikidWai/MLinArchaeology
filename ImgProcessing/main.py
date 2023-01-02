@@ -32,7 +32,6 @@ def main(argv):
                 total += 1 
                 path = os.path.join(root, file)
                 dir = root.split(os.path.sep)[-1]
-
                 try:
                     subImgs = process(path, logger, err_list)
                 except Exception as e:
@@ -53,7 +52,7 @@ def main(argv):
                                 os.makedirs(cfg.TARGET_DIR + targetFolder)
                             num_success += 1 
                             for i, sub_img in enumerate(subImgs):
-                                cv2.imwrite(f'{cfg.TARGET_DIR}{targetFolder}/{dir}_{filename}_s{i+1}.tiff', sub_img)
+                                cv2.imwrite(f'{cfg.TARGET_DIR}{targetFolder}/{dir}_{filename}_s{i+1}.jpg', sub_img)
                         else:
                             imUtils.log_err(logger, msg=f'no target label found for this image {path}') 
                     else:
