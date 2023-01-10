@@ -19,6 +19,7 @@ def improcessing(file, logger, err_list):
     img = imUtils.imread(file)
 
     img = imUtils.white_bal(img)
+    imUtils.imshow(img)
     detector = cv2.mcc.CCheckerDetector_create()
 
     # Scale image according to required ppc ratio
@@ -30,13 +31,16 @@ def improcessing(file, logger, err_list):
         imUtils.append_err_list(err_list, file)
         return
 
+    # Convert the format for color correction
+    rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float64) / 255
+    
     if imUtils.detect24Checker(img.copy(), detector):
         # Color Correction
+        patchPos = imUtils.getCardsPos(img.copy())
         checker = detector.getBestColorChecker()
         chartsRGB = checker.getChartsRGB()
 
-        src = chartsRGB[:, 1].copy().reshape(24, 1, 3)
-        src /= 255.0
+        src = chartsRGB[:, 1].copy().reshape(24, 1, 3) / 255.0
 
         model = cv2.ccm_ColorCorrectionModel(
             src, imUtils.chartsRGB_np, cv2.ccm.COLOR_SPACE_sRGB)
@@ -44,74 +48,40 @@ def improcessing(file, logger, err_list):
         model.setWeightCoeff(1)
 
         model.run()
-
-        img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        img_rgb = img_rgb.astype(np.float64) / 255
-        calibrated = model.infer(img_rgb)
-        calibrated = imUtils.toOpenCVU8(calibrated.copy())
-
-        patchPos = imUtils.getCardsPos(img.copy())
-
-        filled, cnts = imUtils.masking(
-            calibrated.copy(), logger, err_list, file)
-        
-        for cnt in cnts:
-            x, y, w, h = cv2.boundingRect(cnt)
-        for pos in patchPos.values():
-            (x, y, w, h) = pos
-
-        cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
-        try:
-            max_cnt = max(cnts, key=cv2.contourArea)
-        except:
-            print("Cnt contains no value")
-            imUtils.log_err(logger, msg=f'{file}: Cnt contains no value')
-            imUtils.append_err_list(err_list, file)
-            return
-
-        x, y, w, h = cv2.boundingRect(max_cnt)
-        img = img[y:y+h, x:x+w]
+        calibrated = model.infer(rgb)
 
     else:
         patchPos, EXTRACTED_RGB, REF_RGB = imUtils.get4PatchInfo(img.copy())
-
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/255
-
         # currently the bestprint("corrected Vandermonde:")
         calibrated = colour.colour_correction(
-            img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
-        img = imUtils.toOpenCVU8(calibrated.copy())
-        _, cnts = imUtils.masking(img.copy(), logger, err_list, file)
+            rgb, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
 
-        cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
-
-        # checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
-        try:
-            max_cnt = max(cnts, key=cv2.contourArea)
-        except:
-            print("Cnt contains no value")
-            imUtils.log_err(logger, msg=f'{file}: Cnt contains no value')
-            imUtils.append_err_list(err_list, file)
-            return
-
-        x, y, w, h = cv2.boundingRect(max_cnt)
-        img = img[y:y+h, x:x+w]
-
+    img = imUtils.toOpenCVU8(calibrated.copy())
+    
     # Scales kernel size by scaling factor computed for better masking
-    # kernel_size_scaled = math.floor(5 * scaling_factor)
+    kernel_size_scaled = math.floor(5 * scaling_factor)
+    
+    filled, cnts = imUtils.masking(img.copy(), logger, err_list, file, kernel_size = kernel_size_scaled)
 
-    filled, max_cnt = imUtils.masking(
-        img.copy(), logger, err_list, file, 5, 'biggest')
-    if filled is None and max_cnt is None:
-        print("retuned values from making() is none")
+    cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
+
+    # checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
+    try:
+        max_cnt = max(cnts, key=cv2.contourArea)
+    except:
+        print("Cnt contains no value")
+        imUtils.log_err(logger, msg=f'{file}: Cnt contains no value')
+        imUtils.append_err_list(err_list, file)
         return
+
     x, y, w, h = cv2.boundingRect(max_cnt)
+    mask = filled[y:y+h, x:x+w]
+    img = img[y:y+h, x:x+w]
 
     # TODO: crop 1000x500 centered on the above max_cnt
 
-    mask = filled[0:y+h, 0:x+w]
-    img = img[0:y+h, 0:x+w]
-    imUtils.imshow(filled)
+    imUtils.imshow(mask, 'mask')
+    imUtils.imshow(img, 'sherd')
     sub_imgs = []
 
     h, w = img.shape[0], img.shape[1]
@@ -147,5 +117,6 @@ if __name__ == '__main__':
     logger = imUtils.init_logger()
     err_list = []
 
-    sub_imgs = improcessing('../test_images/478130_4419430_1_11/1.CR2', logger, err_list)
-    imUtils.imshow(sub_imgs[0])
+    sub_imgs = improcessing('../test_images/1.cr2', logger, err_list)
+    if sub_imgs is not None: 
+        imUtils.imshow(sub_imgs[0])

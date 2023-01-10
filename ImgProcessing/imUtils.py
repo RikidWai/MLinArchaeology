@@ -188,13 +188,12 @@ def contrast_stretching(img):
 # Cropping
 
 # apply masking 
-def masking(img, logger, err_list, file, kernel_size=6, mode='all'):
+def masking(img, logger, err_list, file, kernel_size=6):
     img = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
     blur = cv2.medianBlur(img, 3)
     gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(
         gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 4)
-    imshow(thresh, 'thresh')
     # apply close morphology
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
@@ -205,32 +204,13 @@ def masking(img, logger, err_list, file, kernel_size=6, mode='all'):
     cnts, _ = cv2.findContours(
         thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = [cnt for cnt in cnts if validCnt(cnt)]
-    print('valid cnts', len(cnts))
-    if mode == 'all':
-        for cnt in cnts:
-            cv2.drawContours(filled, [cnt], 0, 255, -1)
-        
-        filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
-        cnts, _ = cv2.findContours(
-            filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        imshow(filled, 'test1')
-        return filled, cnts
-    elif mode == 'biggest':
-        try:
-            max_cnt = max(cnts, key=cv2.contourArea)
-        except:
-            print("masking(): Cnt contains no value")
-            log_err(logger, msg=f'{file}: Cnt contains no value - masking() Utils')
-            append_err_list(err_list, file)
-            return None, None
-
-        cv2.drawContours(filled, [max_cnt], 0, 255, -1)
-        filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
-        cnts, _ = cv2.findContours(
-            filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        max_cnt = max(cnts, key=cv2.contourArea)
-        return filled, max_cnt
-    return None, None
+    for cnt in cnts:
+        cv2.drawContours(filled, [cnt], 0, 255, -1)
+    
+    filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+    cnts, _ = cv2.findContours(
+        filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    return filled, cnts
 
 # Detect the black region to guess the positions of 24checker and scaling card in an image 
 def getCardsPos(img):
