@@ -1,15 +1,18 @@
 import sys
 sys.path.append('../')
 
-import numpy as np
-import cv2
-import imUtils
-import configure as cfg
-import colour
-import math
 import os
+import math
+import colour
+import configure as cfg
+import imUtils
+import cv2
+import numpy as np
+
+
 
 DEFAULT_OUT_DIM = (1000, 500)
+
 
 def improcessing(file, logger, err_list):
     out_w, out_h = DEFAULT_OUT_DIM
@@ -17,14 +20,14 @@ def improcessing(file, logger, err_list):
 
     img = imUtils.white_bal(img)
     detector = cv2.mcc.CCheckerDetector_create()
-    
+
     # Scale image according to required ppc ratio
     try:
         img, scaling_factor = imUtils.scale_img(img, cfg.DST_PPC)
     except Exception as e:
         print(f'Error scaling image: {e}')
         imUtils.log_err(logger, err=e)
-        imUtils.append_err_list(err_list,file)
+        imUtils.append_err_list(err_list, file)
         return
 
     if imUtils.detect24Checker(img.copy(), detector):
@@ -49,13 +52,14 @@ def improcessing(file, logger, err_list):
 
         patchPos = imUtils.getCardsPos(img.copy())
 
-        filled, cnts = imUtils.masking(calibrated.copy(),logger,err_list, file)
-
+        filled, cnts = imUtils.masking(
+            calibrated.copy(), logger, err_list, file)
+        
         for cnt in cnts:
             x, y, w, h = cv2.boundingRect(cnt)
         for pos in patchPos.values():
             (x, y, w, h) = pos
-            
+
         cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
         try:
             max_cnt = max(cnts, key=cv2.contourArea)
@@ -77,7 +81,7 @@ def improcessing(file, logger, err_list):
         calibrated = colour.colour_correction(
             img, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
         img = imUtils.toOpenCVU8(calibrated.copy())
-        _, cnts = imUtils.masking(img.copy(),logger,err_list, file)
+        _, cnts = imUtils.masking(img.copy(), logger, err_list, file)
 
         cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
 
@@ -87,17 +91,17 @@ def improcessing(file, logger, err_list):
         except:
             print("Cnt contains no value")
             imUtils.log_err(logger, msg=f'{file}: Cnt contains no value')
-            imUtils.append_err_list(err_list,file)
+            imUtils.append_err_list(err_list, file)
             return
 
         x, y, w, h = cv2.boundingRect(max_cnt)
         img = img[y:y+h, x:x+w]
 
     # Scales kernel size by scaling factor computed for better masking
-    kernel_size_scaled = math.floor(5 * scaling_factor)
+    # kernel_size_scaled = math.floor(5 * scaling_factor)
 
     filled, max_cnt = imUtils.masking(
-        img.copy(), logger, err_list, file, kernel_size_scaled, 'biggest')
+        img.copy(), logger, err_list, file, 5, 'biggest')
     if filled is None and max_cnt is None:
         print("retuned values from making() is none")
         return
@@ -107,7 +111,7 @@ def improcessing(file, logger, err_list):
 
     mask = filled[0:y+h, 0:x+w]
     img = img[0:y+h, 0:x+w]
-
+    imUtils.imshow(filled)
     sub_imgs = []
 
     h, w = img.shape[0], img.shape[1]
@@ -129,17 +133,19 @@ def improcessing(file, logger, err_list):
             sub_imgs.append(sub_img)
     if len(sub_imgs) == 0:
         print('nth found!')
-        imUtils.log_err(logger, msg=f'STATUS - {file} has no cropped sherd found')
-        imUtils.append_err_list(err_list,file)
+        imUtils.log_err(
+            logger, msg=f'STATUS - {file} has no cropped sherd found')
+        imUtils.append_err_list(err_list, file)
         return None
     else:
         imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS')
         return sub_imgs
 
+
 if __name__ == '__main__':
     # For loggging errors
     logger = imUtils.init_logger()
     err_list = []
-    
-    sub_imgs = improcessing('/userhome/2072/fyp22007/MLinAraechology/test_images/478130_4419430_1_11/1.CR2', logger, err_list)
-    cv2.imwrite('test.jpg', sub_imgs[0])
+
+    sub_imgs = improcessing('../test_images/478130_4419430_1_11/1.CR2', logger, err_list)
+    imUtils.imshow(sub_imgs[0])

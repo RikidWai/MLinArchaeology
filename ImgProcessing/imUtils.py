@@ -74,7 +74,7 @@ REF_RGB_4Patch = {'blue': b_ref,
                   'white': [1, 1, 1], }  # white
 
 # Read a raw image
-def imread(path, scaling_factor=0.5):
+def imread(path, scaling_factor=1):
     _, extension = os.path.splitext(path)
     try:
         if 'cr' in extension or 'CR' in extension:
@@ -133,7 +133,7 @@ def getEdgedImg(img):
 # validate contours that are big enough only
 def validCnt(cnt):
     (_, (width, height), _) = cv2.minAreaRect(cnt)
-    if width > 100 and height > 100 and cv2.contourArea(cnt) > 400: # Filter those small edges detected
+    if width > 50 and height > 50 and cv2.contourArea(cnt) > 400: # Filter those small edges detected
         return True
     return False
 
@@ -188,11 +188,13 @@ def contrast_stretching(img):
 # Cropping
 
 # apply masking 
-def masking(img, logger, err_list, file, kernel_size=5, mode='all'):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+def masking(img, logger, err_list, file, kernel_size=6, mode='all'):
+    img = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
+    blur = cv2.medianBlur(img, 3)
+    gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(
         gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 4)
-
+    imshow(thresh, 'thresh')
     # apply close morphology
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
@@ -203,10 +205,15 @@ def masking(img, logger, err_list, file, kernel_size=5, mode='all'):
     cnts, _ = cv2.findContours(
         thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = [cnt for cnt in cnts if validCnt(cnt)]
-    
+    print('valid cnts', len(cnts))
     if mode == 'all':
         for cnt in cnts:
             cv2.drawContours(filled, [cnt], 0, 255, -1)
+        
+        filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+        cnts, _ = cv2.findContours(
+            filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        imshow(filled, 'test1')
         return filled, cnts
     elif mode == 'biggest':
         try:
@@ -218,6 +225,10 @@ def masking(img, logger, err_list, file, kernel_size=5, mode='all'):
             return None, None
 
         cv2.drawContours(filled, [max_cnt], 0, 255, -1)
+        filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+        cnts, _ = cv2.findContours(
+            filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        max_cnt = max(cnts, key=cv2.contourArea)
         return filled, max_cnt
     return None, None
 
