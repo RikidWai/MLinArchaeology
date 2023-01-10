@@ -73,20 +73,18 @@ REF_RGB_4Patch = {'blue': b_ref,
                   'black': [0, 0, 0],  # black
                   'white': [1, 1, 1], }  # white
 
-MARGIN = 0  # Margin for cropping
-
 # Read a raw image
-def imread(path, scale_percent=50):
+def imread(path, scaling_factor=0.5):
     _, extension = os.path.splitext(path)
     try:
         if 'cr' in extension or 'CR' in extension:
             raw = rawpy.imread(path).postprocess()  # access to the RAW image to a numpy RGB array
             img = cv2.cvtColor(raw, cv2.COLOR_RGB2BGR)  # the OpenCV image
-
-            width = int(img.shape[1] * scale_percent / 100)
-            height = int(img.shape[0] * scale_percent / 100)
-            dim = (width, height)
-            img = cv2.resize(img, dim)
+            img = cv2.resize(img, None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
+            # width = int(img.shape[1] * scale_percent / 100)
+            # height = int(img.shape[0] * scale_percent / 100)
+            # dim = (width, height)
+            # img = cv2.resize(img, dim)
         else:
             img = cv2.imread(path)
         return img

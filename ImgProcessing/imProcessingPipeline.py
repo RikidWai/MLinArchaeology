@@ -105,10 +105,8 @@ def improcessing(file, logger, err_list):
 
     # TODO: crop 1000x500 centered on the above max_cnt
 
-    mask = filled[imUtils.MARGIN:y+h-imUtils.MARGIN,
-                  imUtils.MARGIN:x+w-imUtils.MARGIN]
-    img = img[imUtils.MARGIN:y+h-imUtils.MARGIN,
-              imUtils.MARGIN:x+w-imUtils.MARGIN]
+    mask = filled[0:y+h, 0:x+w]
+    img = img[0:y+h, 0:x+w]
 
     sub_imgs = []
 
@@ -137,3 +135,11 @@ def improcessing(file, logger, err_list):
     else:
         imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS')
         return sub_imgs
+
+if __name__ == '__main__':
+    # For loggging errors
+    logger = imUtils.init_logger()
+    err_list = []
+    
+    sub_imgs = improcessing('/userhome/2072/fyp22007/MLinAraechology/test_images/478130_4419430_1_11/1.CR2', logger, err_list)
+    cv2.imwrite('test.jpg', sub_imgs[0])
