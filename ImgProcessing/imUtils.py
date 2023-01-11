@@ -207,13 +207,15 @@ def masking(img, logger, err_list, file, kernel_size=6):
     for cnt in cnts:
         cv2.drawContours(filled, [cnt], 0, 255, -1)
     
+    filled = cv2.morphologyEx(filled, cv2.MORPH_OPEN, kernel)
+    
     filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
     cnts, _ = cv2.findContours(
         filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     return filled, cnts
 
 # Detect the black region to guess the positions of 24checker and scaling card in an image 
-def getCardsPos(img):
+def getCardsBlackPos(img):
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
     mask = cv2.inRange(
         img_hsv, COLOR_RANGE['black'][0], COLOR_RANGE['black'][1])

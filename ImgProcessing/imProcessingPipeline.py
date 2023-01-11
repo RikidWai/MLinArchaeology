@@ -19,7 +19,7 @@ def improcessing(file, logger, err_list):
     img = imUtils.imread(file)
 
     img = imUtils.white_bal(img)
-    imUtils.imshow(img)
+    # imUtils.imshow(img)
     detector = cv2.mcc.CCheckerDetector_create()
 
     # Scale image according to required ppc ratio
@@ -34,9 +34,10 @@ def improcessing(file, logger, err_list):
     # Convert the format for color correction
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float64) / 255
     
+    # Color Correction
     if imUtils.detect24Checker(img.copy(), detector):
-        # Color Correction
-        patchPos = imUtils.getCardsPos(img.copy())
+        
+        patchPos = imUtils.getCardsBlackPos(img.copy())
         checker = detector.getBestColorChecker()
         chartsRGB = checker.getChartsRGB()
 
@@ -59,9 +60,8 @@ def improcessing(file, logger, err_list):
     img = imUtils.toOpenCVU8(calibrated.copy())
     
     # Scales kernel size by scaling factor computed for better masking
-    kernel_size_scaled = math.floor(5 * scaling_factor)
-    
-    filled, cnts = imUtils.masking(img.copy(), logger, err_list, file, kernel_size = kernel_size_scaled)
+    kernel_size = max(6, math.floor(5 * scaling_factor))    
+    filled, cnts = imUtils.masking(img.copy(), logger, err_list, file, kernel_size)
 
     cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
 
@@ -79,9 +79,9 @@ def improcessing(file, logger, err_list):
     img = img[y:y+h, x:x+w]
 
     # TODO: crop 1000x500 centered on the above max_cnt
-
-    imUtils.imshow(mask, 'mask')
-    imUtils.imshow(img, 'sherd')
+    # imUtils.imshow(filled, 'filled')
+    # imUtils.imshow(mask, 'mask')
+    # imUtils.imshow(img, 'sherd')
     sub_imgs = []
 
     h, w = img.shape[0], img.shape[1]
@@ -117,6 +117,6 @@ if __name__ == '__main__':
     logger = imUtils.init_logger()
     err_list = []
 
-    sub_imgs = improcessing('../test_images/1.cr2', logger, err_list)
+    sub_imgs = improcessing('../test_images/1.cr3', logger, err_list)
     if sub_imgs is not None: 
         imUtils.imshow(sub_imgs[0])
