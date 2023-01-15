@@ -8,13 +8,14 @@ import configure as cfg
 import imUtils
 import cv2
 import numpy as np
-
+import timeit
 
 
 DEFAULT_OUT_DIM = (1000, 500)
 
 
 def improcessing(file, logger, err_list):
+       
     out_w, out_h = DEFAULT_OUT_DIM
     img = imUtils.imread(file)
 
@@ -114,9 +115,12 @@ def improcessing(file, logger, err_list):
 
 if __name__ == '__main__':
     # For loggging errors
+    
+    start = timeit.default_timer()
     logger = imUtils.init_logger()
     err_list = []
-
     sub_imgs = improcessing('../test_images/1.cr3', logger, err_list)
+    stop = timeit.default_timer()
+    print('Time: ', stop - start) 
     if sub_imgs is not None: 
         imUtils.imshow(sub_imgs[0])

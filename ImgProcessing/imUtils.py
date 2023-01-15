@@ -188,7 +188,8 @@ def contrast_stretching(img):
 # Cropping
 
 # apply masking 
-def masking(img, logger, err_list, file, kernel_size=6):
+def masking(img, kernel_size=6):
+    # Resize to 50% of original size for better masking
     img = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_LINEAR)
     blur = cv2.medianBlur(img, 3)
     gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
@@ -209,6 +210,7 @@ def masking(img, logger, err_list, file, kernel_size=6):
     
     filled = cv2.morphologyEx(filled, cv2.MORPH_OPEN, kernel)
     
+    # Resize to original size 
     filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
     cnts, _ = cv2.findContours(
         filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -400,16 +402,11 @@ def scale_img(img, dst_ppc=118):
         print('Unable to detect the required calibration cards, returning original image')
         return img, 1
 
-    img_rect = img.copy()
-    cv2.drawContours(img_rect, cnts_rect, -1, (0, 0, 255), 2)
-
     # Area sort
     cnts_sorted = sorted(cnts_rect, reverse=True, key=cv2.contourArea)
 
     # Choose second biggest
     idx = 1 if len(cnts_sorted) > 1 else 0
-    img_copy = img.copy()
-    cv2.drawContours(img_copy, cnts_sorted, idx, (0, 255, 0), 2)
 
     # Compute length of black square in 4_color, length of calibration card in 24_color
     approx_chosen = cv2.approxPolyDP(cnts_sorted[idx], 0.01*cv2.arcLength(cnts_sorted[idx], True), True)
