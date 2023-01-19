@@ -10,27 +10,13 @@ import cv2
 import numpy as np
 import timeit
 
-
-DEFAULT_OUT_DIM = (1000, 500)
-
-
 def improcessing(file, logger, err_list):
        
-    out_w, out_h = DEFAULT_OUT_DIM
     img = imUtils.imread(file)
 
     img = imUtils.white_bal(img)
     # imUtils.imshow(img)
     detector = cv2.mcc.CCheckerDetector_create()
-
-    # Scale image according to required ppc ratio
-    try:
-        img, scaling_factor = imUtils.scale_img(img, cfg.DST_PPC)
-    except Exception as e:
-        print(f'Error scaling image: {e}')
-        imUtils.log_err(logger, err=e)
-        imUtils.append_err_list(err_list, file)
-        return
 
     # Convert the format for color correction
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float64) / 255
@@ -57,12 +43,22 @@ def improcessing(file, logger, err_list):
         # currently the bestprint("corrected Vandermonde:")
         calibrated = colour.colour_correction(
             rgb, EXTRACTED_RGB, REF_RGB, 'Vandermonde')
-
+        
     img = imUtils.toOpenCVU8(calibrated.copy())
+    
+    # imUtils.drawPatchPos(img, patchPos)
+    # Scale image according to required ppc ratio
+    try:
+        img, scaling_factor = imUtils.scale_img(img.copy(), cfg.DST_PPC, patchPos)
+    except Exception as e:
+        print(f'Error scaling image: {e}')
+        imUtils.log_err(logger, err=e)
+        imUtils.append_err_list(err_list, file)
+        return
     
     # Scales kernel size by scaling factor computed for better masking
     kernel_size = max(6, math.floor(5 * scaling_factor))    
-    filled, cnts = imUtils.masking(img.copy(), logger, err_list, file, kernel_size)
+    filled, cnts = imUtils.masking(img.copy(), kernel_size)
 
     cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
 
@@ -119,7 +115,7 @@ if __name__ == '__main__':
     start = timeit.default_timer()
     logger = imUtils.init_logger()
     err_list = []
-    sub_imgs = improcessing('../test_images/1.cr3', logger, err_list)
+    sub_imgs = improcessing('../test_images/1.CR2', logger, err_list)
     stop = timeit.default_timer()
     print('Time: ', stop - start) 
     if sub_imgs is not None: 

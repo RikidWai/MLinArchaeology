@@ -118,6 +118,13 @@ def drawCnts(img, cnts):
     cv2.drawContours(img, cnts, -1, (0, 255, 0), 3)
     imshow(img)
 
+def drawPatchPos(img, patchPos): 
+    for color in patchPos:
+        rect_color = (0, 0, 255) if color == 'black' else (0, 255, 0)
+        x, y, w, h = patchPos[color]
+        cv2.rectangle(img, (x,y), (x+w, y+h), rect_color, 10)
+    imshow(img)
+
 # detect edges in an image
 def getEdgedImg(img):
     img = toOpenCVU8(img)
@@ -132,7 +139,7 @@ def getEdgedImg(img):
 
 # validate contours that are big enough only
 def validCnt(cnt):
-    (_, (width, height), _) = cv2.minAreaRect(cnt)
+    (width, height)= cv2.minAreaRect(cnt)[1]
     if width > 50 and height > 50 and cv2.contourArea(cnt) > 400: # Filter those small edges detected
         return True
     return False
@@ -218,17 +225,33 @@ def masking(img, kernel_size=6):
 
 # Detect the black region to guess the positions of 24checker and scaling card in an image 
 def getCardsBlackPos(img):
-    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
-    mask = cv2.inRange(
-        img_hsv, COLOR_RANGE['black'][0], COLOR_RANGE['black'][1])
+
     patchPos = {}
-    colour_cnts, _ = cv2.findContours(
+    
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)  # Convert BGR to HSV
+    black_mask = cv2.inRange(
+        img_hsv, COLOR_RANGE['black'][0], COLOR_RANGE['black'][1])
+    
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+    mask = black_mask.copy()
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    
+    cnts, _ = cv2.findContours(
         mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    colour_cnts = sorted(colour_cnts, reverse=True, key=cv2.contourArea)
-    for i in range(2):
-        if cv2.contourArea(colour_cnts[i]) > 400:
-            x, y, w, h = cv2.boundingRect(colour_cnts[i])
-            patchPos[i] = (x, y, w, h)
+    cnts = [cnt for cnt in cnts if validCnt(cnt)]
+    cnts_rect = list(filter(lambda x: len(cv2.approxPolyDP(
+            x, 0.1*cv2.arcLength(x, True), True)) == 4, cnts))
+    cnts_rect = sorted(cnts_rect, reverse=True, key=cv2.contourArea)
+    num_cnts = len(cnts_rect)
+    if num_cnts >= 2: 
+        patchPos['black'] = cv2.boundingRect(cnts_rect[1]) # Second largest is the scale card 
+        patchPos['black2'] = cv2.boundingRect(cnts_rect[0])
+    # imshow(mask)
+
+    # # Get the largest area
+    # if len(cnts_rect) > 0:
+    #     rect_cnt = max(cnts_rect, key=cv2.contourArea)
+    # patchPos['black'] = cv2.boundingRect(rect_cnt)
     return patchPos
 
 # Detect 4 patches in 4Checker for color calibration
@@ -265,8 +288,8 @@ def get4PatchInfo(img):
             coloured_cnt = max(colour_cnts, key=cv2.contourArea)
         if cv2.contourArea(coloured_cnt) > 400:
             # offsets - with this you get 'mask'
-            x, y, w, h = cv2.boundingRect(coloured_cnt)
-            patchPos[color] = (x, y, w, h)
+            x,y,w,h = cv2.boundingRect(coloured_cnt)
+            patchPos[color] = (x,y,w,h)
 
             colorRect = cv2.cvtColor(img[y:y+h, x:x+w], cv2.COLOR_BGR2RGB)
             colorRect_1D = np.vstack(colorRect)/255
@@ -369,7 +392,7 @@ def get_centroid(cnt):
 # Takes in BGR numpy image
 # dst_ppc is the destinated number of pixels per cm
 # Outputs the scaled image and the scaling factor
-def scale_img(img, dst_ppc=118):
+def scale_img(img, dst_ppc=118, patchPos = None):
     min_area = 400 # Min area for valid contour
     kernel_size = 5 # Adjust for morphing
     arclength_factor = 0.05 # Adjust for rectangle checking, 0.01 may not work that well
@@ -383,7 +406,7 @@ def scale_img(img, dst_ppc=118):
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     mask = black_mask.copy()
     mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
+    # imshow(mask, 'sam')
     # Try contour detection
     try:
         cnts = get_contours(mask)
@@ -412,7 +435,14 @@ def scale_img(img, dst_ppc=118):
     approx_chosen = cv2.approxPolyDP(cnts_sorted[idx], 0.01*cv2.arcLength(cnts_sorted[idx], True), True)
 
     x, y, w, h = cv2.boundingRect(cnts_sorted[idx])
-
+    cv2.rectangle(img, (x,y), (x+w, y+h), (255,0,0), 10)
+    imshow(img, 'sam black square')
+    # if 'black' not in patchPos:
+    #     print('No black squares detected, returning original image')
+    #     return img, 1
+    
+    # (x, y, w, h) = patchPos['black']
+    
     if w == 0 or h == 0:
         print('Width or height zero, error detecting bounding box of calibration card, returning original image')
         return img, 1
@@ -434,13 +464,15 @@ def scale_img(img, dst_ppc=118):
     if scaling_factor >= 5 or (max(img.shape) > 3000 and scaling_factor >= 3):
         print(f'Scaling factor too large ({scaling_factor}), aborting scaling')
         return img, 1
-
+    elif scaling_factor <= 0.35 or (min(img.shape) < 1000 and scaling_factor <= 0.5):
+            print(f'Scaling factor too small ({scaling_factor}), aborting scaling')
+            return img, 1
     try:
         img_scaled = cv2.resize(img.copy(), None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
     except Exception as e:
         print(f'Error scaling image: {e}')
         return img, 1
-
+    print(scaling_factor)
     return img_scaled, scaling_factor
 
 
