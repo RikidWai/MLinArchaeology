@@ -55,7 +55,7 @@ def improcessing(file, logger, err_list):
         imUtils.log_err(logger, err=e)
         imUtils.append_err_list(err_list, file)
         return
-    
+    patchPos = imUtils.getCardsBlackPos(img)
     # Scales kernel size by scaling factor computed for better masking
     kernel_size = max(6, math.floor(5 * scaling_factor))    
     filled, cnts = imUtils.masking(img.copy(), kernel_size)
