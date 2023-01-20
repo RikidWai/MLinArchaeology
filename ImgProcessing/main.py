@@ -9,6 +9,8 @@ import imUtils
 import cv2
 from pathlib import Path
 from Labelling.labelling import generateEncoding
+from DatasetUtils import dsUtils
+
 
 def main(argv):
     generateEncoding()
@@ -21,9 +23,9 @@ def main(argv):
     # For loggging errors
     logger = imUtils.init_logger()
     err_list = []
-    Path(cfg.TARGET_DIR).mkdir(parents=True, exist_ok=True)
+    Path(cfg.PROCESSED_DIR).mkdir(parents=True, exist_ok=True)
     # Looping begins
-    for root, dirs, files in os.walk(cfg.DATA_DIR):
+    for root, dirs, files in os.walk(cfg.RAWIMG_DIR):
         dirs.sort()
         for file in files:
             print(file)
@@ -48,11 +50,11 @@ def main(argv):
                         if targetFolder.empty != True:
                             targetFolder = str(targetFolder.iloc[0]['fabric'])
 
-                            if not os.path.exists(cfg.TARGET_DIR + targetFolder):
-                                os.makedirs(cfg.TARGET_DIR + targetFolder)
+                            if not os.path.exists(cfg.PROCESSED_DIR + targetFolder):
+                                os.makedirs(cfg.PROCESSED_DIR + targetFolder)
                             num_success += 1 
                             for i, sub_img in enumerate(subImgs):
-                                cv2.imwrite(f'{cfg.TARGET_DIR}{targetFolder}/{dir}_{filename}_s{i+1}.jpg', sub_img)
+                                cv2.imwrite(f'{cfg.PROCESSED_DIR}{targetFolder}/{dir}_{filename}_s{i+1}.jpg', sub_img)
                         else:
                             imUtils.log_err(logger, msg=f'no target label found for this image {path}') 
                     else:
@@ -60,6 +62,9 @@ def main(argv):
     imUtils.err_list_to_csv(err_list)
     imUtils.log_err(logger, msg=f'Total {total} images are processed, {num_success} images output data successfully  ') 
     print(f'Total {total} images are processed, {num_success} images output data successfully  ')
+    
+    dsUtils.splitDataset()
+
                             
 
 if __name__ == '__main__':

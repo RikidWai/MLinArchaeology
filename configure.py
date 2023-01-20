@@ -1,7 +1,11 @@
-# DATA_DIR = '../test_images/'
-# TARGET_DIR = '../processed_images/'
-DATA_DIR = '/userhome/2072/fyp22007/data/raw_images/'
-TARGET_DIR = '/userhome/2072/fyp22007/data/processed_images/'
+from pathlib import Path
+
+DATA_DIR = Path('/userhome/2072/fyp22007/data/')
+
+RAWIMG_DIR = DATA_DIR / 'raw_images/'
+PROCESSED_DIR = DATA_DIR / 'processed_images/'
+SPLITTED_DIR = DATA_DIR / 'splitted_processed_data'
+
 
 # Image Processing Parameters
 MAX_WIDTH = 170 # Dimension of cropped img
