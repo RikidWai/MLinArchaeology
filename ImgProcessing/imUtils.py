@@ -465,7 +465,7 @@ def scale_img(img, dst_ppc=118, patchPos = None):
     if scaling_factor >= 5 or (max(img.shape) > 3000 and scaling_factor >= 3):
         print(f'Scaling factor too large ({scaling_factor}), aborting scaling')
         return img, 1
-    elif scaling_factor <= 0.35 or (min(img.shape) < 1000 and scaling_factor <= 0.5):
+    elif scaling_factor <= 0.2 or (min(img.shape) < 1000 and scaling_factor <= 0.5):
             print(f'Scaling factor too small ({scaling_factor}), aborting scaling')
             return img, 1
     try:
@@ -473,7 +473,7 @@ def scale_img(img, dst_ppc=118, patchPos = None):
     except Exception as e:
         print(f'Error scaling image: {e}')
         return img, 1
-    print(scaling_factor)
+
     return img_scaled, scaling_factor
 
 
