@@ -72,7 +72,7 @@ file_name,utm_hemisphere,utm_zone,area_utm_easting_meters,area_utm_northing_mete
 478130_4419430_1_71,N,38,478130,4419430,1,71,,medium,black and white,sand,medium,smoothed,rough,,medium,wheelmade,,brown light medium-1,,,0,,,,,15938
 478130_4419430_1_72,N,38,478130,4419430,1,72,,medium,black and white,sand,medium,smoothed,smoothed,,medium,wheelmade,,reddish medium-2,,,0,,,,,73535
 478130_4419430_1_73,N,38,478130,4419430,1,73,,medium,"black, white and grey",sand,medium,smoothed and deteriorated,rough,,medium,wheelmade,,brown dark medium-1,,,0,,,,,15699
-478130_4419430_1_74,N,38,478130,4419430,1,74,jar body curve,small,black,sand,low,slipped and burnished,striations,,4.5mm,wheelmade,interior,grey dark fine,,,1,2780.8037,5,,LBA black burnished,17274
+478130_4419430_1_74,N,38,478130,4419430,1,74,jar body curve,small,black,sand,low,slipped and burnished,striations,,4.5mm,wheelmade,interior,grey dark fine,,,1,2780.8037,5.0,,LBA black burnished,17274
 478130_4419430_1_75,N,38,478130,4419430,1,75,,coarse,black,sand,medium,smoothed,rough,,medium,wheelmade,,reddish brown medium-2,,,0,,,,,16047
 478130_4419430_1_76,N,38,478130,4419430,1,76,,small,white,sand,low,rough,smoothed,,thick,handmade,,brown fine,small,,0,,,,,13032
 478130_4419430_1_77,N,38,478130,4419430,1,77,,small,black,sand,low,smoothed,smoothed,,medium,wheelmade,,orange fine,,,0,,,,,84382
@@ -154,7 +154,7 @@ file_name,utm_hemisphere,utm_zone,area_utm_easting_meters,area_utm_northing_mete
 478130_4419430_2_53,N,38,478130,4419430,2,53,,small,black,sand,low,smoothed,smoothed,,medium,wheelmade,,reddish medium,partial,,0,,,,,85004
 478130_4419430_2_54,N,38,478130,4419430,2,54,,small,black,sand,medium,rough,rough,,medium,handmade,exterior,brown dark coarse-1,,,0,,,,,15776
 478130_4419430_2_55,N,38,478130,4419430,2,55,,medium,white and grey,sand,medium,slipped,rough,,medium,wheelmade,,grey medium,large exterior,partial interior,0,,,,,85050
-478130_4419430_2_56,N,38,478130,4419430,2,56,jar carination,small,black,sand,medium,smoothed,smoothed,incised lines,8mm,handmade,exterior,grey fine,small,,1,5254.165,9,,BA smoothed/burnished,17272
+478130_4419430_2_56,N,38,478130,4419430,2,56,jar carination,small,black,sand,medium,smoothed,smoothed,incised lines,8mm,handmade,exterior,grey fine,small,,1,5254.165,9.0,,BA smoothed/burnished,17272
 478130_4419430_2_57,N,38,478130,4419430,2,57,,medium,black,sand,medium,,smoothed,impressed and wave lines,medium,,,brown light medium-2,large exterior,,0,,,,,15850
 478130_4419430_2_58,N,38,478130,4419430,2,58,jar body curve,small,black,sand,low,slipped and burnished,encrusted,,8mm,wheelmade,,brown fine,large interior,,1,14860.1572,26.3,outlier1,BA smoothed/burnished,17262
 478130_4419430_2_59,N,38,478130,4419430,2,59,,small,black,sand,medium,smoothed,encrusted,,medium,wheelmade,exterior,reddish brown medium-1,partial interior,,0,,,,,16067
@@ -308,7 +308,7 @@ file_name,utm_hemisphere,utm_zone,area_utm_easting_meters,area_utm_northing_mete
 478130_4419430_3_46,N,38,478130,4419430,3,46,curved,small,white,sand,medium,slipped,,,medium,wheelmade,interior,brown dark coarse-1,,,0,,,,,15792
 478130_4419430_3_47,N,38,478130,4419430,3,47,pithos body,medium,black and white,sand,medium,slipped,rough,,9mm,wheelmade,small interior,reddish medium-1,,,1,13293.0684,22.6,,slipped late,17264
 478130_4419430_3_48,N,38,478130,4419430,3,48,,small,white,sand,medium,,,,medium,wheelmade,both sides,black medium,,,0,,,,,14717
-478130_4419430_3_49,N,38,478130,4419430,3,49,jar carination,medium,grey,sand,medium,,rough,,5mm,wheelmade,exterior,brown dark medium-3,small,,1,9117.125,17,outlier2,outlier,17238
+478130_4419430_3_49,N,38,478130,4419430,3,49,jar carination,medium,grey,sand,medium,,rough,,5mm,wheelmade,exterior,brown dark medium-3,small,,1,9117.125,17.0,outlier2,outlier,17238
 478130_4419430_3_50,N,38,478130,4419430,3,50,,coarse,black and white,sand,medium,rough,smoothed,,medium,wheelmade,,brown dark coarse-1,small interior,partial exterior,0,,,,,68304
 478130_4419430_3_51,N,38,478130,4419430,3,51,,coarse,"black, white and grey",sand,medium,smoothed and deteriorated,smoothed,,medium,wheelmade,both sides,brown dark medium-1,,,0,,,,,87145
 478130_4419430_3_52,N,38,478130,4419430,3,52,,medium,black and white,sand,medium,smoothed and deteriorated,encrusted,,medium,wheelmade,exterior,brown light fine,large interior,,0,,,,,87506
@@ -374,7 +374,7 @@ file_name,utm_hemisphere,utm_zone,area_utm_easting_meters,area_utm_northing_mete
 478130_4419430_3_112,N,38,478130,4419430,3,112,,coarse,black,sand,medium,smoothed with striations,rough,,medium,wheelmade,,yellow brown coarse-1,,,0,,,,,13921
 478130_4419430_3_113,N,38,478130,4419430,3,113,,medium,black,sand,medium,slipped,striations,,thin,wheelmade,,reddish yellow medium,,,0,,,,,13764
 478130_4419430_3_114,N,38,478130,4419430,3,114,,small,black and white,sand,low,slipped,smoothed,,medium,wheelmade,,reddish light medium,small,,0,,,,,15605
-478130_4419430_3_115,N,38,478130,4419430,3,115,jar carination,medium,black,sand,medium,smoothed,rough,,6.5mm,wheelmade,exterior,reddish dark brown medium-1,,,1,6226.8296,12,,BA smoothed/burnished,73491
+478130_4419430_3_115,N,38,478130,4419430,3,115,jar carination,medium,black,sand,medium,smoothed,rough,,6.5mm,wheelmade,exterior,reddish dark brown medium-1,,,1,6226.8296,12.0,,BA smoothed/burnished,73491
 478130_4419430_3_116,N,38,478130,4419430,3,116,,medium,black and white,sand,medium,slipped,rough,,medium,wheelmade,,reddish yellow medium,,,0,,,,,13770
 478130_4419430_3_117,N,38,478130,4419430,3,117,,medium,black and white,sand,medium,slipped,smoothed,,thick,wheelmade,,reddish dark brown medium-1,,,0,,,,,73493
 478130_4419430_3_118,N,38,478130,4419430,3,118,,small,black,sand,low,slipped,smoothed,,medium,wheelmade,small exterior,brown fine,small,,0,,,,,15325
@@ -388,7 +388,7 @@ file_name,utm_hemisphere,utm_zone,area_utm_easting_meters,area_utm_northing_mete
 478130_4419430_3_126,N,38,478130,4419430,3,126,,coarse,black and white,sand,medium,striations,rough,,medium,wheelmade,both sides,grey dark medium,,,1,,,,,83296
 478130_4419430_3_127,N,38,478130,4419430,3,127,,medium,black and white,sand,medium,smoothed,rough,,medium,wheelmade,small exterior,brown dark coarse-2,,,0,,,,,15812
 478130_4419430_3_128,N,38,478130,4419430,3,128,jar body curve,medium,black and white,sand,medium,burnished,smoothed,,8mm,wheelmade,small both sides,brown medium-1,,,1,4110.0938,8.3,outlier3,BA smoothed/burnished,17218
-478130_4419430_3_129,N,38,478130,4419430,3,129,jar body curve,medium,black and red,sand,medium,slipped,rough,groove lines,8mm,wheelmade,,reddish medium-2,,,1,2191.8735,4,,slipped late,73563
+478130_4419430_3_129,N,38,478130,4419430,3,129,jar body curve,medium,black and red,sand,medium,slipped,rough,groove lines,8mm,wheelmade,,reddish medium-2,,,1,2191.8735,4.0,,slipped late,73563
 478130_4419430_3_130,N,38,478130,4419430,3,130,,medium,black red and white,sand,medium,slipped,smoothed,,medium,wheelmade,,reddish light medium-2,small interior,,0,,,,,87440
 478130_4419430_3_131,N,38,478130,4419430,3,131,,medium,black and red,sand,medium,smoothed,smoothed,incised lines,thick,wheelmade,small interior,brown dark medium-3,,,0,,,,,14837
 478130_4419430_3_132,N,38,478130,4419430,3,132,,medium,white and grey,sand,medium,smoothed and deteriorated,smoothed,,medium,wheelmade,,brown medium-1,,,0,,,,,16001

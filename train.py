@@ -15,14 +15,14 @@ import os
 import time
 from pathlib import Path
 import matplotlib.pyplot as plt
-
+from Labelling.labelling import getNumClass
 # Uncomment if have bugs on GPU
 # os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
 datadir = '/content/drive/MyDrive/CS_FYP_archaeology/train_data_dummy/'  # Change to local dir containing training data
-NUM_CLASS = 92  # hard code here
+NUM_CLASS = getNumClass()  # hard code here
 
 # Shows an image tensor using opencv
 # Gives all black? How to show properly without plt?
