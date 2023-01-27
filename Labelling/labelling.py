@@ -3,20 +3,25 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from pathlib import Path
 
-def generateEncoding(): 
-    # Import dataset
-    filepath = Path('../Labelling/original_labels.csv', index = False)
+def rmTypo():
+    filepath = Path('../Labelling/object_finds_ceramics.csv')
     df = pd.read_csv(filepath)
     
     # Remove some typos 
-    # df.fabric_group_name = df.fabric_group_name.str.replace(r'\s+', ' ', regex=True) # Remove double spaces
-    # df.fabric_group_name = df.fabric_group_name.str.replace('rediish', 'reddish') # Remove double spaces
-    # df.fabric_group_name = df.fabric_group_name.str.replace('liight', 'light') # Remove double spaces
-    # df.fabric_group_name = df.fabric_group_name.str.replace('browm', 'brown') # Remove double spaces
-    # df.fabric_group_name = df.fabric_group_name.str.replace('medum', 'medium') # Remove double spaces
-    # df.fabric_group_name = df.fabric_group_name.str.lower()
-    # df.to_csv(filepath)
+    df.fabric_group_name = df.fabric_group_name.str.replace(r'\s+', ' ', regex=True) # Remove double spaces
+    df.fabric_group_name = df.fabric_group_name.str.replace('rediish', 'reddish') # Remove double spaces
+    df.fabric_group_name = df.fabric_group_name.str.replace('liight', 'light') # Remove double spaces
+    df.fabric_group_name = df.fabric_group_name.str.replace('browm', 'brown') # Remove double spaces
+    df.fabric_group_name = df.fabric_group_name.str.replace('medum', 'medium') # Remove double spaces
+    df.fabric_group_name = df.fabric_group_name.str.lower()
+    df.to_csv(filepath, index=False)
+
+def generateEncoding(): 
+    # Import dataset
+    filepath = Path('../Labelling/original_labels.csv')
+    df = pd.read_csv(filepath)
     
+   
     df = df[['file_name', 'fabric_group_name']]
     df.rename(columns={'fabric_group_name': 'fabric'}, inplace=True)
     # verify integrity
@@ -48,6 +53,13 @@ def generateEncoding():
         one_hot_encoded_data = pd.get_dummies(df, columns=['fabric'])
         filepath = Path('../Labelling/oneHotEncoding.csv')
         one_hot_encoded_data.to_csv(filepath)
-        
+
+def getNumClass(): 
+    filepath = Path('../Labelling/labelEncodingMapping.csv', index = False)
+    df = pd.read_csv(filepath)
+    return len(df.index)
+
 if __name__ == '__main__':
+    rmTypo()
     generateEncoding()
+    print(getNumClass())
