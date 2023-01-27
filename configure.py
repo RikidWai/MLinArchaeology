@@ -8,7 +8,7 @@ SPLITTED_DIR = DATA_DIR / 'splitted_processed_data'
 
 
 # Image Processing Parameters
-MAX_WIDTH = 170 # Dimension of cropped img
-MAX_HEIGHT = 170
+MAX_WIDTH = 256 # Dimension of cropped img
+MAX_HEIGHT = 256
 SAMPLE_NUM = 6  # num of cropped img cropped from raw img
-DST_PPC = 118 # pixel per cm 
+DST_PPC = 256 # pixel per cm 

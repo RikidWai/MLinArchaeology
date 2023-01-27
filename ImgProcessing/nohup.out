@@ -1,0 +1,18 @@
+/userhome/2072/fyp22007/data/raw_images/478130_4419430_2_118/1.CR2: Unexpected end of file
+b'Input/output error'
+Traceback (most recent call last):
+  File "/userhome/2072/fyp22007/MLinAraechology/ImgProcessing/imProcessingPipeline.py", line 131, in <module>
+    sub_imgs = improcessing('/userhome/2072/fyp22007/data/raw_images/478130_4419430_2_118/1.CR2', logger, err_list)
+  File "/userhome/2072/fyp22007/MLinAraechology/ImgProcessing/imProcessingPipeline.py", line 18, in improcessing
+    img = imUtils.white_bal(img)
+  File "/userhome/2072/fyp22007/MLinAraechology/ImgProcessing/imUtils.py", line 175, in white_bal
+    result = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+cv2.error: OpenCV(4.5.5) /io/opencv/modules/imgproc/src/color.cpp:182: error: (-215:Assertion failed) !_src.empty() in function 'cvtColor'
+
+Process image will delete the previous samples. Are you sure(y/n)? Traceback (most recent call last):
+  File "/userhome/2072/fyp22007/MLinAraechology/ImgProcessing/main.py", line 104, in <module>
+    main(sys.argv)
+  File "/userhome/2072/fyp22007/MLinAraechology/ImgProcessing/main.py", line 43, in main
+    confirm = input("Process image will delete the previous samples. Are you sure(y/n)? ")
+OSError: [Errno 9] Bad file descriptor
+/userhome/2072/fyp22007/data/raw_images/478130_4419430_2_118/1.CR2: Unexpected end of file

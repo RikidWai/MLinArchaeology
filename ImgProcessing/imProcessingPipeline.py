@@ -1,7 +1,6 @@
 import sys
 sys.path.append('../')
 
-import os
 import math
 import colour
 import configure as cfg
@@ -10,21 +9,28 @@ import cv2
 import numpy as np
 import timeit
 
+detector = cv2.mcc.CCheckerDetector_create()
+
 def improcessing(file, logger, err_list):
        
     img = imUtils.imread(file)
 
     img = imUtils.white_bal(img)
     # imUtils.imshow(img)
-    detector = cv2.mcc.CCheckerDetector_create()
+
 
     # Convert the format for color correction
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float64) / 255
     
     # Color Correction
     if imUtils.detect24Checker(img.copy(), detector):
-        
-        patchPos = imUtils.getCardsBlackPos(img.copy())
+        try:
+            patchPos = imUtils.getCardsBlackPos(img.copy())
+        except Exception as e:
+            print(f'Error getting patch positions: {e}')
+            imUtils.log_err(logger, err=e)
+            imUtils.append_err_list(err_list, file)
+            return
         checker = detector.getBestColorChecker()
         chartsRGB = checker.getChartsRGB()
 
@@ -55,7 +61,14 @@ def improcessing(file, logger, err_list):
         imUtils.log_err(logger, err=e)
         imUtils.append_err_list(err_list, file)
         return
-    patchPos = imUtils.getCardsBlackPos(img)
+    
+    try:
+        patchPos = imUtils.getCardsBlackPos(img.copy())
+    except Exception as e:
+        print(f'Error getting patch positions: {e}')
+        imUtils.log_err(logger, err=e)
+        imUtils.append_err_list(err_list, file)
+        return
     # Scales kernel size by scaling factor computed for better masking
     kernel_size = max(6, math.floor(5 * scaling_factor))    
     filled, cnts = imUtils.masking(img.copy(), kernel_size)
@@ -115,8 +128,9 @@ if __name__ == '__main__':
     start = timeit.default_timer()
     logger = imUtils.init_logger()
     err_list = []
-    sub_imgs = improcessing('../test_images/1.CR2', logger, err_list)
+    sub_imgs = improcessing('/userhome/2072/fyp22007/data/raw_images/478130_4419430_2_118/1.CR2', logger, err_list)
     stop = timeit.default_timer()
     print('Time: ', stop - start) 
     if sub_imgs is not None: 
-        imUtils.imshow(sub_imgs[0])
+        # imUtils.imshow(sub_imgs[0])
+        cv2.imwrite(f'../test_images/test.jpg', sub_imgs[0])
