@@ -2,7 +2,6 @@ import sys
 sys.path.append('../')
 
 import os
-import glob
 import pandas as pd
 import configure as cfg
 from imProcessingPipeline import improcessing as process
@@ -12,30 +11,16 @@ from pathlib import Path
 from Labelling.labelling import generateEncoding
 from DatasetUtils import dsUtils
 
-
-def rm_tree(pth):
-    pth = Path(pth)
-    if pth.is_dir():
-        for child in pth.glob('*'):
-            if child.is_file():
-                child.unlink()
-            else:
-                rm_tree(child)
-    else: 
-        print('No Folder is found')
-
     
 def main(argv):
     generateEncoding()
     df_encoding = pd.read_csv('../Labelling/labelEncoding.csv')
     df_encoding.drop(df_encoding.filter(regex="Unname"),axis=1, inplace=True)
     
-    num_success_labeled = 0 
-    num_success_unlabeled = 0 
-    num_samples_labeled = 0 
-    num_samples_unlabeled = 0
+
     total = 0
-    
+    num_success = 0 
+    num_samples = 0
     # For loggging errors
     logger = imUtils.init_logger()
     err_list = []
@@ -49,14 +34,14 @@ def main(argv):
     #     print('abort')
     #     return
     
-    rm_tree(cfg.PROCESSED_DIR)
-    rm_tree(cfg.SPLITTED_DIR)
+    dsUtils.rm_tree(cfg.PROCESSED_DIR)
+    dsUtils.rm_tree(cfg.SPLITTED_DIR)
     print('Previous results are deleted. Now start to process.')
     
     Path(cfg.PROCESSED_DIR).mkdir(parents=True, exist_ok=True)
     # Looping begins
     for root, dirs, files in os.walk(cfg.RAWIMG_DIR):
-        dirs.sort()
+        dirs.sort(key=lambda s: [1] if s == 'unlabeled' else [0, int(s)])
         for file in files:
             print(Path(root) / Path(file))
             filename, extension = os.path.splitext(file)
@@ -83,22 +68,18 @@ def main(argv):
                         if not os.path.exists(cfg.PROCESSED_DIR / targetFolder):
                             os.makedirs(cfg.PROCESSED_DIR / targetFolder)
                         
-                        if targetFolder != 'unlabeled':
-                            num_success_labeled += 1 
-                            num_samples_labeled += len(subImgs)
-                        else:
-                            num_success_unlabeled += 1 
-                            num_samples_unlabeled += len(subImgs)
-                            
+                        num_success +=1 
+                        num_samples += len(subImgs)
                         for i, sub_img in enumerate(subImgs):           
                             cv2.imwrite(f'{cfg.PROCESSED_DIR / targetFolder/ dir}_{filename}_s{i+1}.jpg', sub_img)
                     else:
                         imUtils.log_err(logger, msg=f'Image not in the correct directory structure {path}') 
     imUtils.err_list_to_csv(err_list)
-    imUtils.log_err(logger, msg=f'Total {total} images are processed, {num_success_labeled} images output data successfully  ') 
-    print(f'Total {total} images are processed, \
-          {num_success_labeled} labeled images output {num_samples_labeled} samples, \
-          {num_success_unlabeled} labeled images output {num_samples_unlabeled} samples ')
+    msg = f'Total {total} images are processed, \
+          {num_success} labeled images output {num_samples} samples'
+    
+    imUtils.log_err(logger, msg=msg) 
+    print(msg)
 
     dsUtils.splitDataset()
 

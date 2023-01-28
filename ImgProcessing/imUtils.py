@@ -6,6 +6,8 @@ import os
 import colour
 import logging
 from datetime import datetime
+from pathlib import Path
+import platform
 
 chartsRGB = [
     [[115, 83, 68]],
@@ -74,9 +76,8 @@ REF_RGB_4Patch = {'blue': b_ref,
 
 # Read a raw image
 def imread(path, scaling_factor=1):
-    _, extension = os.path.splitext(path)
     try:
-        if 'cr' in extension or 'CR' in extension:
+        if 'cr' in Path(path).suffix.lower():
             raw = rawpy.imread(path).postprocess()  # access to the RAW image to a numpy RGB array
             img = cv2.cvtColor(raw, cv2.COLOR_RGB2BGR)  # the OpenCV image
             img = cv2.resize(img, None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
@@ -102,8 +103,11 @@ def imshow(img, title='img'):
         dim = (width, height)
         img = cv2.resize(img, dim)
     try:
-        cv2.imshow(title, img)
-        cv2.waitKey(0)
+        if platform.system() == 'Linux': 
+            cv2.imwrite(f'../test_images/test.jpg', img)
+        else: 
+            cv2.imshow(title, img)
+            cv2.waitKey(0)
     except Exception as e:
         print(e)
 
@@ -119,8 +123,7 @@ def drawPatchPos(img, patchPos):
         
         x, y, w, h = patchPos['black']
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 10)
-    # cv2.imwrite('test.jpg', img)
-    # imshow(img)
+    imshow(img)
 
 # detect edges in an image
 def getEdgedImg(img):
