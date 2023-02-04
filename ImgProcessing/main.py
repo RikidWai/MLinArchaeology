@@ -34,14 +34,14 @@ def main(argv):
     #     print('abort')
     #     return
     
-    dsUtils.rm_tree(cfg.PROCESSED_DIR)
-    dsUtils.rm_tree(cfg.SPLITTED_DIR)
-    print('Previous results are deleted. Now start to process.')
+    # dsUtils.rm_tree(cfg.PROCESSED_DIR)
+    # dsUtils.rm_tree(cfg.SPLITTED_DIR)
+    # print('Previous results are deleted. Now start to process.')
     
     Path(cfg.PROCESSED_DIR).mkdir(parents=True, exist_ok=True)
     # Looping begins
     for root, dirs, files in os.walk(cfg.RAWIMG_DIR):
-        dirs.sort(key=lambda s: [1] if s == 'unlabeled' else [0, int(s)])
+        dirs.sort()
         for file in files:
             print(Path(root) / Path(file))
             filename, extension = os.path.splitext(file)
@@ -49,31 +49,32 @@ def main(argv):
                 total += 1 
                 path = os.path.join(root, file)
                 dir = root.split(os.path.sep)[-1]
-                try:
-                    subImgs = process(path, logger, err_list)
-                except Exception as e:
-                    imUtils.log_err(logger, msg=f'{path}: Cant process image. imProcessing HAS BUG. Exception {e}') 
-                    imUtils.append_err_list(err_list, path)
-                    continue
+                if dir > "478130_4419430_3_212":
+                    try:
+                        subImgs = process(path, logger, err_list)
+                    except Exception as e:
+                        imUtils.log_err(logger, msg=f'{path}: Cant process image. imProcessing HAS BUG. Exception {e}') 
+                        imUtils.append_err_list(err_list, path)
+                        continue
 
-                if subImgs != None:
-                    
-                    # check the dir match filename column in LabelEncoding, then put into respective folder
-                    if len(dir)>0:
-                        targetFolder = df_encoding.query(
-                            f'file_name == "{dir}"')
+                    if subImgs != None:
                         
-                        targetFolder = str(targetFolder.iloc[0]['fabric']) if targetFolder.empty != True else 'unlabeled'
-                        
-                        if not os.path.exists(cfg.PROCESSED_DIR / targetFolder):
-                            os.makedirs(cfg.PROCESSED_DIR / targetFolder)
-                        
-                        num_success +=1 
-                        num_samples += len(subImgs)
-                        for i, sub_img in enumerate(subImgs):           
-                            cv2.imwrite(f'{cfg.PROCESSED_DIR / targetFolder/ dir}_{filename}_s{i+1}.jpg', sub_img)
-                    else:
-                        imUtils.log_err(logger, msg=f'Image not in the correct directory structure {path}') 
+                        # check the dir match filename column in LabelEncoding, then put into respective folder
+                        if len(dir)>0:
+                            targetFolder = df_encoding.query(
+                                f'file_name == "{dir}"')
+                            
+                            targetFolder = str(targetFolder.iloc[0]['fabric']) if targetFolder.empty != True else 'unlabeled'
+                            
+                            if not os.path.exists(cfg.PROCESSED_DIR / targetFolder):
+                                os.makedirs(cfg.PROCESSED_DIR / targetFolder)
+                            
+                            num_success +=1 
+                            num_samples += len(subImgs)
+                            for i, sub_img in enumerate(subImgs):           
+                                cv2.imwrite(f'{cfg.PROCESSED_DIR / targetFolder/ dir}_{filename}_s{i+1}.jpg', sub_img)
+                        else:
+                            imUtils.log_err(logger, msg=f'Image not in the correct directory structure {path}') 
     imUtils.err_list_to_csv(err_list)
     msg = f'Total {total} images are processed, \
           {num_success} labeled images output {num_samples} samples'
@@ -81,7 +82,7 @@ def main(argv):
     imUtils.log_err(logger, msg=msg) 
     print(msg)
 
-    dsUtils.splitDataset()
+    # dsUtils.splitDataset()
 
                             
 

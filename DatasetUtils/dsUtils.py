@@ -40,7 +40,7 @@ def countSamplesGenerated(file_path, isDetailed = False):
     N = 0  # total files
     N_class = 0 # total classes
     for dirpath, dirnames, filenames in os.walk(file_path):
-        dirnames.sort(key=lambda s: [1] if s == 'unlabeled' else [0, int(s)])
+        dirnames.sort(key=lambda s: float('inf') if s == 'unlabeled' else int(s))
         N_class += len(dirnames)
         N_f = len(filenames)
         N += N_f

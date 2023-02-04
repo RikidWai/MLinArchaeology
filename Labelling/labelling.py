@@ -16,6 +16,17 @@ def rmTypo():
     df.fabric_group_name = df.fabric_group_name.str.lower()
     df.to_csv(filepath, index=False)
 
+def encodingCol(df, col):
+    le = LabelEncoder()
+    df[col] = le.fit_transform(
+        df[col].astype(str))
+    le_name_mapping = pd.DataFrame(
+        zip(le.classes_, le.transform(le.classes_)), columns=['Class', 'EncodedLabel'])
+    filepath = Path(f'../Labelling/{col}LabelEncodingMapping.csv')
+    le_name_mapping.to_csv(filepath)
+    return df
+    
+    
 def generateEncoding(): 
     # Import dataset
     filepath = Path('../Labelling/original_labels.csv')
@@ -31,23 +42,20 @@ def generateEncoding():
     else:
         df = df.dropna()  # remove rows with NaN values
         # df['fabric'] = df.fabric.str.rstrip('-1234567890.') # Remove -01, -02, ... in each labels 
-        # df[['color','fabric']] = df.fabric.str.extract('^(.*?)\s((?:dark|light)?\s?\w+)$') # Remove -01, -02, ... in each labels 
+        
         # print(df.head())
         # Label Encoding
         df_labelEncoding = df.copy()
+        # df_labelEncoding['fabric'] = df_labelEncoding.fabric.str.rstrip('-1234567890.')
+        df_labelEncoding[['color','texture']] = df_labelEncoding.fabric.str.extract('^(.*?)\s((?:dark|light)?\s?\S+)$') 
         
         
+        df = encodingCol(df_labelEncoding, 'fabric')
+        df = encodingCol(df_labelEncoding, 'color')
+        df = encodingCol(df_labelEncoding, 'texture')
         
-        le = LabelEncoder()
-        df_labelEncoding.fabric = le.fit_transform(
-            df_labelEncoding.fabric.astype(str))
         filepath = Path('../Labelling/labelEncoding.csv')
         df_labelEncoding.to_csv(filepath)
-
-        le_name_mapping = pd.DataFrame(
-            zip(le.classes_, le.transform(le.classes_)), columns=['Class', 'EncodedLabel'])
-        filepath = Path('../Labelling/labelEncodingMapping.csv')
-        le_name_mapping.to_csv(filepath)
 
         # One-Hot Encoding
         one_hot_encoded_data = pd.get_dummies(df, columns=['fabric'])
