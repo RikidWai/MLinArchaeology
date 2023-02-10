@@ -120,7 +120,6 @@ def drawCnts(img, cnts):
 def drawPatchPos(img, patchPos): 
     for color in patchPos:
         # rect_color = (0, 0, 255) if color == 'black' else (0, 255, 0)
-        
         x, y, w, h = patchPos[color]
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 10)
     imshow(img, 'patchPos')
@@ -220,7 +219,6 @@ def masking(img, kernel_size=6):
     
     # Resize to original size 
     filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
-    imshow(filled, 'filled2')
     cnts, _ = cv2.findContours(
         filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     
@@ -242,6 +240,7 @@ def getCardsBlackPos(img, is24Checker = True):
         mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = [cnt for cnt in cnts if validCnt(cnt)]
     
+    # Fill the black color to get the card
     if is24Checker is True: 
         for cnt in cnts:
             cv2.drawContours(mask, [cnt], 0, 255, -1)
@@ -250,13 +249,11 @@ def getCardsBlackPos(img, is24Checker = True):
     cnts = list(filter(lambda x: len(cv2.approxPolyDP(
             x, 0.01*cv2.arcLength(x, True), True)) == 4, cnts))
 
-    imshow(mask,'blackMask')
     cnts = sorted(cnts, reverse=True, key=cv2.contourArea)
 
     if len(cnts) < 2: 
         raise Exception("No black squares detected.")
     if is24Checker is True: 
-        # TODO Check if it is a scale card by checking num of sides
         _, _, w, h = cv2.boundingRect(cnts[1])
         if w/h > 2 or h/w > 2: # Determine if is scale card
             patchPos['black'] = cv2.boundingRect(cnts[1]) 
@@ -361,7 +358,6 @@ def get4PatchInfo(img):
 
 # Guess if a contour is a sherd
 def isSherd(cnt, patchPos):
-    # if not is24Checker or len(cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)) == 4:
     x, y, w, h = cv2.boundingRect(cnt)
     for pos in patchPos.values():
         # Axis-Aligned Bounding Box
@@ -381,11 +377,10 @@ def getSherdCnt(img, cnts, is24Checker):
 # Rotates a numpy image by right angle
 # Direction options counterclockwise 'ccw' and clockwise 'cw'
 def rotate_right_angle(img, direction):
+    out = cv2.transpose(img)
     if direction == 'ccw':
-        out = cv2.transpose(img)
         out = cv2.flip(out, flipCode=0)
     elif direction == 'cw':
-        out = cv2.transpose(img)
         out = cv2.flip(out, flipCode=1)
     else:
         print('Incorrect rotation direction!')
@@ -399,7 +394,6 @@ def get_contours(binary_img):
     contours_tuple = cv2.findContours(binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = contours_tuple[0] if len(contours_tuple) == 2 else contours_tuple[1] # versioning
     return contours
-
 
 # Finds the centroid of a contour shape
 def get_centroid(cnt):
@@ -444,8 +438,8 @@ def scale_img(img, dst_ppc=118, patchPos = None):
         print(f'Scaling factor too large ({scaling_factor}), aborting scaling')
         return img, 1
     elif scaling_factor <= 0.2 or (min(img.shape) < 1000 and scaling_factor <= 0.5):
-            print(f'Scaling factor too small ({scaling_factor}), aborting scaling')
-            return img, 1
+        print(f'Scaling factor too small ({scaling_factor}), aborting scaling')
+        return img, 1
     try:
         img_scaled = cv2.resize(img.copy(), None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
     except Exception as e:
