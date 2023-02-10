@@ -18,12 +18,13 @@ def improcessing(file, logger, err_list):
     img = imUtils.white_bal(img)
     # imUtils.imshow(img,'ori')
 
-
     # Convert the format for color correction
     rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float64) / 255
     
     # Color Correction
-    if imUtils.detect24Checker(img.copy(), detector):
+    is24Checker = imUtils.detect24Checker(img.copy(), detector)
+    
+    if is24Checker:
         try:
             patchPos = imUtils.getCardsBlackPos(img.copy())
         except Exception as e:
@@ -52,7 +53,6 @@ def improcessing(file, logger, err_list):
         
     img = imUtils.toOpenCVU8(calibrated.copy())
     
-    # imUtils.drawPatchPos(img, patchPos)
     # Scale image according to required ppc ratio
     try:
         img, scaling_factor = imUtils.scale_img(img.copy(), cfg.DST_PPC, patchPos)
@@ -62,33 +62,21 @@ def improcessing(file, logger, err_list):
         imUtils.append_err_list(err_list, file)
         return
     
-    try:
-        patchPos = imUtils.getCardsBlackPos(img.copy())
-    except Exception as e:
-        print(f'Error getting patch positions: {e}')
-        imUtils.log_err(logger, err=e)
-        imUtils.append_err_list(err_list, file)
-        return
+
     # Scales kernel size by scaling factor computed for better masking
-    kernel_size = max(6, math.floor(5 * scaling_factor))    
-    filled, cnts = imUtils.masking(img.copy(), kernel_size)
-
-    cnts = list(filter(lambda cnt: imUtils.isSherd(cnt, patchPos), cnts))
-
-    # checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
-    try:
-        max_cnt = max(cnts, key=cv2.contourArea)
+    filled, cnts = imUtils.masking(img.copy(), kernel_size = max(6, math.floor(5 * scaling_factor)))
+    
+    try: 
+        sherd_cnt = imUtils.getSherdCnt(img.copy(), cnts, is24Checker)
     except:
-        print("Cnt contains no value")
-        imUtils.log_err(logger, msg=f'{file}: Cnt contains no value')
+        print("Fail to get feasible sherd")
+        imUtils.log_err(logger, msg=f'{file}: Fail to get feasible sherd')
         imUtils.append_err_list(err_list, file)
         return
-
-    x, y, w, h = cv2.boundingRect(max_cnt)
+    x, y, w, h = cv2.boundingRect(sherd_cnt)
     mask = filled[y:y+h, x:x+w]
     img = img[y:y+h, x:x+w]
 
-    # TODO: crop 1000x500 centered on the above max_cnt
     # imUtils.imshow(filled, 'filled')
     # imUtils.imshow(mask, 'mask')
     # imUtils.imshow(img, 'sherd')
@@ -103,6 +91,7 @@ def improcessing(file, logger, err_list):
         # if enough sub images are extracted
         if len(sub_imgs) == cfg.SAMPLE_NUM:
             break
+    
         x1 = np.random.randint(0, w - cfg.MAX_WIDTH)
         y1 = np.random.randint(0, h - cfg.MAX_HEIGHT)
 
@@ -128,7 +117,7 @@ if __name__ == '__main__':
     start = timeit.default_timer()
     logger = imUtils.init_logger()
     err_list = []
-    sub_imgs = improcessing('/userhome/2072/fyp22007/MLinAraechology/test_images/1.cr3', logger, err_list)
+    sub_imgs = improcessing('/userhome/2072/fyp22007/MLinAraechology/test_images/1.CR2', logger, err_list)
     # sub_imgs = improcessing('/userhome/2072/fyp22007/data/raw_images/478130_4419430_3_48/1.CR2', logger, err_list)
     stop = timeit.default_timer()
     print('Time: ', stop - start) 

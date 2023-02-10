@@ -51,7 +51,7 @@ lower_red2 = np.array([170, 100, 100])
 upper_red2 = np.array([179, 255, 255])
 
 lower_black = np.array([0, 0, 0])
-upper_black = np.array([179, 255, 80])
+upper_black = np.array([179, 255, 75])
 lower_white = np.array([0, 0, 180])  # TOFIX
 upper_white = np.array([0, 0, 255])  # TOFIX
 
@@ -121,7 +121,7 @@ def drawPatchPos(img, patchPos):
     for color in patchPos:
         # rect_color = (0, 0, 255) if color == 'black' else (0, 255, 0)
         
-        x, y, w, h = patchPos['black']
+        x, y, w, h = patchPos[color]
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 10)
     imshow(img, 'patchPos')
 
@@ -202,10 +202,11 @@ def masking(img, kernel_size=6):
     gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
     thresh = cv2.adaptiveThreshold(
         gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 31, 4)
+
     # apply close morphology
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
-
+    
     # get bounding box coordinates from the one filled external contour
     filled = np.zeros_like(thresh)
 
@@ -219,12 +220,14 @@ def masking(img, kernel_size=6):
     
     # Resize to original size 
     filled = cv2.resize(filled, None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+    imshow(filled, 'filled2')
     cnts, _ = cv2.findContours(
         filled, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
     return filled, cnts
 
 # Detect the black region to guess the positions of 24checker and scaling card in an image 
-def getCardsBlackPos(img):
+def getCardsBlackPos(img, is24Checker = True):
 
     patchPos = {}
     
@@ -237,10 +240,23 @@ def getCardsBlackPos(img):
 
     cnts, _ = cv2.findContours(
         mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = [cnt for cnt in cnts if validCnt(cnt)]
+    
+    if is24Checker is True: 
+        for cnt in cnts:
+            cv2.drawContours(mask, [cnt], 0, 255, -1)
+            
+    # Get rectangle only
+    cnts = list(filter(lambda x: len(cv2.approxPolyDP(
+            x, 0.01*cv2.arcLength(x, True), True)) == 4, cnts))
 
+    imshow(mask,'blackMask')
     cnts = sorted(cnts, reverse=True, key=cv2.contourArea)
-    num_cnts = len(cnts)
-    if num_cnts >= 2: 
+
+    if len(cnts) < 2: 
+        raise Exception("No black squares detected.")
+    if is24Checker is True: 
+        # TODO Check if it is a scale card by checking num of sides
         _, _, w, h = cv2.boundingRect(cnts[1])
         if w/h > 2 or h/w > 2: # Determine if is scale card
             patchPos['black'] = cv2.boundingRect(cnts[1]) 
@@ -249,7 +265,9 @@ def getCardsBlackPos(img):
             patchPos['black'] = cv2.boundingRect(cnts[0]) # Second largest is the scale card 
             patchPos['black2'] = cv2.boundingRect(cnts[1])
     else: 
-        raise Exception("No black squares detected.")
+        
+        patchPos['black'] = cv2.boundingRect(cnts[1]) # The largest may be the blue patch
+        
     # drawPatchPos(img.copy(), patchPos)
     return patchPos
 
@@ -338,13 +356,13 @@ def get4PatchInfo(img):
 
     EXTRACTED_RGB = np.array(np.vstack(EXTRACTED_RGB))
     REF_RGB = colour.cctf_decoding(np.array(np.vstack(REF_RGB)))
-
+    # drawPatchPos(img.copy(), patchPos)
     return patchPos, EXTRACTED_RGB, REF_RGB
 
 # Guess if a contour is a sherd
 def isSherd(cnt, patchPos):
+    # if not is24Checker or len(cv2.approxPolyDP(cnt, 0.01*cv2.arcLength(cnt, True), True)) == 4:
     x, y, w, h = cv2.boundingRect(cnt)
-
     for pos in patchPos.values():
         # Axis-Aligned Bounding Box
         # Test if two bound box not intersect
@@ -352,6 +370,12 @@ def isSherd(cnt, patchPos):
         if not ((x + w) < pos[0] or x > (pos[0] + pos[2]) or y > (pos[1] + pos[3]) or (y + h) < pos[1]):
             return False
     return True
+
+def getSherdCnt(img, cnts, is24Checker):
+    patchPos = getCardsBlackPos(img.copy(), is24Checker)
+    cnts = list(filter(lambda cnt: isSherd(cnt, patchPos), cnts))
+    # checking if max() arg is empty also filter out the unqualified images (e.g. ones with no colorChecker)
+    return max(cnts, key=cv2.contourArea)
 
 
 # Rotates a numpy image by right angle
