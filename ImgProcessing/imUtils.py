@@ -77,12 +77,12 @@ REF_RGB_4Patch = {'blue': b_ref,
 # Read a raw image
 def imread(path, scaling_factor=1):
     try:
-        if 'cr' in Path(path).suffix.lower():
-            raw = rawpy.imread(path).postprocess()  # access to the RAW image to a numpy RGB array
+        if 'cr' in path.suffix.lower():
+            raw = rawpy.imread(str(path)).postprocess()  # access to the RAW image to a numpy RGB array
             img = cv2.cvtColor(raw, cv2.COLOR_RGB2BGR)  # the OpenCV image
             img = cv2.resize(img, None, fx=scaling_factor, fy=scaling_factor, interpolation=cv2.INTER_LINEAR)
         else:
-            img = cv2.imread(path)
+            img = cv2.imread(str(path))
         return img
     except Exception as e:
         print(e)
@@ -124,18 +124,6 @@ def drawPatchPos(img, patchPos):
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 10)
     imshow(img, 'patchPos')
 
-# detect edges in an image
-def getEdgedImg(img):
-    img = toOpenCVU8(img)
-
-    blur = cv2.medianBlur(img, 3)
-    med_val = np.median(img)
-    lower = int(max(0, 0.5*med_val))
-    upper = int(min(255, 1.3*med_val))
-    edged = cv2.Canny(blur, lower, upper)
-
-    return edged
-
 # validate contours that are big enough only
 def validCnt(cnt):
     (width, height)= cv2.minAreaRect(cnt)[1]
@@ -160,6 +148,7 @@ def detect24Checker(img, detector, kernel_size=5):
     if not detector.process(closing, cv2.mcc.MCC24, 1, params=processParams):
         return False
     return True
+
 # Color Correction
 
 # a helper function to find the region contains color that is closest to white
