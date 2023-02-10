@@ -1,5 +1,6 @@
 from pathlib import Path
 
+MAIN_DIR = Path('/userhome/2072/fyp22007/MLinAraechology/')
 DATA_DIR = Path('/userhome/2072/fyp22007/data/')
 
 RAWIMG_DIR = DATA_DIR / 'raw_images/'

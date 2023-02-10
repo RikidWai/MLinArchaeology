@@ -1,5 +1,3 @@
-Hi Sam
-
 # Basic set up
 import sys
 sys.path.append('../')
@@ -19,6 +17,7 @@ from torch.utils.data import Dataset
 from torchvision import datasets, transforms, models
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
+import argparse
 
 from dataloader import SherdDataSet
 from mlUtils import create_transform
@@ -40,41 +39,11 @@ batch_size = 8
 learning_rate = 2e-4
 num_of_epochs = 10
 
-cnn = models.resnet18(pretrained=True).to(device)
+cnn = models.resnet18(weights='DEFAULT').to(device)
 loss_func = nn.CrossEntropyLoss()
 optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1) # Decay LR by a factor of 0.1 every 7 epochs
 
-      
-# Loading dataset using default Pytorch ImageFolder
-# Assumes the data structure shown above classified by label into subfolders
-
-
-
-ds = torchvision.datasets.ImageFolder(root=datadir / 'train', transform=create_transform(255, 224))
-
-# Certain models e.g. Inception v3 requires certain size of images
-# Skipping normalization here
-# Assumes data images are all 170x170
-data_transforms = {
-    'train': create_transform(crop_size=128),
-    'val': create_transform(crop_size=128)
-}
-
-# Pytorch losses like CELoss do not required one-hot labels
-
-# image_datasets = {x: datasets.ImageFolder(root=os.path.join(data_dir, x),
-#                   transform=data_transforms[x], target_transform=target_to_oh)
-#                   for x in ['train', 'val']}
-image_datasets = {x: datasets.ImageFolder(root=datadir / x, 
-                                          transform=data_transforms[x]) for x in ['train', 'val']}
-
-dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
-                shuffle=True)
-                for x in ['train', 'val']}
-dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
-class_names = image_datasets['train'].classes
-cnn.fc = nn.Linear(cnn.fc.in_features, len(class_names))
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
@@ -160,11 +129,6 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 # Actual Training
 
-# model_ft needs to be properly initialized first, same structure as the one initialized before training
-cnn.load_state_dict(torch.load('weights/flip_resnet18_model_weights.pth'))
-model_ft_trained, histories = train_model(cnn, loss_func, optimizer, exp_lr_scheduler, num_epochs=50)
-torch.save(model_ft_trained.state_dict(), 'weights/flip_resnet18_model_weights_100epoch.pth')
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default='train', help='options: train, test')
@@ -173,7 +137,39 @@ if __name__ == '__main__':
     Mode = FLAGS.mode
     
     if Mode == 'train':
-        print(Mode)
+        # Loading dataset using default Pytorch ImageFolder
+        # Assumes the data structure shown above classified by label into subfolders
+
+
+
+        ds = torchvision.datasets.ImageFolder(root=datadir / 'train', transform=create_transform(255, 224))
+
+        # Certain models e.g. Inception v3 requires certain size of images
+        # Skipping normalization here
+        # Assumes data images are all 170x170
+        data_transforms = {
+            'train': create_transform(crop_size=128),
+            'val': create_transform(crop_size=128)
+        }
+
+        # Pytorch losses like CELoss do not required one-hot labels
+
+        # image_datasets = {x: datasets.ImageFolder(root=os.path.join(data_dir, x),
+        #                   transform=data_transforms[x], target_transform=target_to_oh)
+        #                   for x in ['train', 'val']}
+        image_datasets = {x: datasets.ImageFolder(root=datadir / x, 
+                                                transform=data_transforms[x]) for x in ['train', 'val']}
+
+        dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
+                        shuffle=True)
+                        for x in ['train', 'val']}
+        dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
+        class_names = image_datasets['train'].classes
+        cnn.fc = nn.Linear(cnn.fc.in_features, len(class_names))
+        # model_ft needs to be properly initialized first, same structure as the one initialized before training
+        cnn.load_state_dict(torch.load('weights/flip_resnet18_model_weights.pth'))
+        model_ft_trained, histories = train_model(cnn, loss_func, optimizer, exp_lr_scheduler, num_epochs=num_of_epochs)
+        torch.save(model_ft_trained.state_dict(), 'weights/flip_resnet18_model_weights_100epoch.pth')
     elif Mode == 'test':
         print(Mode)
     else: 

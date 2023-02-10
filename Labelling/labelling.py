@@ -18,8 +18,8 @@ def rmTypo():
 
 def encodingCol(df, col):
     le = LabelEncoder()
-    df[col] = le.fit_transform(
-        df[col].astype(str))
+    df[col+'_code'] = le.fit_transform(
+        df[col])
     le_name_mapping = pd.DataFrame(
         zip(le.classes_, le.transform(le.classes_)), columns=['Class', 'EncodedLabel'])
     filepath = Path(f'../Labelling/{col}LabelEncodingMapping.csv')
@@ -46,6 +46,8 @@ def generateEncoding():
         # print(df.head())
         # Label Encoding
         df_labelEncoding = df.copy()
+        # ignore some classes
+        # df_labelEncoding = df_labelEncoding[~(df_labelEncoding.fabric.isin(['iron','glass']))]
         # df_labelEncoding['fabric'] = df_labelEncoding.fabric.str.rstrip('-1234567890.')
         df_labelEncoding[['color','texture']] = df_labelEncoding.fabric.str.extract('^(.*?)\s((?:dark|light)?\s?\S+)$') 
         
@@ -57,10 +59,10 @@ def generateEncoding():
         filepath = Path('../Labelling/labelEncoding.csv')
         df_labelEncoding.to_csv(filepath)
 
-        # One-Hot Encoding
-        one_hot_encoded_data = pd.get_dummies(df, columns=['fabric'])
-        filepath = Path('../Labelling/oneHotEncoding.csv')
-        one_hot_encoded_data.to_csv(filepath)
+        # # One-Hot Encoding
+        # one_hot_encoded_data = pd.get_dummies(df, columns=['fabric'])
+        # filepath = Path('../Labelling/oneHotEncoding.csv')
+        # one_hot_encoded_data.to_csv(filepath)
 
 def getNumClass(): 
     filepath = Path('../Labelling/labelEncodingMapping.csv', index = False)

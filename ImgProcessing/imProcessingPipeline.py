@@ -16,7 +16,7 @@ def improcessing(file, logger, err_list):
     img = imUtils.imread(file)
 
     img = imUtils.white_bal(img)
-    # imUtils.imshow(img)
+    # imUtils.imshow(img,'ori')
 
 
     # Convert the format for color correction
@@ -128,9 +128,10 @@ if __name__ == '__main__':
     start = timeit.default_timer()
     logger = imUtils.init_logger()
     err_list = []
-    sub_imgs = improcessing('../test_images/1.CR2', logger, err_list)
+    sub_imgs = improcessing('/userhome/2072/fyp22007/MLinAraechology/test_images/1.cr3', logger, err_list)
+    # sub_imgs = improcessing('/userhome/2072/fyp22007/data/raw_images/478130_4419430_3_48/1.CR2', logger, err_list)
     stop = timeit.default_timer()
     print('Time: ', stop - start) 
     if sub_imgs is not None: 
-        imUtils.imshow(sub_imgs[0])
+        imUtils.imshow(sub_imgs[0], 'result')
         # cv2.imwrite(f'../test_images/test.jpg', sub_imgs[0])

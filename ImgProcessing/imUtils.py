@@ -104,7 +104,7 @@ def imshow(img, title='img'):
         img = cv2.resize(img, dim)
     try:
         if platform.system() == 'Linux': 
-            cv2.imwrite(f'../test_images/test.jpg', img)
+            cv2.imwrite(f'../test_images/{title}test.jpg', img)
         else: 
             cv2.imshow(title, img)
             cv2.waitKey(0)
@@ -115,7 +115,7 @@ def imshow(img, title='img'):
 def drawCnts(img, cnts):
     print("Number of Contours found = " + str(len(cnts)))
     cv2.drawContours(img, cnts, -1, (0, 255, 0), 3)
-    imshow(img)
+    imshow(img, 'cnts2')
 
 def drawPatchPos(img, patchPos): 
     for color in patchPos:
@@ -123,7 +123,7 @@ def drawPatchPos(img, patchPos):
         
         x, y, w, h = patchPos['black']
         cv2.rectangle(img, (x,y), (x+w, y+h), (0, 255, 0), 10)
-    imshow(img)
+    imshow(img, 'patchPos')
 
 # detect edges in an image
 def getEdgedImg(img):
