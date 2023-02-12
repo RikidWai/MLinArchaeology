@@ -5,13 +5,15 @@
 # Setup conda environment
 conda create -n archaeoML
 conda activate archaeoML
-pip list --format=freeze > requirements.txt
+# pip list --format=freeze > requirements.txt
 
 # Setup dependencies
 pip install -r requirements.txt
 ```
-## Image Processing 
 
+Configure your paths and size of cropped images in configure.py
+
+## Image Processing 
 ### Run
 ```
 cd ImgProcessing

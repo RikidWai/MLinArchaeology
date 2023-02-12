@@ -9,7 +9,7 @@ import configure as cfg
 def splitDataset(): 
     # Split the dataset after processed with a ratio.
     # To only split into training and validation set, set a tuple to `ratio`, i.e, `(.8, .2)`.
-    Path(cfg.SPLITTED_DIR).mkdir(parents=True, exist_ok=True)
+    cfg.SPLITTED_DIR.mkdir(parents=True, exist_ok=True)
     splitfolders.ratio(cfg.PROCESSED_DIR, output=cfg.SPLITTED_DIR,
         seed=1337, ratio=(.8, .1, .1), group_prefix=None, move=False) # If move=True, images will be moved from processed_images instead of copy
 
@@ -54,4 +54,4 @@ if __name__ == '__main__':
     countSamplesGenerated(cfg.PROCESSED_DIR, True)
     
     # print("Splitting processed dataset")
-    # splitDataset() 
+    splitDataset() 

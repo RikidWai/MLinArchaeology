@@ -92,14 +92,13 @@ def imshow(img, title='img'):
     if img is None:
         raise Exception('No Image')
     size = 800
-    if img.shape[1] >= size and img.shape[1] >= img.shape[0]:
-        width = size
-        height = int(img.shape[0] * size / img.shape[1])
-        dim = (width, height)
-        img = cv2.resize(img, dim)
-    elif img.shape[0] >= size and img.shape[0] >= img.shape[1]:
-        width = int(img.shape[1] * size / img.shape[0])
-        height = size
+    if max(img.shape[1], img.shape[0]) >= size:
+        if img.shape[1] >= img.shape[0]:
+            width = size
+            height = int(img.shape[0] * size / img.shape[1])
+        elif img.shape[0] >= img.shape[1]:
+            width = int(img.shape[1] * size / img.shape[0])
+            height = size
         dim = (width, height)
         img = cv2.resize(img, dim)
     try:

@@ -19,6 +19,7 @@ from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
 import argparse
 
+from DatasetUtils import dsUtils 
 from dataloader import SherdDataSet
 from mlUtils import create_transform
 
@@ -29,7 +30,7 @@ import copy
 # Uncomment if have bugs on GPU
 # os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
-device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
 print(device)
 
 datadir = cfg.SPLITTED_DIR
@@ -39,7 +40,7 @@ batch_size = 8
 learning_rate = 2e-4
 num_of_epochs = 10
 
-cnn = models.resnet18(weights='DEFAULT').to(device)
+cnn = models.resnet18(weights='DEFAULT')
 loss_func = nn.CrossEntropyLoss()
 optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1) # Decay LR by a factor of 0.1 every 7 epochs
@@ -106,6 +107,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             if phase == 'val' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
+            
             if phase == 'val':
                 val_loss_history.append(epoch_loss)
                 val_acc_history.append(epoch_acc)
@@ -132,21 +134,22 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default='train', help='options: train, test')
+    parser.add_argument('--by', type=str, default='detailed', help='options: detailed, color, texture')
     FLAGS = parser.parse_args()
     
     Mode = FLAGS.mode
+    
+    # dsUtils.splitDataset() # Uncomment this line if needed 
     
     if Mode == 'train':
         # Loading dataset using default Pytorch ImageFolder
         # Assumes the data structure shown above classified by label into subfolders
 
+        # ds = torchvision.datasets.ImageFolder(root=datadir / 'train', transform=create_transform(255, 224))
 
-
-        ds = torchvision.datasets.ImageFolder(root=datadir / 'train', transform=create_transform(255, 224))
-
-        # Certain models e.g. Inception v3 requires certain size of images
-        # Skipping normalization here
-        # Assumes data images are all 170x170
+        # # Certain models e.g. Inception v3 requires certain size of images
+        # # Skipping normalization here
+        # # Assumes data images are all 170x170
         data_transforms = {
             'train': create_transform(crop_size=128),
             'val': create_transform(crop_size=128)
@@ -165,12 +168,14 @@ if __name__ == '__main__':
                         for x in ['train', 'val']}
         dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
         class_names = image_datasets['train'].classes
+        print(f'Num of class: {len(class_names)}')
         cnn.fc = nn.Linear(cnn.fc.in_features, len(class_names))
+        cnn = cnn.to(device)
         # model_ft needs to be properly initialized first, same structure as the one initialized before training
-        cnn.load_state_dict(torch.load('weights/flip_resnet18_model_weights.pth'))
+        # cnn.load_state_dict(torch.load('weights/flip_resnet18_model_weights.pth'))
         model_ft_trained, histories = train_model(cnn, loss_func, optimizer, exp_lr_scheduler, num_epochs=num_of_epochs)
         torch.save(model_ft_trained.state_dict(), 'weights/flip_resnet18_model_weights_100epoch.pth')
     elif Mode == 'test':
         print(Mode)
     else: 
-        print('Hello World')
+        print('Abort')
