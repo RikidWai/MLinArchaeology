@@ -33,12 +33,10 @@ import copy
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
 print(device)
 
-datadir = cfg.SPLITTED_DIR
-
 # Parameters 
 batch_size = 8
 learning_rate = 2e-4
-num_of_epochs = 10
+num_of_epochs = 1
 
 cnn = models.resnet18(weights='DEFAULT')
 loss_func = nn.CrossEntropyLoss()
@@ -129,6 +127,9 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     histories = (train_loss_history, val_loss_history, train_acc_history, val_acc_history)
     return model, histories
 
+def test():
+    return
+
 # Actual Training
 
 if __name__ == '__main__':
@@ -138,13 +139,17 @@ if __name__ == '__main__':
     FLAGS = parser.parse_args()
     
     Mode = FLAGS.mode
+    By = '' if FLAGS.by == 'detailed' else FLAGS.by 
     
+    datadir = cfg.SPLITTED_DIR /  By
     # dsUtils.splitDataset() # Uncomment this line if needed 
     
     if Mode == 'train':
         # Loading dataset using default Pytorch ImageFolder
         # Assumes the data structure shown above classified by label into subfolders
-
+        #TODO 
+        # Split and select data
+        
         # ds = torchvision.datasets.ImageFolder(root=datadir / 'train', transform=create_transform(255, 224))
 
         # # Certain models e.g. Inception v3 requires certain size of images

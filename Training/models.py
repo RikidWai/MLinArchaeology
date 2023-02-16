@@ -5,6 +5,7 @@
 
 import torch.nn as nn
 import torch.nn.functional as F
+import torch 
 
 # A simple CNN with 2 convolutions and 3 linear layers (2:3)
 class SimNet1(nn.Module):

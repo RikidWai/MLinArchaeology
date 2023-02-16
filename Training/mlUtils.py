@@ -65,3 +65,6 @@ def create_transform(resize_size=None, crop_size=None):
                           std=[0.229, 0.224, 0.225],
                       )])
   return transform
+
+def generateReport():
+  return
