@@ -4,7 +4,7 @@ MAIN_DIR = Path('/userhome/2072/fyp22007/MLinAraechology/')
 DATA_DIR = Path('/userhome/2072/fyp22007/data/')
 
 RAWIMG_DIR = DATA_DIR / 'raw_images/'
-PROCESSED_DIR = DATA_DIR / 'processed_images/'
+PROCESSED_DIR = DATA_DIR / 'processed_images/' 
 SPLITTED_DIR = DATA_DIR / 'splitted_processed_data'
 
 
