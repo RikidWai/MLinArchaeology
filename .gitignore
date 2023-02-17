@@ -3,5 +3,4 @@
 err_list/
 logs/
 test_output/
-Labelling/labelEncoding.csv
-Labelling/labelEncodingMapping.csv
+Training/training_logs/

@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import pandas as pd
 import configure as cfg
-import pathlib as Path
+
 
 import torch
 import torchvision
@@ -21,12 +21,15 @@ import argparse
 
 from DatasetUtils import dsUtils 
 from dataloader import SherdDataSet
-from mlUtils import create_transform
+import mlUtils 
+
+# import models
 
 import os
 import time
 import copy
 
+from pathlib import Path
 # Uncomment if have bugs on GPU
 # os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
@@ -40,13 +43,14 @@ batch_size = 8
 learning_rate = 2e-4
 num_of_epochs = 10
 
-cnn = models.resnet18(weights='DEFAULT')
+# cnn = models.resnet18(weights='DEFAULT')
+cnn = models.resnet18()
 loss_func = nn.CrossEntropyLoss()
 optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1) # Decay LR by a factor of 0.1 every 7 epochs
 
-
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+# TODO: Add dataloaders as arg
+def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
 
     train_loss_history = []
@@ -57,66 +61,66 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     best_model_wts = copy.deepcopy(model.state_dict())
     best_acc = 0.0
 
-    for epoch in range(num_epochs):
-        print(f'Epoch {epoch}/{num_epochs - 1}')
-        print('-' * 10)
+    # for epoch in range(num_epochs):
+    #     print(f'Epoch {epoch}/{num_epochs - 1}')
+    #     print('-' * 10)
 
-        # Each epoch has a training and validation phase
-        for phase in ['train', 'val']:
-            # Modes determine activation of dropout layers
-            if phase == 'train':
-                model.train()  # Set model to training mode
-            else:
-                model.eval()   # Set model to evaluate mode
+    #     # Each epoch has a training and validation phase
+    #     for phase in ['train', 'val']:
+    #         # Modes determine activation of dropout layers
+    #         if phase == 'train':
+    #             model.train()  # Set model to training mode
+    #         else:
+    #             model.eval()   # Set model to evaluate mode
 
-            running_loss = 0.0
-            running_corrects = 0
+    #         running_loss = 0.0
+    #         running_corrects = 0
 
-            # Iterate over data.
-            for inputs, labels in dataloaders[phase]:
-                inputs = inputs.to(device)
-                labels = labels.to(device)
+    #         # Iterate over data.
+    #         for inputs, labels in dataloaders[phase]:
+    #             inputs = inputs.to(device)
+    #             labels = labels.to(device)
 
-                # clear the parameter gradients
-                optimizer.zero_grad()
+    #             # clear the parameter gradients
+    #             optimizer.zero_grad()
 
-                # forward
-                # track history if only in train
-                with torch.set_grad_enabled(phase == 'train'):
-                    outputs = model(inputs) # logits of shape (N, C) where N is batch size, C is # classes
-                    _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels) # if CELoss: outputs=unnormalized logits; labels=class indices vector of shape (N)
+    #             # forward
+    #             # track history if only in train
+    #             with torch.set_grad_enabled(phase == 'train'):
+    #                 outputs = model(inputs) # logits of shape (N, C) where N is batch size, C is # classes
+    #                 _, preds = torch.max(outputs, 1)
+    #                 loss = criterion(outputs, labels) # if CELoss: outputs=unnormalized logits; labels=class indices vector of shape (N)
 
-                    # backward + optimize only if in training phase
-                    if phase == 'train':
-                        loss.backward()
-                        optimizer.step()
+    #                 # backward + optimize only if in training phase
+    #                 if phase == 'train':
+    #                     loss.backward()
+    #                     optimizer.step()
 
-                # statistics
-                running_loss += loss.item() * inputs.size(0) # if CELoss: loss is scalar from logSoftmax and NLLLoss
-                running_corrects += torch.sum(preds == labels.data)
-            if phase == 'train':
-                scheduler.step() # Decays learning rate. If not using scheduler, replace with optimizer.step()
+    #             # statistics
+    #             running_loss += loss.item() * inputs.size(0) # if CELoss: loss is scalar from logSoftmax and NLLLoss
+    #             running_corrects += torch.sum(preds == labels.data)
+    #         if phase == 'train':
+    #             scheduler.step() # Decays learning rate. If not using scheduler, replace with optimizer.step()
 
-            epoch_loss = running_loss / dataset_sizes[phase]
-            epoch_acc = running_corrects.double() / dataset_sizes[phase]
+    #         epoch_loss = running_loss / dataset_sizes[phase]
+    #         epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
-            print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
+    #         print(f'{phase} Loss: {epoch_loss:.4f} Acc: {epoch_acc:.4f}')
 
-            # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
+    #         # deep copy the model
+    #         if phase == 'val' and epoch_acc > best_acc:
+    #             best_acc = epoch_acc
+    #             best_model_wts = copy.deepcopy(model.state_dict())
             
-            if phase == 'val':
-                val_loss_history.append(epoch_loss)
-                val_acc_history.append(epoch_acc)
-            else:
-                train_loss_history.append(epoch_loss)
-                train_acc_history.append(epoch_acc)
+    #         if phase == 'val':
+    #             val_loss_history.append(epoch_loss)
+    #             val_acc_history.append(epoch_acc)
+    #         else:
+    #             train_loss_history.append(epoch_loss)
+    #             train_acc_history.append(epoch_acc)
 
 
-        print()
+    #     print()
 
     time_elapsed = time.time() - since
     print(f'Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s')
@@ -125,9 +129,14 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     # load best model weights
     model.load_state_dict(best_model_wts)
 
+    histories = {
+        'train_loss' : train_loss_history,
+        'val_loss' : val_loss_history,
+        'train_acc' : train_acc_history,
+        'val_acc' : val_acc_history,
+    }
 
-    histories = (train_loss_history, val_loss_history, train_acc_history, val_acc_history)
-    return model, histories
+    return model, histories, time_elapsed, best_acc
 
 # Actual Training
 
@@ -151,11 +160,10 @@ if __name__ == '__main__':
         # # Skipping normalization here
         # # Assumes data images are all 170x170
         data_transforms = {
-            'train': create_transform(crop_size=128),
-            'val': create_transform(crop_size=128)
+            'train': mlUtils.create_transform(crop_size=128),
+            'val': mlUtils.create_transform(crop_size=128)
         }
-
-        # Pytorch losses like CELoss do not required one-hot labels
+        # Pytorch losses like CELoss do not require one-hot labels
 
         # image_datasets = {x: datasets.ImageFolder(root=os.path.join(data_dir, x),
         #                   transform=data_transforms[x], target_transform=target_to_oh)
@@ -168,14 +176,35 @@ if __name__ == '__main__':
                         for x in ['train', 'val']}
         dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
         class_names = image_datasets['train'].classes
-        print(f'Num of class: {len(class_names)}')
-        cnn.fc = nn.Linear(cnn.fc.in_features, len(class_names))
+        num_of_classes = len(class_names)
+        cnn.fc = nn.Linear(cnn.fc.in_features, num_of_classes)
         cnn = cnn.to(device)
         # model_ft needs to be properly initialized first, same structure as the one initialized before training
         # cnn.load_state_dict(torch.load('weights/flip_resnet18_model_weights.pth'))
-        model_ft_trained, histories = train_model(cnn, loss_func, optimizer, exp_lr_scheduler, num_epochs=num_of_epochs)
-        torch.save(model_ft_trained.state_dict(), 'weights/flip_resnet18_model_weights_100epoch.pth')
+        model_ft_trained, histories, time_elapsed, best_acc = train_model(cnn, dataloaders, loss_func, optimizer, exp_lr_scheduler, num_of_epochs)
+        # torch.save(model_ft_trained.state_dict(), 'weights/flip_resnet18_model_weights_100epoch.pth')
+
+        # Save the results
+
+
+        mlUtils.save_training_results(histories, 
+                                      FLAGS.by, 
+                                      num_of_classes, 
+                                      batch_size, 
+                                      learning_rate, 
+                                      num_of_epochs, 
+                                      cnn, 
+                                      loss_func, 
+                                      optimizer, 
+                                      exp_lr_scheduler, 
+                                      data_transforms,
+                                      time_elapsed, 
+                                      best_acc)
+
+
     elif Mode == 'test':
         print(Mode)
+
+
     else: 
         print('Abort')

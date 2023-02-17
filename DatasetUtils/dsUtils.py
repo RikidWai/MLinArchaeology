@@ -5,6 +5,11 @@ import os
 from pathlib import Path
 import splitfolders
 import configure as cfg
+import configure as cfg
+import os
+import shutil
+import pandas as pd
+from pathlib import Path
 
 def splitDataset(): 
     # Split the dataset after processed with a ratio.
@@ -50,7 +55,62 @@ def countSamplesGenerated(file_path, isDetailed = False):
     
     return N
 
+def generateColorDatabase():
+    filepath = cfg.MAIN_DIR / "Labelling/labelEncoding.csv"
+    df = pd.read_csv(filepath)
+
+    targetFolder = cfg.DATA_DIR / "processed_images_by_color/"
+    originFolder = cfg.PROCESSED_DIR
+
+    for root, dirs, files in os.walk(originFolder):
+        dirs.sort()
+        for file in files:
+            path = os.path.join(root, file)
+            dir = root.split(os.path.sep)[-1]
+            print(dir)
+            parentImageName = "_".join((file.split('_'))[0:4])
+            print(parentImageName)
+            if dir == "unlabeled":
+                if not os.path.exists(targetFolder / 'unlabeled'):
+                    os.makedirs(targetFolder / 'unlabeled')
+                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / "unlabeled"}/'+file)
+            else:
+                colorFolderCode = df[df['file_name'] == parentImageName]['color_code'].values[0]
+                
+                if not os.path.exists(targetFolder / str(colorFolderCode)):
+                    os.makedirs(targetFolder / str(colorFolderCode))
+                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / str(colorFolderCode)}/'+file)
+
+def generateTextureDatabase():
+    filepath = cfg.MAIN_DIR / "Labelling/labelEncoding.csv"
+    df = pd.read_csv(filepath)
+
+    targetFolder = cfg.DATA_DIR / "processed_images_by_texture/"
+    originFolder = cfg.PROCESSED_DIR
+
+    for root, dirs, files in os.walk(originFolder):
+        dirs.sort()
+        for file in files:
+            path = os.path.join(root, file)
+            dir = root.split(os.path.sep)[-1]
+            print(dir)
+            parentImageName = "_".join((file.split('_'))[0:4])
+            print(parentImageName)
+            if dir == "unlabeled":
+                if not os.path.exists(targetFolder / 'unlabeled'):
+                    os.makedirs(targetFolder / 'unlabeled')
+                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / "unlabeled"}/'+file)
+            else:
+                textureFolderCode = df[df['file_name'] == parentImageName]['texture_code'].values[0]
+                
+                if not os.path.exists(targetFolder / str(textureFolderCode)):
+                    os.makedirs(targetFolder / str(textureFolderCode))
+                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / str(textureFolderCode)}/'+file)
+
 if __name__ == '__main__':
+    # generateColorDatabase()
+    # generateTextureDatabase()
+    
     countSamplesGenerated(cfg.PROCESSED_DIR, True)
     
     # print("Splitting processed dataset")

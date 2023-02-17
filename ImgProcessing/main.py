@@ -13,7 +13,7 @@ from DatasetUtils import dsUtils
 
     
 def main(argv):
-    generateEncoding()
+    # generateEncoding()
     df_encoding = pd.read_csv('../Labelling/labelEncoding.csv')
     df_encoding.drop(df_encoding.filter(regex="Unname"),axis=1, inplace=True)
     
@@ -46,11 +46,11 @@ def main(argv):
             path = Path(root) / file
             
             dir, filename, extension = path.parent.name, path.stem ,path.suffix.lower()
-            
-            if 'cr' in path.suffix.lower() and filename == '2':
-                total += 1 
-                print(path)
-                if dir > "478130_4419430_3_212":
+           
+            if dir > '478130_4419430_8_20':
+                if 'cr' in path.suffix.lower() and filename == '2':
+                    total += 1 
+                    print(path)
                     try:
                         subImgs = process(path, logger, err_list)
                     except Exception as e:
