@@ -79,10 +79,10 @@ def plot_histories(dir, histories):
     plt.show()
     plt.savefig(dir / 'loss.png', bbox_inches='tight')
     
-def save_training_results(model_weights, histories, by, num_of_classes, batch_size, learning_rate, num_of_epochs, cnn, loss_func, optimizer, exp_lr_scheduler, data_transforms, time_elapsed, best_acc):
+def save_training_results(model_weights, histories, by, num_of_classes, paras, data_transforms, time_elapsed, best_acc):
 
     timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M')
-    filename = f'{cnn.__class__.__name__}_{by}_{num_of_epochs}ep_{timestamp}'
+    filename = f"{paras['model'].__class__.__name__}_{by}_{paras['num_of_epochs']}ep_{timestamp}"
     
     result_dir = Path(__file__).parent / 'training_logs' / filename
     result_dir.mkdir(parents=True, exist_ok=True)
@@ -98,13 +98,13 @@ def save_training_results(model_weights, histories, by, num_of_classes, batch_si
           "List of Parameters:\n"
           f"Dataset: {by}\n"
           f"number of classes: {num_of_classes}\n"
-          f"batch_size = {batch_size}\n"
-          f"learning_rate = {learning_rate}\n"
-          f"num_of_epochs = {num_of_epochs}\n"
-          f"cnn = {cnn.__class__.__name__}\n"
-          f"loss_func = {loss_func}\n"
-          f"optimizer = {optimizer.__class__.__name__}\n"
-          f"exp_lr_scheduler = {exp_lr_scheduler}\n"
+          f"batch_size = {paras['batch_size']}\n"
+          f"learning_rate = {paras['learning_rate']}\n"
+          f"num_of_epochs = {paras['num_of_epochs']}\n"
+          f"cnn = {paras['model'].__class__.__name__}\n"
+          f"loss_func = {paras['loss_func']}\n"
+          f"optimizer = {paras['optimizer'].__class__.__name__}\n"
+          f"exp_lr_scheduler = {paras['exp_lr_scheduler'].__class__.__name__}\n"
           f"data_transforms = {data_transforms}\n\n"
           "Results:\n"
           f"Training complete in {time_elapsed // 60:.0f}m {time_elapsed % 60:.0f}s\n"

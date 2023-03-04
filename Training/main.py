@@ -38,21 +38,21 @@ from pathlib import Path
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
 print(device)
 
+paras = paraDict.PARAS_1
 # ================= Hyperparameters ====================== 
-batch_size = 8
-learning_rate = 2e-2 # original 2e-4
-num_of_epochs = 1
+batch_size = paras['batch_size']
+learning_rate = paras['learning_rate'] # original 2e-4
+num_of_epochs = paras['num_of_epochs']
 
 # ================= Instantiating model globally ======================
 # cnn = models.resnet18(weights='DEFAULT')
-cnn = models.resnet18()
+cnn = paras['model']
 
 # ================= Loss, optimizer and scheduler ======================
-loss_func = nn.CrossEntropyLoss()
+loss_func = paras['loss_func']
 # optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
-optimizer = optim.SGD(cnn.parameters(), lr=learning_rate, momentum=0.9)
-exp_lr_scheduler = lr_scheduler.StepLR(optimizer, step_size=7, gamma=0.1) # Decay LR by a factor of 0.1 every 7 epochs
-
+optimizer = paras['optimizer']
+exp_lr_scheduler = paras['exp_lr_scheduler'] # Decay LR by a factor of 0.1 every 7 epochs
 
 # ================= Helper functions for training and testing ======================
 def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=25):
@@ -221,13 +221,7 @@ if __name__ == '__main__':
                                       histories, 
                                       FLAGS.by, 
                                       num_of_classes, 
-                                      batch_size, 
-                                      learning_rate, 
-                                      num_of_epochs, 
-                                      cnn, 
-                                      loss_func, 
-                                      optimizer, 
-                                      exp_lr_scheduler, 
+                                      paras,
                                       data_transforms,
                                       time_elapsed, 
                                       best_acc)
