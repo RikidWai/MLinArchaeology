@@ -201,12 +201,12 @@ if __name__ == '__main__':
 
         # ===================== Training and logging results =====================
         # model_ft needs to be properly initialized first, same structure as the one initialized before training
-        model_used = 'simnet1'
-        timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M')
+        # model_used = 'simnet1'
+        # timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M')
 
-        # Paths for weights saving and loading
-        weights_save_file = f'weights/{model_used}_{FLAGS.by}_{num_of_epochs}ep_{timestamp}.pth'
-        weights_load_file = 'weights/simnet1_color_2ep_2023_03_01_22_07.pth' # Modify this when loading
+        # # Paths for weights saving and loading
+        # weights_save_file = f'weights/{model_used}_{FLAGS.by}_{num_of_epochs}ep_{timestamp}.pth'
+        # weights_load_file = 'weights/simnet1_color_2ep_2023_03_01_22_07.pth' # Modify this when loading
 
         # cnn.load_state_dict(torch.load('weights/resNET_model_weights_color.pth'))
 
@@ -214,7 +214,7 @@ if __name__ == '__main__':
         model_ft_trained, histories, time_elapsed, best_acc = train_model(cnn, dataloaders, loss_func, optimizer, exp_lr_scheduler, num_of_epochs)
         # torch.save(model_ft_trained.state_dict(), f'weights/resNET_model_weights_{FLAGS.by}_100epoch.pth')
 
-        torch.save(model_ft_trained.state_dict(), weights_save_file) # -- newly added
+        # torch.save(model_ft_trained.state_dict(), weights_save_file) # -- newly added
 
         # Save the results
         mlUtils.save_training_results(model_ft_trained.state_dict(),
