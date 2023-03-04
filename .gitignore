@@ -1,6 +1,7 @@
 *.pyc
-# *.txt
 err_list/
 logs/
 test_output/
 Training/training_logs/
+weights/
+*.pth

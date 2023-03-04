@@ -11,6 +11,7 @@ from datetime import datetime
 
 from torchvision import datasets, transforms, models
 from torchvision.transforms import ToTensor
+import torch
 
 # Defines the transformation done to each input data prior to being fed into the model
 def create_transform(resize_size=None, crop_size=None):
@@ -78,10 +79,15 @@ def plot_histories(dir, histories):
     plt.show()
     plt.savefig(dir / 'loss.png', bbox_inches='tight')
     
-def save_training_results(histories, by, num_of_classes, batch_size, learning_rate, num_of_epochs, cnn, loss_func, optimizer, exp_lr_scheduler, data_transforms, time_elapsed, best_acc):
+def save_training_results(model_weights, histories, by, num_of_classes, batch_size, learning_rate, num_of_epochs, cnn, loss_func, optimizer, exp_lr_scheduler, data_transforms, time_elapsed, best_acc):
 
-    result_dir = Path(__file__).parent / 'training_logs' / datetime.now().strftime('trResults_%Y_%m_%d_%H_%M')
+    timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M')
+    filename = f'{cnn.__class__.__name__}_{by}_{num_of_epochs}ep_{timestamp}'
+    
+    result_dir = Path(__file__).parent / 'training_logs' / filename
     result_dir.mkdir(parents=True, exist_ok=True)
+    
+    torch.save(model_weights, result_dir / 'weights.pth')
     
     # Record image 
     plot_histories(result_dir, histories)

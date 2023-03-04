@@ -26,7 +26,7 @@ class SimNet1(nn.Module):
             nn.MaxPool2d(2, 2)
         )
 
-        # self.conv1 = ...
+        # self.conv2 = ...
 
         # === End Conv Layers ===
 
@@ -62,7 +62,3 @@ class SimNet1(nn.Module):
 
 
 
-<<<<<<< HEAD
-=======
-
->>>>>>> c8b455017cd375f42c7dabe33dc0e734acebfe61
