@@ -5,3 +5,4 @@ test_output/
 Training/training_logs/
 weights/
 *.pth
+nohup.out

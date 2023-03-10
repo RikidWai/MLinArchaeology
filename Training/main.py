@@ -24,7 +24,7 @@ from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-import paraDict 
+from paraDict import PARAS_8 as paras
 
 import os
 import time
@@ -35,10 +35,11 @@ from pathlib import Path
 # Uncomment if have bugs on GPU
 # os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
+print('\nStart Training')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
 print(device)
 
-paras = paraDict.PARAS_1
+# paras = paraDict.PARAS_1
 # ================= Hyperparameters ====================== 
 batch_size = paras['batch_size']
 learning_rate = paras['learning_rate'] # original 2e-4
@@ -46,13 +47,13 @@ num_of_epochs = paras['num_of_epochs']
 
 # ================= Instantiating model globally ======================
 # cnn = models.resnet18(weights='DEFAULT')
-cnn = paras['model']
+model = paras['model']
 
 # ================= Loss, optimizer and scheduler ======================
 loss_func = paras['loss_func']
 # optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
 optimizer = paras['optimizer']
-exp_lr_scheduler = paras['exp_lr_scheduler'] # Decay LR by a factor of 0.1 every 7 epochs
+exp_lr_scheduler =  paras['exp_lr_scheduler'] # Decay LR by a factor of 0.1 every 7 epochs
 
 # ================= Helper functions for training and testing ======================
 def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=25):
@@ -104,8 +105,12 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=
                 # statistics
                 running_loss += loss.item() * inputs.size(0) # if CELoss: loss is scalar from logSoftmax and NLLLoss
                 running_corrects += torch.sum(preds == labels.data).detach().cpu().numpy()
-            if phase == 'train':
-                scheduler.step() # Decays learning rate. If not using scheduler, replace with optimizer.step()
+            if phase == 'train': 
+                # Decays learning rate. 
+                if scheduler is not None: 
+                    scheduler.step() 
+                else:
+                    optimizer.step()
 
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = float(running_corrects) / dataset_sizes[phase]
@@ -143,8 +148,50 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=
 
     return model, histories, time_elapsed, best_acc
 
-def test():
-    return
+def test_model(model, num_samples):
+
+
+    testset = datasets.ImageFolder(root=os.path.join(data_dir, 'test'), transform=create_transform(crop_size=128))
+    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
+                shuffle=True)
+
+    correct = 0
+    total = 0
+    samples_used = 0
+  
+    was_training = model.training
+    model.eval()
+
+    # since we're not training, we don't need to calculate the gradients for our outputs
+    with torch.no_grad():
+        for i, (inputs, labels) in enumerate(testloader):
+            inputs = inputs.to(device)
+            labels = labels.to(device)
+
+            outputs = model(inputs)
+            _, preds = torch.max(outputs, 1)
+
+            total += labels.size(0)
+            correct += (preds == labels).sum().item()
+
+            for j in range(inputs.size()[0]):
+                samples_used += 1
+                row_num = max(num_samples//2, 1)
+                ax = plt.subplot(row_num, 3, samples_used)
+                ax.axis('off')
+                ax.set_title(f'predicted: {class_names[preds[j]]}')
+
+                imshow_list(inputs.cpu().data[j], normalize=False)
+
+                if samples_used >= num_samples:
+                    model.train(mode=was_training)
+                    print(f'Accuracy on test images: {100 * correct // total} %')
+                    return
+
+        model.train(mode=was_training)
+
+    print(f'Accuracy on test images: {100 * correct // total} %')
+
 
 # Actual Training
 
@@ -188,15 +235,16 @@ if __name__ == '__main__':
                         for x in ['train', 'val']}
         dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
         class_names = image_datasets['train'].classes
-        num_of_classes = len(class_names)
-
+        num_classes = len(class_names)
+        
+        cnn, _ = mlUtils.initialize_model(model, num_classes, False, device)
         # Old, when using resnet
-        cnn.fc = nn.Linear(cnn.fc.in_features, num_of_classes)
-        cnn = cnn.to(device)
+        # cnn.fc = nn.Linear(cnn.fc.in_features, num_of_classes)
+        # cnn = cnn.to(device)
 
-        # ===================== Instantiates simple cnn model =====================
-        cnn = cm.SimNet1(conv_out_1=4, conv_out_2=6, hid_dim_1=120, hid_dim_2=60, num_classes=num_of_classes, kernel_size=5)
-        cnn = cnn.to(device)
+        # # ===================== Instantiates simple cnn model =====================
+        # cnn = cm.SimNet1(conv_out_1=4, conv_out_2=6, hid_dim_1=120, hid_dim_2=60, num_classes=num_of_classes, kernel_size=5)
+        # cnn = cnn.to(device)
 
 
         # ===================== Training and logging results =====================
@@ -220,7 +268,7 @@ if __name__ == '__main__':
         mlUtils.save_training_results(model_ft_trained.state_dict(),
                                       histories, 
                                       FLAGS.by, 
-                                      num_of_classes, 
+                                      num_classes, 
                                       paras,
                                       data_transforms,
                                       time_elapsed, 
@@ -232,7 +280,6 @@ if __name__ == '__main__':
         print(Mode)
 
         print('Finished testing!')
-
-
+        print()
     else: 
         print('Abort')

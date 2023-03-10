@@ -11,7 +11,7 @@ import torch
 class SimNet1(nn.Module):
 
     # One instantiation of the class, customize deeper layers by creating other instantiations of more parameters
-    def __init__(self, conv_out_1, conv_out_2, hid_dim_1, hid_dim_2, num_classes, kernel_size):
+    def __init__(self, conv_out_1 = 0, conv_out_2 = 0, hid_dim_1 = 0, hid_dim_2 = 0, num_classes = 0, kernel_size = 0):
         super().__init__()
 
         # === Can customize conv and mlp layers for experimentation ===

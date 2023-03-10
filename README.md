@@ -23,6 +23,8 @@ python main.py
 ## Machine Learning 
 ### Run
 ```
+gpu-interactive
+onda activate archaeoML
 cd Training
 python main.py --mode train
 ```
