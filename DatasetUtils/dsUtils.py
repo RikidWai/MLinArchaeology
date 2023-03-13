@@ -22,9 +22,7 @@ def splitDataset(processed_data_dir, splitted_data_dir):
         seed=1337, ratio=(.8, .1, .1), group_prefix=None, move=False) # If move=True, images will be moved from processed_images instead of copy
 
     # If empty folders in validation set, remove them from train and test folders as well
-    #BUG 
     for dirpath, dirnames, files in os.walk(splitted_data_dir / "val"):
-        
         if not any(Path(dirpath).iterdir()):
             print("Diretory {0} is empty".format(dirpath))
             if not os.system(f'rm -d {dirpath}'):
@@ -77,12 +75,6 @@ def generateDatasetByFeature(targetFolder, by):
             parentImageName = "_".join((file.split('_'))[0:4]) # the original image in raw image dataset
             side = file.split('_')[4] # Front or back side of a sherd 
             
-            # print(f'path: {path}')
-            # print(f'dir: {dir}')
-            # print(f'file: {file}')
-            # print(parentImageName)
-            # print(f'side: {side}')
-            
             # if dir == "unlabeled":
             #     if not os.path.exists(targetFolder / 'unlabeled'):
             #         os.makedirs(targetFolder / 'unlabeled')
@@ -95,57 +87,57 @@ def generateDatasetByFeature(targetFolder, by):
                     shutil.copy(originFolder / dir / file, targetFolderCode / file)
 
 
-def generateColorDatabase():
-    filepath = cfg.MAIN_DIR / "Labelling/labelEncoding.csv"
-    df = pd.read_csv(filepath)
+# def generateColorDatabase():
+#     filepath = cfg.MAIN_DIR / "Labelling/labelEncoding.csv"
+#     df = pd.read_csv(filepath)
 
-    targetFolder = cfg.DATA_DIR / "processed_images_by_color/"
-    originFolder = cfg.PROCESSED_DIR
+#     targetFolder = cfg.DATA_DIR / "processed_images_by_color/"
+#     originFolder = cfg.PROCESSED_DIR
 
-    for root, dirs, files in os.walk(originFolder):
-        dirs.sort()
-        for file in files:
-            path = os.path.join(root, file)
-            dir = root.split(os.path.sep)[-1]
-            print(dir)
-            parentImageName = "_".join((file.split('_'))[0:4])
-            print(parentImageName)
-            if dir == "unlabeled":
-                if not os.path.exists(targetFolder / 'unlabeled'):
-                    os.makedirs(targetFolder / 'unlabeled')
-                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / "unlabeled"}/'+file)
-            else:
-                colorFolderCode = df[df['file_name'] == parentImageName]['color_code'].values[0]
+#     for root, dirs, files in os.walk(originFolder):
+#         dirs.sort()
+#         for file in files:
+#             path = os.path.join(root, file)
+#             dir = root.split(os.path.sep)[-1]
+#             print(dir)
+#             parentImageName = "_".join((file.split('_'))[0:4])
+#             print(parentImageName)
+#             if dir == "unlabeled":
+#                 if not os.path.exists(targetFolder / 'unlabeled'):
+#                     os.makedirs(targetFolder / 'unlabeled')
+#                 shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / "unlabeled"}/'+file)
+#             else:
+#                 colorFolderCode = df[df['file_name'] == parentImageName]['color_code'].values[0]
                 
-                if not os.path.exists(targetFolder / str(colorFolderCode)):
-                    os.makedirs(targetFolder / str(colorFolderCode))
-                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / str(colorFolderCode)}/'+file)
+#                 if not os.path.exists(targetFolder / str(colorFolderCode)):
+#                     os.makedirs(targetFolder / str(colorFolderCode))
+#                 shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / str(colorFolderCode)}/'+file)
 
-def generateTextureDatabase():
-    filepath = cfg.MAIN_DIR / "Labelling/labelEncoding.csv"
-    df = pd.read_csv(filepath)
+# def generateTextureDatabase():
+#     filepath = cfg.MAIN_DIR / "Labelling/labelEncoding.csv"
+#     df = pd.read_csv(filepath)
 
-    targetFolder = cfg.DATA_DIR / "processed_images_by_texture/"
-    originFolder = cfg.PROCESSED_DIR
+#     targetFolder = cfg.DATA_DIR / "processed_images_by_texture/"
+#     originFolder = cfg.PROCESSED_DIR
 
-    for root, dirs, files in os.walk(originFolder):
-        dirs.sort()
-        for file in files:
-            path = os.path.join(root, file)
-            dir = root.split(os.path.sep)[-1]
-            print(dir)
-            parentImageName = "_".join((file.split('_'))[0:4])
-            print(parentImageName)
-            if dir == "unlabeled":
-                if not os.path.exists(targetFolder / 'unlabeled'):
-                    os.makedirs(targetFolder / 'unlabeled')
-                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / "unlabeled"}/'+file)
-            else:
-                textureFolderCode = df[df['file_name'] == parentImageName]['texture_code'].values[0]
+#     for root, dirs, files in os.walk(originFolder):
+#         dirs.sort()
+#         for file in files:
+#             path = os.path.join(root, file)
+#             dir = root.split(os.path.sep)[-1]
+#             print(dir)
+#             parentImageName = "_".join((file.split('_'))[0:4])
+#             print(parentImageName)
+#             if dir == "unlabeled":
+#                 if not os.path.exists(targetFolder / 'unlabeled'):
+#                     os.makedirs(targetFolder / 'unlabeled')
+#                 shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / "unlabeled"}/'+file)
+#             else:
+#                 textureFolderCode = df[df['file_name'] == parentImageName]['texture_code'].values[0]
                 
-                if not os.path.exists(targetFolder / str(textureFolderCode)):
-                    os.makedirs(targetFolder / str(textureFolderCode))
-                shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / str(textureFolderCode)}/'+file)
+#                 if not os.path.exists(targetFolder / str(textureFolderCode)):
+#                     os.makedirs(targetFolder / str(textureFolderCode))
+#                 shutil.copy(f'{originFolder / dir }/'+file, f'{targetFolder / str(textureFolderCode)}/'+file)
 
 if __name__ == '__main__':
     

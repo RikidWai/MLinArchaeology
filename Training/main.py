@@ -24,7 +24,7 @@ from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-from paraDict import PARAS_7 as paras
+from paraDict import PARAS_8 as paras
 
 import os
 import time
@@ -35,14 +35,19 @@ from pathlib import Path
 # Uncomment if have bugs on GPU
 # os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 
-print('\nStart Training')
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu") 
 print(device)
+
+if str(device)=='cpu':
+    print('Quitting due to using cpu')
+    # sys.exit(0)
+
 
 # paras = paraDict.PARAS_1
 # ================= Hyperparameters ====================== 
 batch_size = paras['batch_size']
-learning_rate = paras['learning_rate'] # original 2e-4
+learning_rate = paras['learning_rate']
 num_of_epochs = paras['num_of_epochs']
 
 # ================= Instantiating model globally ======================
@@ -148,10 +153,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=
 
     return model, histories, time_elapsed, best_acc
 
-def test_model(model, num_samples):
-
-
-
+def test_model(model, class_names, num_samples, testloader):
 
     correct = 0
     total = 0
@@ -179,16 +181,16 @@ def test_model(model, num_samples):
                 ax.axis('off')
                 ax.set_title(f'predicted: {class_names[preds[j]]}')
 
-                imshow_list(inputs.cpu().data[j], normalize=False)
+                mlUtils.imshow_list(inputs.cpu().data[j], normalize=False)
 
                 if samples_used >= num_samples:
                     model.train(mode=was_training)
                     print(f'Accuracy on test images: {100 * correct // total} %')
-                    return
+                    return 100 * correct // total
 
         model.train(mode=was_training)
 
-    print(f'Accuracy on test images: {100 * correct // total} %')
+    return 100 * correct // total
 
 
 # Actual Training
@@ -205,9 +207,11 @@ if __name__ == '__main__':
     processed_data_dir = cfg.DATA_DIR / dir
     splitted_data_dir = cfg.DATA_DIR / ('splitted_' + dir)
     # dsUtils.splitDataset() # Uncomment this line if needed 
+    weights_path = None
     
     if Mode == 'train':
-        
+        print('\nStart Training')
+
         # ===================== Retrieves usable data =======================
         # Splits and selects data
         if not processed_data_dir.exists(): 
@@ -228,22 +232,21 @@ if __name__ == '__main__':
         image_datasets = {x: datasets.ImageFolder(root=splitted_data_dir / x, 
                                                 transform=data_transforms[x]) for x in ['train', 'val']}
 
-        dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=batch_size,
-                        shuffle=True)
-                        for x in ['train', 'val']}
+        dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], 
+                                                      batch_size=batch_size,
+                                                    shuffle=True)
+                                                    for x in ['train', 'val']}
         dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
         class_names = image_datasets['train'].classes
         num_classes = len(class_names)
         
-        cnn, _ = mlUtils.initialize_model(model, num_classes, False, device)
-        # Old, when using resnet
-        # cnn.fc = nn.Linear(cnn.fc.in_features, num_of_classes)
-        # cnn = cnn.to(device)
-
+        
         # # ===================== Instantiates simple cnn model =====================
         # cnn = cm.SimNet1(conv_out_1=4, conv_out_2=6, hid_dim_1=120, hid_dim_2=60, num_classes=num_of_classes, kernel_size=5)
         # cnn = cnn.to(device)
 
+        cnn, _ = mlUtils.initialize_model(model, num_classes, False, weights_path, device)
+        
 
         # ===================== Training and logging results =====================
         # model_ft needs to be properly initialized first, same structure as the one initialized before training
@@ -275,12 +278,24 @@ if __name__ == '__main__':
         print('Finished training!')
 
     elif Mode == 'test':
-        # TODO Test dataset and log fuction
-        testset = datasets.ImageFolder(root=splitted_data_dir / 'test', transform=create_transform(crop_size=128))
+        print('\nStart Testing')
+
+        testset = datasets.ImageFolder(root=splitted_data_dir / 'test', 
+                                       transform=mlUtils.create_transform(crop_size=128))
         testloader = torch.utils.data.DataLoader(testset, 
                                                  batch_size=batch_size,
                                                  shuffle=True)
-
+        if paras['weights_path'] is not None:
+            weights_path = cfg.MAIN_DIR / 'Training/training_logs'/ paras['weights_path'] / 'weights.pth' 
+            class_names = testset.classes
+            num_classes = len(class_names)
+            model, _ = mlUtils.initialize_model(model, num_classes, False, weights_path, device)
+            
+            test_accuracy = test_model(model, class_names, 4, testloader)
+            
+            print(f'Accuracy on test images: {test_accuracy} %')
+            mlUtils.save_testing_results(weights_path.parent, test_accuracy)
+            
         print('Finished testing!')
         print()
     else: 
