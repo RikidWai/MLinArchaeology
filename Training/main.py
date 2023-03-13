@@ -24,7 +24,7 @@ from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-from paraDict import PARAS_8 as paras
+from paraDict import PARAS_7 as paras
 
 import os
 import time
@@ -151,9 +151,7 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=
 def test_model(model, num_samples):
 
 
-    testset = datasets.ImageFolder(root=os.path.join(data_dir, 'test'), transform=create_transform(crop_size=128))
-    testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size,
-                shuffle=True)
+
 
     correct = 0
     total = 0
@@ -277,7 +275,11 @@ if __name__ == '__main__':
         print('Finished training!')
 
     elif Mode == 'test':
-        print(Mode)
+        # TODO Test dataset and log fuction
+        testset = datasets.ImageFolder(root=splitted_data_dir / 'test', transform=create_transform(crop_size=128))
+        testloader = torch.utils.data.DataLoader(testset, 
+                                                 batch_size=batch_size,
+                                                 shuffle=True)
 
         print('Finished testing!')
         print()

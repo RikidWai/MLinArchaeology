@@ -24,7 +24,7 @@ python main.py
 ### Run
 ```
 gpu-interactive
-onda activate archaeoML
+conda activate archaeoML
 cd Training
 python main.py --mode train
 ```
