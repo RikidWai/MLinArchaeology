@@ -24,7 +24,7 @@ from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-from paraDict import PARAS_8 as paras
+from paraDict import PARAS_1 as paras
 
 import os
 import time
@@ -57,8 +57,8 @@ model = paras['model']
 # ================= Loss, optimizer and scheduler ======================
 loss_func = paras['loss_func']
 # optimizer = optim.Adam(cnn.parameters(), lr=learning_rate)
-optimizer = paras['optimizer']
-exp_lr_scheduler =  paras['exp_lr_scheduler'] # Decay LR by a factor of 0.1 every 7 epochs
+# optimizer = paras['optimizer']
+# exp_lr_scheduler =  paras['exp_lr_scheduler'] # Decay LR by a factor of 0.1 every 7 epochs
 
 # ================= Helper functions for training and testing ======================
 def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=25):
@@ -246,7 +246,8 @@ if __name__ == '__main__':
         # cnn = cnn.to(device)
 
         cnn, _ = mlUtils.initialize_model(model, num_classes, False, weights_path, device)
-        
+        optimizer = mlUtils.initialize_optimizer(paras)
+        exp_lr_scheduler = mlUtils.initialize_scheduler(paras)
 
         # ===================== Training and logging results =====================
         # model_ft needs to be properly initialized first, same structure as the one initialized before training

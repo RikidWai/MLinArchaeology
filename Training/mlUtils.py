@@ -16,6 +16,8 @@ from torchvision import datasets, transforms, models
 from torchvision.transforms import ToTensor
 import torch
 import customModels as cm
+import torch.optim as optim
+from torch.optim import lr_scheduler
 
 # Defines the transformation done to each input data prior to being fed into the model
 def create_transform(resize_size=None, crop_size=None):
@@ -169,6 +171,42 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
     if weights_path is not None: 
         model_ft.load_state_dict(torch.load(weights_path))
     return model_ft.to(device), input_size
+
+
+def initialize_optimizer(paras):
+    optimizer_name = paras["optimizer_name"]
+    model = paras["model"]
+    lr = paras["learning_rate"]
+    
+    if optimizer_name == "SGD":
+        paras['optimizer'] = optim.SGD(model.parameters(), 
+                                        lr=lr, 
+                                        momentum=paras.get("momentum",0.9))
+    elif optimizer_name == "Adam":
+        paras['optimizer'] = optim.Adam(model.parameters(), 
+                                        lr=lr, 
+                                        weight_decay=paras.get('weight_decay',1e-2))
+    else:
+        print("Invalid optimizer name, exiting...")
+        exit()
+
+    return paras['optimizer']
+
+def initialize_scheduler(paras):
+    scheduler_name = paras['scheduler_name']
+    optimizer = paras['optimizer']
+    
+    if scheduler_name == None:
+        paras['exp_lr_scheduler'] = None 
+    elif scheduler_name == "StepLR":
+        paras['exp_lr_scheduler'] = lr_scheduler.StepLR(optimizer, 
+                                                  step_size=paras.get('step_size', 7), 
+                                                  gamma=paras.get('gama', 0.1))
+    else:
+        print("Invalid scheduler name, exiting...")
+        exit()
+
+    return paras['exp_lr_scheduler']
 
 def save_testing_results(dir, accuracy):
     with open(dir / "paras.txt", "a") as text_file:
