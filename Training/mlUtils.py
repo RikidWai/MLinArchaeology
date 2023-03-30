@@ -31,6 +31,7 @@ def create_transform(resize_size=None, crop_size=None):
                                     transforms.CenterCrop(crop_size), 
                                     transforms.RandomHorizontalFlip(), 
                                     transforms.RandomVerticalFlip(), 
+                                    transforms.RandomRotation(90),
                                     transforms.ToTensor(),transforms.Normalize(
                                         mean=mean,
                                         std=std,
@@ -39,6 +40,7 @@ def create_transform(resize_size=None, crop_size=None):
     transform = transforms.Compose([transforms.Resize(resize_size),
                                     transforms.RandomHorizontalFlip(), 
                                     transforms.RandomVerticalFlip(),
+                                    transforms.RandomRotation(90),
                                     transforms.ToTensor(),
                                     transforms.Normalize(
                                         mean=mean,
@@ -48,6 +50,7 @@ def create_transform(resize_size=None, crop_size=None):
     transform = transforms.Compose([transforms.CenterCrop(crop_size), 
                                     transforms.RandomHorizontalFlip(), 
                                     transforms.RandomVerticalFlip(),
+                                    transforms.RandomRotation(90),
                                     transforms.ToTensor(),
                                     transforms.Normalize(
                                         mean=mean,
@@ -56,6 +59,7 @@ def create_transform(resize_size=None, crop_size=None):
   else:
     transforms.Compose([transforms.RandomHorizontalFlip(), 
                         transforms.RandomVerticalFlip(),
+                        transforms.RandomRotation(90),
                         transforms.ToTensor(),
                         transforms.Normalize(
                           mean=[0.485, 0.456, 0.406],
@@ -104,6 +108,7 @@ def save_training_results(model_weights, histories, by, num_of_classes, paras, d
           "Path: \n"
           f"\t{filename}\n"
           "List of Parameters:\n"
+          f"\tModel Architecture: {paras['model_architecture']}\n"
           f"\tDataset: {by}\n"
           f"\tcnn = {paras['model_name']}\n"
           f"\tnumber of classes: {num_of_classes}\n"
@@ -139,8 +144,7 @@ def imshow_list(inp, title=None, normalize=True):
 def initialize_model(model_ft, num_classes, feature_extract, weights_path = None, device = torch.device('cuda')  ):
     # Initialize these variables which will be set in this if statement. Each of these
     #  variables is model specific.
-    
-    
+
     model_name = model_ft.__class__.__name__.lower()
     input_size = 0
     print(f'model_name is {model_name}')
@@ -150,11 +154,46 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
         input_size = 224
 
     elif model_name == "alexnet":
+        # # Freeze all feature layers (features.0 through features.12) [Alexnet as just a feature extractor]
+        # for param in model_ft.features[0:13].parameters():
+        #     param.requires_grad = False
+
+        # # Freeze first two classifier layers 
+        # for param in model_ft.classifier[0:2].parameters():
+        #     param.requires_grad = False
+    
+        # #Freeze all except the last layer
+        # for param in model_ft.parameters():
+        #     param.requires_grad = False
+
+        # Modify the number of channels in the convolutional layers
+        model_ft.features[0] = nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2)
+        model_ft.features[3] = nn.Conv2d(64, 128, kernel_size=5, padding=2)
+        model_ft.features[6] = nn.Conv2d(128, 192, kernel_size=3, padding=1)
+        model_ft.features[8] = nn.Conv2d(192, 256, kernel_size=3, padding=1)
+        model_ft.features[10] = nn.Conv2d(256, 256, kernel_size=3, padding=1)
+
+        # Freeze the weights of the pre-trained layers
+        for param in model_ft.features.parameters():
+            param.requires_grad = False
+
         num_ftrs = model_ft.classifier[6].in_features
         model_ft.classifier[6] = nn.Linear(num_ftrs,num_classes)
         input_size = 224
+        print(model_ft.eval())
 
     elif model_name == "vgg":
+        # Freeze the lower feature layers (features.0 through features.2)
+        # for param in model_ft.features[0:3].parameters():
+        #     param.requires_grad = False
+
+        # # Freeze first two classifier layers 
+        # for param in model_ft.classifier[0:2].parameters():
+        #     param.requires_grad = False
+    
+        # #Freeze all except the last layer
+        # for param in model_ft.parameters():
+        #     param.requires_grad = False
         num_ftrs = model_ft.classifier[6].in_features
         model_ft.classifier[6] = nn.Linear(num_ftrs,num_classes)
         input_size = 224

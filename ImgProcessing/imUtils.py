@@ -88,7 +88,7 @@ def imread(path, scaling_factor=1):
         print(e)
 
 # Display an image
-def imshow(img, title='img'):
+def imshow(img, title='img', dst=f'../test_images/test.jpg'):
     if img is None:
         raise Exception('No Image')
     size = 800
@@ -103,7 +103,7 @@ def imshow(img, title='img'):
         img = cv2.resize(img, dim)
     try:
         if platform.system() == 'Linux': 
-            cv2.imwrite(f'../test_images/{title}test.jpg', img)
+            cv2.imwrite(str(dst), img)
         else: 
             cv2.imshow(title, img)
             cv2.waitKey(0)

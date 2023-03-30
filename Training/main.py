@@ -24,7 +24,7 @@ from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-from paraDict import PARAS_1 as paras
+from paraDict import PARAS_10 as paras
 
 import os
 import time
@@ -198,7 +198,7 @@ def test_model(model, class_names, num_samples, testloader):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default='train', help='options: train, test')
-    parser.add_argument('--by', type=str, default='color', help='options: detailed, color, texture')
+    parser.add_argument('--by', type=str, default='color', help='options: detailed, color, texture, texture2')
     FLAGS = parser.parse_args()
     
     Mode = FLAGS.mode
@@ -251,7 +251,7 @@ if __name__ == '__main__':
 
         # ===================== Training and logging results =====================
         # model_ft needs to be properly initialized first, same structure as the one initialized before training
-        # model_used = 'simnet1'
+        # model_used = 'alexnet'
         # timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M')
 
         # # Paths for weights saving and loading

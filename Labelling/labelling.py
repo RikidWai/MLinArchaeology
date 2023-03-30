@@ -50,11 +50,13 @@ def generateEncoding():
         # df_labelEncoding = df_labelEncoding[~(df_labelEncoding.fabric.isin(['iron','glass']))]
         # df_labelEncoding['fabric'] = df_labelEncoding.fabric.str.rstrip('-1234567890.')
         df_labelEncoding[['color','texture']] = df_labelEncoding.fabric.str.extract('^(.*?)\s((?:dark|light)?\s?\S+)$') 
-        
+        df_labelEncoding['texture2'] = df_labelEncoding.texture.str.rstrip('-1234567890.')
         
         df = encodingCol(df_labelEncoding, 'fabric')
         df = encodingCol(df_labelEncoding, 'color')
         df = encodingCol(df_labelEncoding, 'texture')
+        df = encodingCol(df_labelEncoding, 'texture2')
+        
         
         filepath = Path('../Labelling/labelEncoding.csv')
         df_labelEncoding.to_csv(filepath)
