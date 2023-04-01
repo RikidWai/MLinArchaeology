@@ -112,7 +112,7 @@ def improcessing(file, logger, err_list):
 
         
 if __name__ == '__main__':
-    # For loggging errors
+    # To process one single image
     
     start = timeit.default_timer()
     logger = imUtils.init_logger()

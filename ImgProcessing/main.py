@@ -45,7 +45,7 @@ def main(argv):
         for file in files:
             path = Path(root) / file
             
-            dir, filename, extension = path.parent.name, path.stem ,path.suffix.lower()
+            dir, filename = path.parent.name, path.stem 
            
             if dir > '478130_4419430_8_20':
                 if 'cr' in path.suffix.lower() and filename == '2':
@@ -86,17 +86,19 @@ def main(argv):
                             
 
 if __name__ == '__main__':
-    # main(sys.argv)
-    for root, dirs, files in os.walk(cfg.RAWIMG_DIR):
-        for file in files:
-            path = Path(root) / file
-            dir, filename, extension = path.parent.name, path.stem ,path.suffix.lower()
-            # print(path)
-            if 'cr' in path.suffix.lower():
-                try: 
-                    img = imUtils.imread(path)
-                    imUtils.imshow(img, 'img', path.with_suffix('.jpg'))
-                except Exception as e: 
-                    print(path)
-                    print(e)
-                    pass
+    main(sys.argv)
+    
+    # # Create a jpg copy of raw images so that the image can be opened 
+    # for root, dirs, files in os.walk(cfg.RAWIMG_DIR):
+    #     for file in files:
+    #         path = Path(root) / file
+    #         dir, filename, extension = path.parent.name, path.stem ,path.suffix.lower()
+    #         # print(path)
+    #         if 'cr' in path.suffix.lower():
+    #             try: 
+    #                 img = imUtils.imread(path)
+    #                 imUtils.imshow(img, 'img', path.with_suffix('.jpg'))
+    #             except Exception as e: 
+    #                 print(path)
+    #                 print(e)
+    #                 pass

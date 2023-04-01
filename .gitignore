@@ -6,3 +6,4 @@ Training/training_logs/
 weights/
 *.pth
 nohup.out
+test_images/

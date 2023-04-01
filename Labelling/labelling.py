@@ -41,16 +41,13 @@ def generateEncoding():
 
     else:
         df = df.dropna()  # remove rows with NaN values
-        # df['fabric'] = df.fabric.str.rstrip('-1234567890.') # Remove -01, -02, ... in each labels 
         
-        # print(df.head())
         # Label Encoding
         df_labelEncoding = df.copy()
         # ignore some classes
         # df_labelEncoding = df_labelEncoding[~(df_labelEncoding.fabric.isin(['iron','glass']))]
-        # df_labelEncoding['fabric'] = df_labelEncoding.fabric.str.rstrip('-1234567890.')
         df_labelEncoding[['color','texture']] = df_labelEncoding.fabric.str.extract('^(.*?)\s((?:dark|light)?\s?\S+)$') 
-        df_labelEncoding['texture2'] = df_labelEncoding.texture.str.rstrip('-1234567890.')
+        df_labelEncoding['texture2'] = df_labelEncoding.texture.str.rstrip('-1234567890.') # Remove -01, -02, ... in each labels 
         
         df = encodingCol(df_labelEncoding, 'fabric')
         df = encodingCol(df_labelEncoding, 'color')

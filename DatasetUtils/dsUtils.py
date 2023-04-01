@@ -11,6 +11,7 @@ import shutil
 import pandas as pd
 from pathlib import Path
 import plotly.express as px
+import argparse
 
 def splitDataset(processed_data_dir, splitted_data_dir): 
     # Split the dataset after processed with a ratio.
@@ -92,8 +93,17 @@ def generateDatasetByFeature(targetFolder, by):
 
 if __name__ == '__main__':
     
-    # targetFolder = cfg.DATA_DIR / 'processed_images_by_texture2'
-    by = 'texture2'
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--by', type=str, default='texture2', help='options: color, texture, texture2')
+    FLAGS = parser.parse_args()
+
+    by = FLAGS.by
+    dir = 'processed_images' + ('' if by == 'detailed' else f'_by_{by}') 
+    processed_data_dir = cfg.DATA_DIR / dir
+    generateDatasetByFeature(processed_data_dir, by)
+    print("Splitting processed dataset")
+    splitted_data_dir = cfg.DATA_DIR / ('splitted_' + dir)
+    splitDataset(processed_data_dir, splitted_data_dir) 
 
     # generateDatasetByFeature(targetFolder, by)
     # root = '/userhome/2072/fyp22007/data/processed_images/unlabeled'
@@ -125,9 +135,3 @@ if __name__ == '__main__':
     # fig = px.bar(df, x='Class Code', y='Count')
     # fig.write_image(f"{by}_count.jpg")
     
-    
-    print("Splitting processed dataset")
-    dir = 'processed_images' + ('' if by == 'detailed' else f'_by_{by}')
-    processed_data_dir = cfg.DATA_DIR / dir
-    splitted_data_dir = cfg.DATA_DIR / ('splitted_' + dir)
-    splitDataset(processed_data_dir, splitted_data_dir) 
