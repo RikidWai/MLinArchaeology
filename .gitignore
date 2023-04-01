@@ -2,8 +2,7 @@
 err_list/
 logs/
 test_output/
-
 weights/
-*.pth
+
 nohup.out
 test_images/
