@@ -8,3 +8,7 @@ nohup.out
 test_images/
 *.pth
 *.log
+*.CR2
+*.CR3
+*.jpg
+*.jpeg

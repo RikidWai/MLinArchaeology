@@ -24,7 +24,7 @@ from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-from paraDict import PARAS_17 as paras
+from paraDict import PARAS_10 as paras
 
 
 from paraDict import PARAS_8 as paras_8

@@ -204,9 +204,9 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
         input_size = 224
 
     elif model_name == "alexnet":
-        # # Freeze some feature layers (features.0 through features.2)
-        # for param in model_ft.features[0:3].parameters():
-        #     param.requires_grad = False
+         # Freeze some feature layers (features.0 through features.5)
+        for param in model_ft.features[0:6].parameters():
+            param.requires_grad = False
 
         # # Freeze first two classifier layers 
         # for param in model_ft.classifier[0:2].parameters():
@@ -223,9 +223,9 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
         # model_ft.features[8] = nn.Conv2d(192, 256, kernel_size=3, padding=1)
         # model_ft.features[10] = nn.Conv2d(256, 256, kernel_size=3, padding=1)
 
-        # Freeze the weights of the pre-trained layers
-        for param in model_ft.features.parameters():
-            param.requires_grad = False
+        # # Freeze the weights of the pre-trained layers
+        # for param in model_ft.features.parameters():
+        #     param.requires_grad = False
 
         num_ftrs = model_ft.classifier[6].in_features
         model_ft.classifier[6] = nn.Linear(num_ftrs,num_classes)
@@ -269,7 +269,7 @@ def initialize_optimizer(paras):
     
     if optimizer_name == "SGD":
         paras['optimizer'] = optim.SGD(model.parameters(), 
-                                        lr=lr, 
+                                        lr=lr, weight_decay=0.0001, 
                                         momentum=paras.get("momentum",0.9))
     elif optimizer_name == "Adam":
         paras['optimizer'] = optim.Adam(model.parameters(), 

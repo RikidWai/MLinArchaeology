@@ -8,7 +8,6 @@ import logging
 from datetime import datetime
 from pathlib import Path
 import platform
-from PIL import Image
 
 chartsRGB = [
     [[115, 83, 68]],

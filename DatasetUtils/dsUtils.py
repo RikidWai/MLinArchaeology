@@ -9,9 +9,10 @@ import pandas as pd
 import os
 import shutil
 import pandas as pd
-from pathlib import Path
 import plotly.express as px
 import argparse
+import imUtils 
+from PIL import Image
 
 def splitDataset(processed_data_dir, splitted_data_dir): 
     # Split the dataset after processed with a ratio.
@@ -33,8 +34,6 @@ def splitDataset(processed_data_dir, splitted_data_dir):
                 print(f"deleted test - {dirpath.split(os.path.sep)[-1]}")
                 os.system(f'rm -r {splitted_data_dir / "train/" / dirpath.split(os.path.sep)[-1]}')
                 print(f"deleted train - {dirpath.split(os.path.sep)[-1]}")
-                    
-    
                     
 def rm_tree(pth):
     pth = Path(pth)
@@ -90,6 +89,11 @@ def generateDatasetByFeature(targetFolder, by):
                     targetFolderCode.mkdir(parents=True, exist_ok=True)
                     shutil.copy(originFolder / dir / file, targetFolderCode / file)
 
+def raw2jpg(src, dst): 
+    img = imUtils.imread(src)
+    img = img[:,:,::-1]
+    img = Image.fromarray(img)
+    img.save(dst)
 
 if __name__ == '__main__':
     

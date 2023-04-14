@@ -183,17 +183,15 @@ PARAS_10 = {
     "learning_rate": 2e-4,
     "num_of_epochs": 50,
     "loss_func": nn.CrossEntropyLoss(),
-    "optimizer_name": "SGD", 
+    "optimizer_name": "Adam", 
     "scheduler_name": "StepLR",
     "model_architecture": """
-        # Freeze some feature layers (features.0 through features.5)
-        for param in model_ft.features[0:6].parameters():
-            param.requires_grad = False
-
+	freezed feature 0 to 5
+	Adam optimizer
     """
 }
 
-PARAS_10['weights_path'] = None
+PARAS_10["weights_path"] = None
 # ================= Parameters 11 ====================== 
 
 PARAS_11 = {
