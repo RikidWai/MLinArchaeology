@@ -11,9 +11,7 @@ import timeit
 
 detector = cv2.mcc.CCheckerDetector_create()
 
-def improcessing(file, logger, err_list):
-       
-    img = imUtils.imread(file)
+def improcessing(img):
 
     img = imUtils.white_bal(img)
     # imUtils.imshow(img,'ori')
@@ -28,10 +26,8 @@ def improcessing(file, logger, err_list):
         try:
             patchPos = imUtils.getCardsBlackPos(img.copy())
         except Exception as e:
-            print(f'Error getting patch positions: {e}')
-            imUtils.log_err(logger, err=e)
-            imUtils.append_err_list(err_list, file)
-            return
+            raise ValueError(f'Error getting patch positions: {e}')
+        
         checker = detector.getBestColorChecker()
         chartsRGB = checker.getChartsRGB()
 
@@ -57,22 +53,20 @@ def improcessing(file, logger, err_list):
     try:
         img, scaling_factor = imUtils.scale_img(img.copy(), cfg.DST_PPC, patchPos)
     except Exception as e:
-        print(f'Error scaling image: {e}')
-        imUtils.log_err(logger, err=e)
-        imUtils.append_err_list(err_list, file)
-        return
-    
+        raise ValueError(f'Error scaling image: {e}')
+
+
 
     # Scales kernel size by scaling factor computed for better masking
-    filled, cnts = imUtils.masking(img.copy(), kernel_size = max(6, math.floor(5 * scaling_factor)))
+    # max(6, 5*scaling_factor)
+    kernel_size = 6 if max(img.shape) >= 1000 else 5 
+    filled, cnts = imUtils.masking(img.copy(), kernel_size)
     
     try: 
         sherd_cnt = imUtils.getSherdCnt(img.copy(), cnts, is24Checker)
     except:
-        print("Fail to get feasible sherd")
-        imUtils.log_err(logger, msg=f'{file}: Fail to get feasible sherd')
-        imUtils.append_err_list(err_list, file)
-        return
+        raise ValueError("Fail to get feasible sherd")
+
     x, y, w, h = cv2.boundingRect(sherd_cnt)
     mask = filled[y:y+h, x:x+w]
     img = img[y:y+h, x:x+w]
@@ -101,23 +95,16 @@ def improcessing(file, logger, err_list):
                           x1: x1 + cfg.MAX_WIDTH, :]
             sub_imgs.append(sub_img)
     if len(sub_imgs) == 0:
-        print('nth found!')
-        imUtils.log_err(
-            logger, msg=f'STATUS - {file} has no cropped sherd found')
-        imUtils.append_err_list(err_list, file)
-        return None
-    else:
-        imUtils.log_err(logger, msg=f'STATUS - {file}: SUCCESS')
-        return sub_imgs
+        raise ValueError('nth found!')
+    return sub_imgs
 
         
 if __name__ == '__main__':
     # To process one single image
     
     start = timeit.default_timer()
-    logger = imUtils.init_logger()
-    err_list = []
-    sub_imgs = improcessing('/userhome/2072/fyp22007/MLinAraechology/test_images/1.CR2', logger, err_list)
+    img = imUtils.imread('/userhome/2072/fyp22007/MLinAraechology/test_images/1.CR2')
+    sub_imgs = improcessing(img)
     # sub_imgs = improcessing('/userhome/2072/fyp22007/data/raw_images/478130_4419430_3_48/1.CR2', logger, err_list)
     stop = timeit.default_timer()
     print('Time: ', stop - start) 

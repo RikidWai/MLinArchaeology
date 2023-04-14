@@ -102,13 +102,15 @@ def save_training_results(model_weights, histories, by, num_of_classes, paras, d
     # Record image 
     plot_histories(result_dir, histories)
     
+    model_architecture = paras.get('model_architecture', 'standard')
+    
     # Record model details 
     with open(str(result_dir / "paras.txt"), "w") as text_file: 
       text_file.write(
           "Path: \n"
           f"\t{filename}\n"
           "List of Parameters:\n"
-          f"\tModel Architecture: {paras['model_architecture']}\n"
+          f"\tModel Architecture: {model_architecture}\n"
           f"\tDataset: {by}\n"
           f"\tcnn = {paras['model_name']}\n"
           f"\tnumber of classes: {num_of_classes}\n"
@@ -126,6 +128,54 @@ def save_training_results(model_weights, histories, by, num_of_classes, paras, d
       )
     # Record histories in csv 
     pd.DataFrame(histories).to_csv(result_dir / 'histories.csv', index=True)
+
+def save_CV_fold_model(model_weights, histories, by, num_of_classes, paras, data_transforms, time_elapsed, best_acc,fold, saveFoldWeightsfolderName):
+
+    timestamp = datetime.now().strftime('%Y_%m_%d_%H_%M')
+    # filename = f"{paras['model_name']}_{by}_fold-{fold}_{paras['num_of_epochs']}ep_{timestamp}"
+    filename = f'weights-fold{fold}.pth'
+
+    if saveFoldWeightsfolderName != "":
+        result_dir = saveFoldWeightsfolderName
+    else:
+        result_dir = Path(__file__).parent / 'training_logs' / f"{paras['model_name']}_{by}_CV_{paras['num_of_epochs']}ep_{timestamp}"
+        result_dir.mkdir(parents=True, exist_ok=True)
+    
+    torch.save(model_weights, result_dir / filename)
+    return result_dir
+    
+def save_CV_training_results(by, num_of_classes, paras, data_transforms, result_dir, resultsAll, k_folds, recall,precision,acc,f_score):
+    
+    model_architecture = paras.get('model_architecture', 'standard')
+    
+    # Record model details 
+    with open(str(result_dir / "paras.txt"), "w") as text_file: 
+      text_file.write(
+          "Path: \n"
+          f"\t{result_dir}\n"
+          "List of Parameters:\n"
+          f"\tModel Architecture: {model_architecture}\n"
+          f"\tDataset: {by}\n"
+          f"\tcnn = {paras['model_name']}\n"
+          f"\tnumber of classes: {num_of_classes}\n"
+          f"\tbatch_size = {paras['batch_size']}\n"
+          f"\tlearning_rate = {paras['learning_rate']}\n"
+          f"\tweights = {paras['weights']}\n"
+          f"\tnum_of_epochs = {paras['num_of_epochs']}\n"
+          f"\tloss_func = {paras['loss_func']}\n"
+          f"\toptimizer = {paras['optimizer'].__class__.__name__}\n"
+          f"\texp_lr_scheduler = {paras['exp_lr_scheduler'].__class__.__name__}\n"
+          f"\tdata_transforms = {data_transforms}\n\n"
+          f"\tk folds = {k_folds}\n\n"
+
+          "Results:\n"
+          f"\tAll results: {resultsAll}\n\n"  
+          f"\tAvg. recall: {recall:4f}\n"  
+          f"\tAvg. precision: {precision:4f}\n"          
+          f"\tAvg. accuracy: {acc:4f}\n"          
+          f"\tAvg. f_score: {f_score:4f}\n"          
+      )
+
 
 def imshow_list(inp, title=None, normalize=True):
     """Imshow for Tensor."""
@@ -154,8 +204,8 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
         input_size = 224
 
     elif model_name == "alexnet":
-        # # Freeze all feature layers (features.0 through features.12) [Alexnet as just a feature extractor]
-        # for param in model_ft.features[0:13].parameters():
+        # # Freeze some feature layers (features.0 through features.2)
+        # for param in model_ft.features[0:3].parameters():
         #     param.requires_grad = False
 
         # # Freeze first two classifier layers 
@@ -166,12 +216,12 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
         # for param in model_ft.parameters():
         #     param.requires_grad = False
 
-        # Modify the number of channels in the convolutional layers
-        model_ft.features[0] = nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2)
-        model_ft.features[3] = nn.Conv2d(64, 128, kernel_size=5, padding=2)
-        model_ft.features[6] = nn.Conv2d(128, 192, kernel_size=3, padding=1)
-        model_ft.features[8] = nn.Conv2d(192, 256, kernel_size=3, padding=1)
-        model_ft.features[10] = nn.Conv2d(256, 256, kernel_size=3, padding=1)
+        # # Modify the number of channels in the convolutional layers
+        # model_ft.features[0] = nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2)
+        # model_ft.features[3] = nn.Conv2d(64, 128, kernel_size=5, padding=2)
+        # model_ft.features[6] = nn.Conv2d(128, 192, kernel_size=3, padding=1)
+        # model_ft.features[8] = nn.Conv2d(192, 256, kernel_size=3, padding=1)
+        # model_ft.features[10] = nn.Conv2d(256, 256, kernel_size=3, padding=1)
 
         # Freeze the weights of the pre-trained layers
         for param in model_ft.features.parameters():
@@ -247,8 +297,18 @@ def initialize_scheduler(paras):
 
     return paras['exp_lr_scheduler']
 
-def save_testing_results(dir, accuracy):
+def save_testing_results(dir, test_metrics):
+    print(
+            f"Best test Recall: {test_metrics['recall']:4f}\n"
+            f"Best test Precision: {test_metrics['precision']:4f}\n"
+            f"Best test Acc: {test_metrics['accuracy']:4f}\n"
+            f"Best test F_score: {test_metrics['f_score']:4f}\n"
+    )
+    
     with open(dir / "paras.txt", "a") as text_file:
         text_file.write(
-            f'\tBest test Acc: {accuracy:4f}\n'
+            f"\n\tBest test Recall: {test_metrics['recall']:4f}\n"
+            f"\tBest test Precision: {test_metrics['precision']:4f}\n"
+            f"\tBest test Acc: {test_metrics['accuracy']:4f}\n"
+            f"\tBest test F_score: {test_metrics['f_score']:4f}\n"
         )

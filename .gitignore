@@ -3,6 +3,8 @@ err_list/
 logs/
 test_output/
 weights/
-
+training_logs/
 nohup.out
 test_images/
+*.pth
+*.log

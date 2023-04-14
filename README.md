@@ -153,3 +153,13 @@ python main.py --mode test --by color
 ```
 
 \*\* The program will load the model in `PARAS_x['weights_path']` to test the dataset specified by `--by`
+
+## UI 
+
+A user interface is developed to better use with the app. 
+```
+cd UI
+gradio app.py
+# python app.py
+http://localhost:8080/?__theme=dark
+```

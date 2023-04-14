@@ -25,19 +25,6 @@ def main(argv):
     logger = imUtils.init_logger()
     err_list = []
     
-    # confirm = input("Process image will delete the previous samples. Are you sure(y/n)? ")
-    # if confirm == 'y':
-    #     rm_tree(cfg.PROCESSED_DIR)
-    #     rm_tree(cfg.SPLITTED_DIR)
-    #     print('Previous results are deleted. Now start to process.')
-    # else: 
-    #     print('abort')
-    #     return
-    
-    # dsUtils.rm_tree(cfg.PROCESSED_DIR)
-    # dsUtils.rm_tree(cfg.SPLITTED_DIR)
-    # print('Previous results are deleted. Now start to process.')
-    
     cfg.PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
     # Looping begins
     for root, dirs, files in os.walk(cfg.RAWIMG_DIR):
@@ -52,7 +39,9 @@ def main(argv):
                     total += 1 
                     print(path)
                     try:
-                        subImgs = process(path, logger, err_list)
+                        img = imUtils.imread(path)
+                        subImgs = process(img)
+                        imUtils.log_err(logger, msg=f'STATUS - {path}: SUCCESS')
                     except Exception as e:
                         imUtils.log_err(logger, msg=f'{path}: Cant process image. imProcessing HAS BUG. Exception {e}') 
                         imUtils.append_err_list(err_list, path)

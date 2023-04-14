@@ -35,11 +35,19 @@ PARAS_2 = {
     "scheduler_name":"StepLR",
 }
 PARAS_2['weights_path'] = 'vgg11_color_50ep_2023_03_08_11_48'
-PARAS_2['weights_path'] = 'vgg11_color_50ep_2023_03_14_18_40'
+
+
 PARAS_2['weights_path'] = 'vgg11_color_50ep_2023_03_24_11_15' # Freeze the lower feature layers 
-PARAS_2['weights_path'] = 'vgg11_color_50ep_2023_03_24_13_38' # Freeze first two classifier layers 
+
+
+PARAS_2['weights_path'] = 'vgg11_color_50ep_2023_04_06_12_13' # No Augmentation 
+PARAS_2['weights_path'] = 'vgg11_texture2_50ep_2023_04_06_16_23' # No Augmentation 
+
+PARAS_2['weights_path'] = 'vgg11_texture2_50ep_2023_04_03_12_53' 
+PARAS_2['weights_path'] = 'vgg11_color_50ep_2023_03_14_18_40'
 
 PARAS_2['weights_path'] = 'vgg11_texture_50ep_2023_03_27_17_21' # Freeze first two classifier layers 
+PARAS_2['weights_path'] = 'vgg11_color_50ep_2023_03_24_13_38' # Freeze first two classifier layers 
 # ================= Parameters 3 ====================== 
 PARAS_3 = {
     "model_name": "vgg11_bn",
@@ -68,6 +76,7 @@ PARAS_4 = {
 }
 PARAS_4['weights_path'] = 'vgg16_color_50ep_2023_03_09_12_31'
 PARAS_4['weights_path'] = 'vgg16_color_50ep_2023_03_16_15_04'
+PARAS_4['weights_path'] = 'vgg16_texture2_50ep_2023_04_03_15_32'
 
 # ================= Parameters 5 ====================== 
 PARAS_5 = {
@@ -82,8 +91,10 @@ PARAS_5 = {
     "scheduler_name":"StepLR",
     
 }
-PARAS_5['weights_path'] = 'vgg19_color_50ep_2023_03_09_15_04'
 
+
+PARAS_5['weights_path'] = 'vgg19_color_50ep_2023_03_09_15_04'
+PARAS_5['weights_path'] = 'vgg19_texture2_50ep_2023_04_04_13_19'
 # ================= Parameters 6 ====================== 
 PARAS_6 = {
     "model_name": "vgg11",
@@ -97,8 +108,9 @@ PARAS_6 = {
     "scheduler_name":"StepLR",
 }
 PARAS_6['weights_path'] = 'vgg11_color_50ep_2023_03_09_17_18'
-PARAS_6['weights_path'] = 'vgg11_color_50ep_2023_03_18_11_33'
 
+PARAS_6['weights_path'] = 'vgg11_texture2_50ep_2023_04_04_14_19'
+PARAS_6['weights_path'] = 'vgg11_color_50ep_2023_03_18_11_33'
 # ================= Parameters 7 ====================== 
 PARAS_7 = {
     "model_name": "vgg11",
@@ -128,22 +140,38 @@ PARAS_8 = {
 }
 
 PARAS_8['weights_path'] = 'vgg11_color_50ep_2023_03_10_12_59'
+PARAS_8['weights_path'] = 'vgg11_texture2_50ep_2023_04_06_16_23'
 
 # ================= Parameters 9 ====================== 
 PARAS_9 = {
     "model_name": "SimNet1",
     "weights": 'DEFAULT',
     "batch_size": 8,
-    "learning_rate": 2e-4,
-    "num_of_epochs": 50,
+    "learning_rate": 2e-6,
+    "num_of_epochs": 10,
     "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "Adam", 
+    "scheduler_name": "StepLR",
 }
+
+# True creation happens in mlUtils, model here is just for model name
 PARAS_9["model"] = cm.SimNet1(conv_out_1=6, conv_out_2=16, hid_dim_1=120, hid_dim_2=60, num_classes=13, kernel_size=5)
-PARAS_9["optimizer"] = optim.SGD(PARAS_9["model"].parameters(), 
-                                 lr=PARAS_9["learning_rate"], 
-                                 momentum=0.9)
-PARAS_9["exp_lr_scheduler"] = None
-PARAS_9['weights_path'] = 'SimNet1_color_50ep_2023_03_13_00_10' # To specify the path for testing dataset
+# PARAS_9["model"] = cm.SimNet1(conv_out_1=6, conv_out_2=32, hid_dim_1=120, hid_dim_2=60, num_classes=13, kernel_size=5)
+# PARAS_9['model'] = None
+
+
+# ----- Deprecated Start -----
+# PARAS_9["optimizer"] = optim.SGD(PARAS_9["model"].parameters(), 
+#                                  lr=PARAS_9["learning_rate"], 
+#                                  momentum=0.9)
+# PARAS_9["exp_lr_scheduler"] = None
+# ----- Deprecated End -----
+
+# To specify the path for testing dataset
+PARAS_9["weights_path"] = None
+# PARAS_9['weights_path'] = 'SimNet1_color_50ep_2023_03_13_00_10'
+
+
 
 # ================= Parameters 10 ====================== 
 
@@ -158,25 +186,13 @@ PARAS_10 = {
     "optimizer_name": "SGD", 
     "scheduler_name": "StepLR",
     "model_architecture": """
-        # Modify the number of channels in the convolutional layers
-        model_ft.features[0] = nn.Conv2d(3, 64, kernel_size=11, stride=4, padding=2)
-        model_ft.features[3] = nn.Conv2d(64, 128, kernel_size=5, padding=2)
-        model_ft.features[6] = nn.Conv2d(128, 192, kernel_size=3, padding=1)
-        model_ft.features[8] = nn.Conv2d(192, 256, kernel_size=3, padding=1)
-        model_ft.features[10] = nn.Conv2d(256, 256, kernel_size=3, padding=1)
-
-        # Freeze the weights of the pre-trained layers
-        for param in model_ft.features.parameters():
+        # Freeze some feature layers (features.0 through features.5)
+        for param in model_ft.features[0:6].parameters():
             param.requires_grad = False
+
     """
 }
 
-# PARAS_10['weights_path'] = "alexnet_color_50ep_noFreeze_2023_03_15_15_09"
-# PARAS_10['weights_path'] = "alexnet_color_50ep_2023_03_17_16_28_randomRotation_SGD_freezeallExceptLast"
-# PARAS_10['weights_path'] = "alexnet_color_50ep_2023_03_19_03_51_randomRotation_SGD_freezeSome"
-# PARAS_10['weights_path'] = "alexnet_color_50ep_2023_03_19_03_34_randomRotation_SGD_noFreeze"
-# PARAS_10['weights_path'] = 'alexnet_color_50ep_2023_03_23_19_44'
-# PARAS_10['weights_path'] = "alexnet_color_50ep_2023_03_23_20_13"
 PARAS_10['weights_path'] = None
 # ================= Parameters 11 ====================== 
 
@@ -192,8 +208,122 @@ PARAS_11 = {
     "scheduler_name": "StepLR",
 }
 
-# PARAS_11['weights_path'] = "alexnet_color_50ep_2023_03_17_16_22_randomRotation_Adam_freezeallExceptLast"
-PARAS_11['weights_path'] = None
+PARAS_11['weights_path'] = "alexnet_color_50ep_2023_03_17_16_22_randomRotation_Adam_freezeallExceptLast"
+PARAS_11['weights_path'] = 'alexnet_texture2_50ep_2023_04_12_17_25'
+# PARAS_11['weights_path'] = None
+
+
+
+# ================= Parameters 12 ====================== 
+PARAS_12 = {
+    "model_name": "resnet34",
+    "model": models.resnet34(weights='DEFAULT'),
+    "weights": 'DEFAULT',
+    "batch_size": 8,
+    "learning_rate": 2e-2,
+    "num_of_epochs": 50,
+    "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "SGD",
+    "scheduler_name": "StepLR"
+}
+PARAS_12['weights_path'] = None
+# PARAS_12['weights_path'] = 'resnet34_texture2_50ep_2023_04_06_01_56'
+# PARAS_12['weights_path'] = 'resnet34_texture_50ep_2023_04_07_00_16'
+# PARAS_12['weights_path'] = 'resnet34_color_50ep_2023_04_06_00_51'
+# PARAS_12['weights_path'] = 'resnet34_color_50ep_freeze3_2023_04_08_18_18'
+# PARAS_12['weights_path'] = 'resnet34_texture2_50ep_freezee3_2023_04_08_19_02'
+# PARAS_12['weights_path'] = 'resnet34_color_50ep_freeze2_2023_04_08_20_00'
+PARAS_12['weights_path'] = 'resnet34_texture2_50ep_freeze2_2023_04_08_20_47'
+
+# ================= Parameters 13 ====================== 
+PARAS_13 = {
+    "model_name": "resnet50",
+    "model": models.resnet50(weights='DEFAULT'),
+    "weights": 'DEFAULT',
+    "batch_size": 8,
+    "learning_rate": 2e-2,
+    "num_of_epochs": 50,
+    "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "SGD",
+    "scheduler_name": "StepLR"
+}
+PARAS_13['weights_path'] = None
+PARAS_13['weights_path'] = 'resnet50_texture2_50ep_2023_04_06_19_09'
+# PARAS_13['weights_path'] = 'resnet50_texture_50ep_2023_04_06_22_34'
+# PARAS_13['weights_path'] = 'resnet50_color_50ep_2023_04_06_20_08'
+
+
+
+
+# ================= Parameters 14 ====================== 
+PARAS_14 = {
+    "model_name": "resnet18",
+    "model": models.resnet18(weights='DEFAULT'),
+    "weights": 'DEFAULT',
+    "batch_size": 8,
+    "learning_rate": 2e-2,
+    "num_of_epochs": 50,
+    "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "SGD",
+    "scheduler_name": "StepLR"
+}
+PARAS_14['weights_path'] = None
+PARAS_14['weights_path'] = 'resnet18_color_50ep_2023_04_08_23_31'
+
+
+# ================= Parameters 15 ====================== 
+# Inspect effect of learning rate
+PARAS_15 = {
+    "model_name": "resnet18",
+    "model": models.resnet18(weights='DEFAULT'),
+    "weights": 'DEFAULT',
+    "batch_size": 8,
+    "learning_rate": 2e-4,
+    "num_of_epochs": 50,
+    "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "SGD",
+    "scheduler_name": "StepLR"
+}
+PARAS_15['weights_path'] = None
+PARAS_15['weights_path'] = 'resnet18_color_50ep_2023_04_09_00_11'
+
+
+# ================= Parameters 16 ====================== 
+# Inspect effect of learning rate
+PARAS_16 = {
+    "model_name": "resnet18",
+    "model": models.resnet18(weights='DEFAULT'),
+    "weights": 'DEFAULT',
+    "batch_size": 8,
+    "learning_rate": 2e-4,
+    "num_of_epochs": 50,
+    "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "Adam",
+    "scheduler_name": "StepLR"
+}
+PARAS_16['weights_path'] = None
+
+
+
+# ================= Parameters 17 ====================== 
+# Inspects the convergence behavior if weights are randomly initialized
+# To compare if this problem persists in LPM over simple model
+PARAS_17 = {
+    "model_name": "resnet18",
+    "model": models.resnet18(weights=None),
+    "weights": 'DEFAULT',
+    "batch_size": 8,
+    "learning_rate": 2e-4,
+    "num_of_epochs": 50,
+    "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "Adam",
+    "scheduler_name": "StepLR"
+}
+PARAS_17['weights_path'] = None
+
+
+
+
 
 # # ================= Parameters 9 ====================== 
 # PARAS_9 = {
