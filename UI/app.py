@@ -1,3 +1,7 @@
+import sys
+sys.path.append('../')
+sys.path.append('../ImgProcessing/')
+
 import gradio as gr
 import pandas as pd
 import torch
@@ -16,14 +20,14 @@ df_textureMapping = pd.read_csv('../Labelling/texture2LabelEncodingMapping.csv')
 num_texture_class = len(df_textureMapping.index) - 1
 labels_texture = df_textureMapping['Class'].tolist()
 
-vgg11_color = models.vgg11()
+vgg11_color = models.alexnet()
 vgg11_color.classifier[6] = nn.Linear(vgg11_color.classifier[6].in_features , num_color_class)
-vgg11_color.load_state_dict(torch.load("vgg_color_weights.pth", map_location=device))
+vgg11_color.load_state_dict(torch.load("color_weights.pth", map_location=device))
 vgg11_color.eval()
 
-vgg11_texture = models.vgg11()
+vgg11_texture = models.alexnet()
 vgg11_texture.classifier[6] = nn.Linear(vgg11_texture.classifier[6].in_features , num_texture_class)
-vgg11_texture.load_state_dict(torch.load("vgg_texture_weights.pth", map_location=device))
+vgg11_texture.load_state_dict(torch.load("texture_weights.pth", map_location=device))
 vgg11_texture.eval()
 
 def get_confidences(img, model, labels, num_class):
@@ -66,11 +70,8 @@ demo = gr.Interface(fn=predict,
             inputs=[gr.Image(label='Please Upload Sherd Image', type="numpy"),
                     gr.Radio(choices = ["AlexNet", "VGG", "ResNet", "SimNet"], value='AlexNet',label="Please select a model")],
             examples=[["exampleImgs/raw_sherd2.jpg",None],
-                      ["exampleImgs/raw_sherd2.jpg",None],
                       ["exampleImgs/raw_sherd4.jpg",None],
-                      ["exampleImgs/raw_sherd5.jpg",None],
-                      ["exampleImgs/raw_sherd7.jpg",None],
-                      ["exampleImgs/raw_sherd6.jpg",None]],
+                      ["exampleImgs/raw_sherd5.jpg",None]],
             outputs=[gr.Image(label='Processed Image'),
                      gr.Label(label='Color Prediction',num_top_classes=3), 
                      gr.Label(label='Texture Prediction', num_top_classes=3),

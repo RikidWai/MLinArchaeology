@@ -12,3 +12,8 @@ test_images/
 *.CR3
 *.jpg
 *.jpeg
+
+!UI/vgg_color_weights.pth
+!UI/vgg_texture_weights.pth
+!UI/exampleImgs/
+
