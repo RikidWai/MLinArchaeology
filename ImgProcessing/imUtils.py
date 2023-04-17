@@ -449,7 +449,7 @@ def log_err(logger, err=None, msg=None):
 
 # Creates logger object and log directory
 def init_logger():
-    log_dir = '../logs'
+    log_dir = '/logs'
     log_path = log_dir + datetime.now().strftime('/img_process_log_%Y_%m_%d_%H_%M.log')
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
@@ -469,7 +469,7 @@ def append_err_list(err_list, file):
 
 # Saves error list as csv for inspection
 def err_list_to_csv(err_list):
-    err_dir = '../err_list'
+    err_dir = '/err_list'
     err_path = err_dir + datetime.now().strftime('/err_list_%Y_%m_%d_%H_%M.csv')
     if not os.path.exists(err_dir):
         os.makedirs(err_dir)
