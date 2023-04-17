@@ -1,11 +1,11 @@
 *.pyc
-err_list/
-logs/
-test_output/
-weights/
-training_logs/
+err_list/*
+logs/*
+test_output/*
+weights/*
+training_logs/*
 nohup.out
-test_images/
+test_images/*
 *.pth
 *.log
 *.CR2
@@ -13,7 +13,6 @@ test_images/
 *.jpg
 *.jpeg
 
-!UI/vgg_color_weights.pth
-!UI/vgg_texture_weights.pth
-!UI/exampleImgs/
+!UI/*.pth
+!UI/exampleImgs/*.jpg
 
