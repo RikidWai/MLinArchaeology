@@ -8,7 +8,7 @@ import configure as cfg
 import pandas as pd
 import os
 import shutil
-import pandas as pd
+import seaborn as sns
 import plotly.express as px
 import argparse
 import imUtils 

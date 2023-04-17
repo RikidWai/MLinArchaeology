@@ -57,14 +57,16 @@ def create_transform(resize_size=None, crop_size=None):
                                         std=std,
                                     )])
   else:
-    transforms.Compose([transforms.RandomHorizontalFlip(), 
+    transform = transforms.Compose([
+                        transforms.CenterCrop(128),
+                        transforms.RandomHorizontalFlip(), 
                         transforms.RandomVerticalFlip(),
-                        transforms.RandomRotation(90),
+                        # transforms.RandomRotation(90),
                         transforms.ToTensor(),
                         transforms.Normalize(
-                          mean=[0.485, 0.456, 0.406],
-                          std=[0.229, 0.224, 0.225],
-                      )])
+                          mean=mean,
+                          std=std,)
+                        ])
   return transform
 
 
@@ -128,6 +130,7 @@ def save_training_results(model_weights, histories, by, num_of_classes, paras, d
       )
     # Record histories in csv 
     pd.DataFrame(histories).to_csv(result_dir / 'histories.csv', index=True)
+    return filename
 
 def save_CV_fold_model(model_weights, histories, by, num_of_classes, paras, data_transforms, time_elapsed, best_acc,fold, saveFoldWeightsfolderName):
 
@@ -199,6 +202,17 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
     input_size = 0
     print(f'model_name is {model_name}')
     if model_name == "resnet":
+        # Freezing the first few layers from top down
+        # Including conv1, bn1, relu, maxpool as first four
+        first_n = 4 + 3 # plus: number of layers on top of the first four feature extractors
+        ct = 0
+        for child in model_ft.children():
+            if ct < first_n:
+                for param in child.parameters():
+                    param.requires_grad = False
+            ct += 1
+
+        # Modifies last fully connected layer to match number of classes as output
         num_ftrs = model_ft.fc.in_features
         model_ft.fc = nn.Linear(num_ftrs, num_classes)
         input_size = 224
@@ -230,7 +244,7 @@ def initialize_model(model_ft, num_classes, feature_extract, weights_path = None
         num_ftrs = model_ft.classifier[6].in_features
         model_ft.classifier[6] = nn.Linear(num_ftrs,num_classes)
         input_size = 224
-        print(model_ft.eval())
+        # print(model_ft.eval())
 
     elif model_name == "vgg":
         # Freeze the lower feature layers (features.0 through features.2)
@@ -266,6 +280,8 @@ def initialize_optimizer(paras):
     optimizer_name = paras["optimizer_name"]
     model = paras["model"]
     lr = paras["learning_rate"]
+
+    print(f'The learning rate is: {lr}')
     
     if optimizer_name == "SGD":
         paras['optimizer'] = optim.SGD(model.parameters(), 
@@ -311,4 +327,7 @@ def save_testing_results(dir, test_metrics):
             f"\tBest test Precision: {test_metrics['precision']:4f}\n"
             f"\tBest test Acc: {test_metrics['accuracy']:4f}\n"
             f"\tBest test F_score: {test_metrics['f_score']:4f}\n"
+            f"\tf_score_vec: {test_metrics['f_score_vec']}\n"
+            f"\trecall_vec: {test_metrics['recall_vec']}\n"
+            f"\precision_vec: {test_metrics['precision_vec']}\n"
         )

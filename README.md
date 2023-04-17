@@ -155,6 +155,7 @@ python main.py --mode test --by color
 \*\* The program will load the model in `PARAS_x['weights_path']` to test the dataset specified by `--by`
 
 ## UI 
+Only need to pull the UI and ImgProcessing folders
 
 A user interface is developed to better use with the app. 
 ```

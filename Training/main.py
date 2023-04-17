@@ -19,18 +19,19 @@ from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
 import argparse
 
-from DatasetUtils import dsUtils 
+# from DatasetUtils import dsUtils 
 from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-from paraDict import PARAS_10 as paras
+from paraDict import PARAS_15 as paras
 
-
+# For ensemble use
 from paraDict import PARAS_8 as paras_8
 from paraDict import PARAS_11 as paras_11
 from paraDict import PARAS_13 as paras_13
-
+from paraDict import PARAS_12 as paras_12
+from paraDict import PARAS_14 as paras_14
 
 
 import os
@@ -62,10 +63,10 @@ batch_size = paras['batch_size']
 learning_rate = paras['learning_rate']
 num_of_epochs = paras['num_of_epochs']
 
+print(f'The batch size is {batch_size}')
+
 # ================= Instantiating model globally ======================
 model = paras['model']
-
-
 
 # ================= Loss, optimizer and scheduler ======================
 loss_func = paras['loss_func']
@@ -104,6 +105,14 @@ def train_model(model, dataloaders, criterion, optimizer, scheduler, num_epochs=
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
+
+                # Self test print gradients
+                # print('Showing conv1 mid conv2d gradients')
+                # if model.conv1[3].weight.grad is not None:
+                #     print(model.conv1[3].weight.grad[0][0])
+                # print('Showing mlp1 mid linear gradients')
+                # if model.mlp1[2].weight.grad is not None:
+                #     print(model.mlp1[2].weight.grad[0][0])
 
                 # clear the parameter gradients
                 optimizer.zero_grad()
@@ -308,6 +317,12 @@ if __name__ == '__main__':
             'val': mlUtils.create_transform(crop_size=128)
         }
 
+        # Self test on aug
+        # data_transforms = {
+        #     'train': mlUtils.create_transform(),
+        #     'val': mlUtils.create_transform()
+        # }
+
         # ===================== Creates datasets and loaders =======================
         # Loading dataset using default Pytorch ImageFolder
         # Assumes the data structure shown above classified by label into subfolders
@@ -427,6 +442,7 @@ if __name__ == '__main__':
         testloader = torch.utils.data.DataLoader(testset, 
                                                  batch_size=5000,
                                                  shuffle=False)
+        print("weight path:",paras['weights_path'])
         if paras['weights_path'] is not None:
             weights_path = cfg.MAIN_DIR / 'Training/training_logs'/ paras['weights_path'] / 'weights.pth' 
             class_names = testset.classes
@@ -451,7 +467,7 @@ if __name__ == '__main__':
         # Holds the set of models used for ensemble prediction
         models = []
         # Modify the preferred selection of models using PARAS
-        paras_ensembled = [paras_8, paras_11, paras_13]
+        paras_ensembled = [paras_13, paras_12, paras_14, paras_11, paras] # [paras_8, paras_11, paras_13, paras_12, paras_14]
         
         for i in range(len(paras_ensembled)):
             if paras_ensembled[i]['weights_path'] is not None:

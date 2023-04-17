@@ -177,21 +177,20 @@ PARAS_9["weights_path"] = None
 
 PARAS_10 = {
     "model_name": "alexnet",
-    "model": models.alexnet(weights='DEFAULT'),
-    "weights": 'DEFAULT',
+    "model": models.alexnet(weights="DEFAULT"),
+    "weights": "DEFAULT",
     "batch_size": 8,
     "learning_rate": 2e-4,
     "num_of_epochs": 50,
     "loss_func": nn.CrossEntropyLoss(),
-    "optimizer_name": "Adam", 
+    "optimizer_name": "SGD", 
     "scheduler_name": "StepLR",
     "model_architecture": """
-	freezed feature 0 to 5
-	Adam optimizer
+
     """
 }
 
-PARAS_10["weights_path"] = None
+PARAS_10["weights_path"] = "alexnet_color_50ep_2023_03_31_00_52"
 # ================= Parameters 11 ====================== 
 
 PARAS_11 = {
@@ -206,8 +205,8 @@ PARAS_11 = {
     "scheduler_name": "StepLR",
 }
 
-PARAS_11['weights_path'] = "alexnet_color_50ep_2023_03_17_16_22_randomRotation_Adam_freezeallExceptLast"
-PARAS_11['weights_path'] = 'alexnet_texture2_50ep_2023_04_12_17_25'
+PARAS_11['weights_path'] = "alexnet_color_50ep_2023_03_31_00_52"
+PARAS_11['weights_path'] = 'alexnet_texture2_50ep_2023_04_15_04_55'
 # PARAS_11['weights_path'] = None
 
 
@@ -218,20 +217,20 @@ PARAS_12 = {
     "model": models.resnet34(weights='DEFAULT'),
     "weights": 'DEFAULT',
     "batch_size": 8,
-    "learning_rate": 2e-2,
+    "learning_rate": 2e-4,
     "num_of_epochs": 50,
     "loss_func": nn.CrossEntropyLoss(),
     "optimizer_name": "SGD",
-    "scheduler_name": "StepLR"
+    "scheduler_name": None #"StepLR"
 }
 PARAS_12['weights_path'] = None
 # PARAS_12['weights_path'] = 'resnet34_texture2_50ep_2023_04_06_01_56'
 # PARAS_12['weights_path'] = 'resnet34_texture_50ep_2023_04_07_00_16'
 # PARAS_12['weights_path'] = 'resnet34_color_50ep_2023_04_06_00_51'
 # PARAS_12['weights_path'] = 'resnet34_color_50ep_freeze3_2023_04_08_18_18'
-# PARAS_12['weights_path'] = 'resnet34_texture2_50ep_freezee3_2023_04_08_19_02'
+PARAS_12['weights_path'] = 'resnet34_texture2_50ep_freezee3_2023_04_08_19_02'
 # PARAS_12['weights_path'] = 'resnet34_color_50ep_freeze2_2023_04_08_20_00'
-PARAS_12['weights_path'] = 'resnet34_texture2_50ep_freeze2_2023_04_08_20_47'
+# PARAS_12['weights_path'] = 'resnet34_texture2_50ep_freeze2_2023_04_08_20_47'
 
 # ================= Parameters 13 ====================== 
 PARAS_13 = {
@@ -266,16 +265,20 @@ PARAS_14 = {
     "scheduler_name": "StepLR"
 }
 PARAS_14['weights_path'] = None
-PARAS_14['weights_path'] = 'resnet18_color_50ep_2023_04_08_23_31'
+# PARAS_14['weights_path'] = 'resnet18_color_50ep_2023_04_08_23_31'
+PARAS_14['weights_path'] = 'resnet18_texture2_50ep_2023_04_07_02_21'
 
 
 # ================= Parameters 15 ====================== 
 # Inspect effect of learning rate
+# Not using pretrained
+# Rough subset {2e-2, 2e-4, 2e-6}
+# Finer subset
 PARAS_15 = {
     "model_name": "resnet18",
     "model": models.resnet18(weights='DEFAULT'),
     "weights": 'DEFAULT',
-    "batch_size": 8,
+    "batch_size": 16,
     "learning_rate": 2e-4,
     "num_of_epochs": 50,
     "loss_func": nn.CrossEntropyLoss(),
@@ -283,11 +286,11 @@ PARAS_15 = {
     "scheduler_name": "StepLR"
 }
 PARAS_15['weights_path'] = None
-PARAS_15['weights_path'] = 'resnet18_color_50ep_2023_04_09_00_11'
-
+# PARAS_15['weights_path'] = 'resnet18_color_50ep_2023_04_09_00_11'
+# PARAS_15['weights_path'] = 'resnet18_texture2_50ep_2023_04_16_14_14'
 
 # ================= Parameters 16 ====================== 
-# Inspect effect of learning rate
+# Inspect effect of optimizer
 PARAS_16 = {
     "model_name": "resnet18",
     "model": models.resnet18(weights='DEFAULT'),
@@ -318,6 +321,29 @@ PARAS_17 = {
     "scheduler_name": "StepLR"
 }
 PARAS_17['weights_path'] = None
+
+
+
+
+
+# ================= Parameters 18 ====================== 
+# Inspects the convergence behavior if weights are randomly initialized
+# To compare if this problem persists in LPM over simple model
+PARAS_18 = {
+    "model_name": "resnet34",
+    "model": models.resnet34(weights=None),
+    "weights": 'None',
+    "batch_size": 8,
+    "learning_rate": 2e-4,
+    "num_of_epochs": 50,
+    "loss_func": nn.CrossEntropyLoss(),
+    "optimizer_name": "Adam",
+    "scheduler_name": "StepLR"
+}
+PARAS_18['weights_path'] = None
+
+
+
 
 
 
