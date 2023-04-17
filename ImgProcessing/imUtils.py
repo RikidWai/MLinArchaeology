@@ -284,7 +284,7 @@ def get4PatchInfo(img):
 
         # Get rectangle only
         colour_cnts = list(filter(lambda x: len(cv2.approxPolyDP(
-            x, 0.01*cv2.arcLength(x, True), True)) == 4, colour_cnts))
+            x, 0.05*cv2.arcLength(x, True), True)) == 4, colour_cnts))
 
         # Get the largest area
         if len(colour_cnts) > 0:
