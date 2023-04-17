@@ -236,7 +236,7 @@ def getCardsBlackPos(img, is24Checker = True):
             
     # Get rectangle only
     cnts = list(filter(lambda x: len(cv2.approxPolyDP(
-            x, 0.01*cv2.arcLength(x, True), True)) == 4, cnts))
+            x, 0.05*cv2.arcLength(x, True), True)) == 4, cnts))
 
     cnts = sorted(cnts, reverse=True, key=cv2.contourArea)
 
