@@ -1,6 +1,11 @@
 # MLinArchaeology
 
-### Setup and Configuration
+## Background 
+### Poster 
+
+### Video
+
+## Setup and Configuration
 
 1. Run the following code
 
