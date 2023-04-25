@@ -146,30 +146,24 @@ PARAS_8['weights_path'] = 'vgg11_texture2_50ep_2023_04_06_16_23'
 PARAS_9 = {
     "model_name": "SimNet1",
     "weights": 'DEFAULT',
-    "batch_size": 8,
-    "learning_rate": 2e-6,
-    "num_of_epochs": 10,
+    "batch_size": 32,
+    "learning_rate": 2e-2,
+    "num_of_epochs": 50,
     "loss_func": nn.CrossEntropyLoss(),
-    "optimizer_name": "Adam", 
-    "scheduler_name": "StepLR",
+    "optimizer_name": "SGD", 
+    "scheduler_name": None # "StepLR",
 }
 
 # True creation happens in mlUtils, model here is just for model name
-PARAS_9["model"] = cm.SimNet1(conv_out_1=6, conv_out_2=16, hid_dim_1=120, hid_dim_2=60, num_classes=13, kernel_size=5)
+# PARAS_9["model"] = cm.SimNet1(conv_out_1=6, conv_out_2=16, hid_dim_1=120, hid_dim_2=60, num_classes=13, kernel_size=5)
 # PARAS_9["model"] = cm.SimNet1(conv_out_1=6, conv_out_2=32, hid_dim_1=120, hid_dim_2=60, num_classes=13, kernel_size=5)
+PARAS_9["model"] = cm.SimNet1(conv_out_1=6, conv_out_2=256, hid_dim_1=120, hid_dim_2=60, num_classes=13, kernel_size=5)
+# PARAS_9["model"] = cm.SimNet1(conv_out_1=6, conv_out_2=256, hid_dim_1=120, hid_dim_2=60, num_classes=9, kernel_size=5)
+
 # PARAS_9['model'] = None
+# PARAS_9["weights_path"] = None
+PARAS_9['weights_path'] = 'SimNet1_texture2_50ep_conv256_2023_04_18_10_59'
 
-
-# ----- Deprecated Start -----
-# PARAS_9["optimizer"] = optim.SGD(PARAS_9["model"].parameters(), 
-#                                  lr=PARAS_9["learning_rate"], 
-#                                  momentum=0.9)
-# PARAS_9["exp_lr_scheduler"] = None
-# ----- Deprecated End -----
-
-# To specify the path for testing dataset
-PARAS_9["weights_path"] = None
-# PARAS_9['weights_path'] = 'SimNet1_color_50ep_2023_03_13_00_10'
 
 
 
@@ -180,7 +174,7 @@ PARAS_10 = {
     "model": models.alexnet(weights="DEFAULT"),
     "weights": "DEFAULT",
     "batch_size": 8,
-    "learning_rate": 2e-4,
+    "learning_rate": 2e-2,
     "num_of_epochs": 50,
     "loss_func": nn.CrossEntropyLoss(),
     "optimizer_name": "SGD", 
@@ -190,7 +184,7 @@ PARAS_10 = {
     """
 }
 
-PARAS_10["weights_path"] = "alexnet_color_50ep_2023_03_31_00_52"
+PARAS_10["weights_path"] = None
 # ================= Parameters 11 ====================== 
 
 PARAS_11 = {
@@ -278,16 +272,19 @@ PARAS_15 = {
     "model_name": "resnet18",
     "model": models.resnet18(weights='DEFAULT'),
     "weights": 'DEFAULT',
-    "batch_size": 16,
-    "learning_rate": 2e-4,
+    "batch_size": 32,
+    "learning_rate": 2e-2,
     "num_of_epochs": 50,
     "loss_func": nn.CrossEntropyLoss(),
     "optimizer_name": "SGD",
-    "scheduler_name": "StepLR"
+    "scheduler_name": None #"StepLR"
 }
 PARAS_15['weights_path'] = None
 # PARAS_15['weights_path'] = 'resnet18_color_50ep_2023_04_09_00_11'
 # PARAS_15['weights_path'] = 'resnet18_texture2_50ep_2023_04_16_14_14'
+PARAS_15['weights_path'] = 'resnet18_texture2_50ep_lr2e-2_2023_04_17_20_19' # Best texture2 model
+PARAS_15['weights_path'] = 'resnet18_color_50ep_lr2e-2_2023_04_17_21_37' # Best color model
+
 
 # ================= Parameters 16 ====================== 
 # Inspect effect of optimizer

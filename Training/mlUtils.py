@@ -59,8 +59,8 @@ def create_transform(resize_size=None, crop_size=None):
   else:
     transform = transforms.Compose([
                         transforms.CenterCrop(128),
-                        transforms.RandomHorizontalFlip(), 
-                        transforms.RandomVerticalFlip(),
+                        # transforms.RandomHorizontalFlip(), 
+                        # transforms.RandomVerticalFlip(),
                         # transforms.RandomRotation(90),
                         transforms.ToTensor(),
                         transforms.Normalize(

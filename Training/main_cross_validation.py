@@ -25,7 +25,7 @@ from dataloader import SherdDataSet
 import mlUtils
 import customModels as cm
 
-from paraDict import PARAS_10 as paras
+from paraDict import PARAS_15 as paras
 
 import os
 import time
@@ -339,24 +339,24 @@ if __name__ == '__main__':
 
         print('Finished training!')
 
-    # elif Mode == 'test':
-    #     print('\nStart Testing')
+    elif Mode == 'test':
+        print('\nStart Testing')
 
-    #     testset = datasets.ImageFolder(root=splitted_data_dir / 'test', 
-    #                                    transform=mlUtils.create_transform(crop_size=128))
-    #     testloader = torch.utils.data.DataLoader(testset, 
-    #                                              batch_size=5000,
-    #                                              shuffle=False)
-    #     if paras['weights_path'] is not None:
-    #         weights_path = cfg.MAIN_DIR / 'Training/training_logs'/ paras['weights_path'] / 'weights.pth' 
-    #         class_names = testset.classes
-    #         num_classes = len(class_names)
-    #         model, _ = mlUtils.initialize_model(model, num_classes, False, weights_path, device)
+        testset = datasets.ImageFolder(root=splitted_data_dir / 'test', 
+                                       transform=mlUtils.create_transform(crop_size=128))
+        testloader = torch.utils.data.DataLoader(testset, 
+                                                 batch_size=5000,
+                                                 shuffle=False)
+        if paras['weights_path'] is not None:
+            weights_path = cfg.MAIN_DIR / 'Training/training_logs'/ paras['weights_path'] / 'weights.pth' 
+            class_names = testset.classes
+            num_classes = len(class_names)
+            model, _ = mlUtils.initialize_model(model, num_classes, False, weights_path, device)
             
-    #         test_metrics = test_model(model, class_names, 4, testloader)
-    #         mlUtils.save_testing_results(weights_path.parent, test_metrics)
+            test_metrics = test_model(model, class_names, 4, testloader)
+            mlUtils.save_testing_results(weights_path.parent, test_metrics)
             
-    #     print('Finished testing!')
-    #     print()
+        print('Finished testing!')
+        print()
     else: 
         print('Abort')

@@ -1,11 +1,12 @@
 *.pyc
-err_list/*
-logs/*
+ImgProcessing/err_list/*
+ImgProcessing/logs/*
 test_output/*
-weights/*
-training_logs/*
+Training/weights/*
+Training/training_logs/*
 nohup.out
 test_images/*
+misc/
 *.pth
 *.log
 *.CR2

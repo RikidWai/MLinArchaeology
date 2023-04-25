@@ -28,10 +28,12 @@ from paraDict import PARAS_15 as paras
 
 # For ensemble use
 from paraDict import PARAS_8 as paras_8
+from paraDict import PARAS_9 as paras_9
 from paraDict import PARAS_11 as paras_11
 from paraDict import PARAS_13 as paras_13
 from paraDict import PARAS_12 as paras_12
 from paraDict import PARAS_14 as paras_14
+from paraDict import PARAS_15 as paras_15
 
 
 import os
@@ -67,6 +69,8 @@ print(f'The batch size is {batch_size}')
 
 # ================= Instantiating model globally ======================
 model = paras['model']
+
+# print(model)
 
 # ================= Loss, optimizer and scheduler ======================
 loss_func = paras['loss_func']
@@ -467,7 +471,7 @@ if __name__ == '__main__':
         # Holds the set of models used for ensemble prediction
         models = []
         # Modify the preferred selection of models using PARAS
-        paras_ensembled = [paras_13, paras_12, paras_14, paras_11, paras] # [paras_8, paras_11, paras_13, paras_12, paras_14]
+        paras_ensembled = [paras_15, paras_9] # [paras_13, paras_12, paras_14, paras_11, paras] # [paras_8, paras_11, paras_13, paras_12, paras_14]
         
         for i in range(len(paras_ensembled)):
             if paras_ensembled[i]['weights_path'] is not None:
