@@ -4,7 +4,7 @@ import torchvision
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
-from torchvision import datasets, transforms, models
+from torchvision import models
 
 import customModels as cm
 

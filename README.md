@@ -11,8 +11,9 @@
 
 ```
 # Setup conda environment
-conda create -n archaeoML
+conda create -n archaeoML python=3.10
 conda activate archaeoML
+conda install pip
 # pip list --format=freeze > requirements.txt
 
 # Setup dependencies

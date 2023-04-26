@@ -4,7 +4,6 @@ sys.path.append('../')
 
 import numpy as np
 import pandas as pd
-import configure as cfg
 from pathlib import Path
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -13,9 +12,7 @@ import torch
 import torchvision
 import torch.nn as nn
 from torchvision import datasets, transforms, models
-from torchvision.transforms import ToTensor
 import torch
-import customModels as cm
 import torch.optim as optim
 from torch.optim import lr_scheduler
 

@@ -1,7 +1,6 @@
 import sys
 sys.path.append('../')
 
-import math
 import colour
 import configure as cfg
 import imUtils
