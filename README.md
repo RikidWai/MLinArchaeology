@@ -2,8 +2,7 @@
 
 ## Background 
 ### Poster 
-
-### Video
+![(rgb) InnoWing Version Poster](https://user-images.githubusercontent.com/89850471/234245847-9dc8be7e-a9d7-446a-bd82-4f14e3339356.jpeg)
 
 ## Setup and Configuration
 
