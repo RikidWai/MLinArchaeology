@@ -1,4 +1,6 @@
 # MLinArchaeology
+A R&D project to apply computer vision aimed at standardizing sherd images and utilizing deep learning to group similar sherds to facilitate archaeologists' field work.  
+
 
 ## Background 
 ### Poster 
